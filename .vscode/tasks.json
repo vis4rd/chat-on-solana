@@ -17,6 +17,22 @@
             "options": {
                 "cwd": "${workspaceFolder}/tests"
             }
+        },
+        {
+            "label": "Run Solana Test Validator",
+            "type": "shell",
+            "command": "solana-test-validator",
+            "runOptions": {
+                "instanceLimit": 1,
+            },
+            "isBackground": true,
+            "icon": {
+                "id": "link",
+                "color": "terminal.ansiGreen"
+            },
+            "presentation": {
+                "panel": "dedicated"
+            }
         }
     ]
 }
