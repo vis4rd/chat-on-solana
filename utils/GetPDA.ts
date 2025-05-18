@@ -1,5 +1,5 @@
 import { PublicKey } from "@solana/web3.js";
-import LoadSecretKey from "../utils/LoadSecretKey.js";
+import LoadSecretKey from "./LoadSecretKey.ts";
 
 const programAddress = new PublicKey(
   "BeuzWNZL6UR4wdLhLHHHDHtu45pH46YVtHabLMznZicf"

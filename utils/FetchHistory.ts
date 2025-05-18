@@ -1,4 +1,4 @@
-import LoadSecretKey from "../utils/LoadSecretKey.js";
+import LoadSecretKey from "./LoadSecretKey.ts";
 import * as web3 from "@solana/web3.js";
 
 const payer = new LoadSecretKey().fromEnvironmentByteArray("NEW_ACCOUNT");

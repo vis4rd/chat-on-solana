@@ -1,5 +1,4 @@
 use anchor_lang::prelude::*;
-use anchor_lang::solana_program::hash::hash;
 
 declare_id!("F8NS3dkPenxhREk1fAHB35psLf5b7dT7AHtu1voL8F79");
 
@@ -31,8 +30,6 @@ pub struct CreateConversation<'info> {
     // PDA account for the conversation
     #[account(
         init,
-        seeds = [&Self::keys_hash(&chatters)],
-        bump,
         payer = payer,
         space = 8 + ConversationAccount::INIT_SPACE // 8 bytes for the account discriminator
     )]
@@ -41,23 +38,23 @@ pub struct CreateConversation<'info> {
     pub system_program: Program<'info, System>,
 }
 
-impl CreateConversation<'_> {
-    fn _flatten_pubkeys(mut pubkeys: Vec<Pubkey>) -> Vec<u8> {
-        pubkeys.sort();
-        pubkeys.iter().flat_map(|pk| pk.to_bytes()).collect()
-    }
+// impl CreateConversation<'_> {
+//     fn _flatten_pubkeys(mut pubkeys: Vec<Pubkey>) -> Vec<u8> {
+//         pubkeys.sort();
+//         pubkeys.iter().flat_map(|pk| pk.to_bytes()).collect()
+//     }
 
-    pub fn keys_hash(keys: &Vec<Pubkey>) -> [u8; 32] {
-        let mut local_keys = keys.clone();
-        local_keys.sort();
-        let bytes: Vec<u8> = local_keys.iter().flat_map(|k| k.to_bytes()).collect();
-        hash(&bytes).to_bytes()
-    }
-}
+//     pub fn keys_hash(keys: &Vec<Pubkey>) -> [u8; 32] {
+//         let mut local_keys = keys.clone();
+//         local_keys.sort();
+//         let bytes: Vec<u8> = local_keys.iter().flat_map(|k| k.to_bytes()).collect();
+//         hash(&bytes).to_bytes()
+//     }
+// }
 
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, InitSpace)]
 pub struct Message {
-    #[max_len(200)]
+    #[max_len(100)]
     pub data: String,
 }
 
