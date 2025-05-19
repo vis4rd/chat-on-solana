@@ -92,4 +92,71 @@ describe("CreateConversation", () => {
             // Logging.logProgramLogs(err);
         }
     });
+
+    it("Reject with 'PayerNotInChatters' when payer is not in chatters", async () => {
+        const newConversationAccountKeypair = new anchor.web3.Keypair();
+        const chatters = [new anchor.web3.Keypair().publicKey, new anchor.web3.Keypair().publicKey];
+
+        try {
+            const tx = await program.methods
+                .createConversation(chatters)
+                .accounts({
+                    payer: payer.publicKey,
+                    conversationAccount: newConversationAccountKeypair.publicKey,
+                })
+                .signers([newConversationAccountKeypair])
+                .rpc();
+            assert.ok(false);
+        } catch (e) {
+            const err = handleAnchorError(e);
+            assert.strictEqual(err.error.errorCode.code, "PayerNotInChatters");
+            assert.strictEqual(err.error.errorCode.number, 6003);
+            // Logging.logProgramLogs(err);
+        }
+    });
+
+    it("Reject with 'ConversationAccountIsChatter' when conversation account is in chatters", async () => {
+        const newConversationAccountKeypair = new anchor.web3.Keypair();
+        const chatters = [newConversationAccountKeypair.publicKey, payer.publicKey];
+
+        try {
+            const tx = await program.methods
+                .createConversation(chatters)
+                .accounts({
+                    payer: payer.publicKey,
+                    conversationAccount: newConversationAccountKeypair.publicKey,
+                })
+                .signers([newConversationAccountKeypair])
+                .rpc();
+            assert.ok(false);
+        } catch (e) {
+            const err = handleAnchorError(e);
+            assert.strictEqual(err.error.errorCode.code, "ConversationAccountIsChatter");
+            assert.strictEqual(err.error.errorCode.number, 6004);
+            // Logging.logProgramLogs(err);
+        }
+    });
+
+    it("Reject with 'RepeatedChatters' when passed repeated chatters", async () => {
+        const newConversationAccountKeypair = new anchor.web3.Keypair();
+        const repeatedChatterKeypair = new anchor.web3.Keypair();
+        const chatters = [payer.publicKey, repeatedChatterKeypair.publicKey, repeatedChatterKeypair.publicKey];
+
+        try {
+            const tx = await program.methods
+                .createConversation(chatters)
+                .accounts({
+                    payer: payer.publicKey,
+                    conversationAccount: newConversationAccountKeypair.publicKey,
+                })
+                .signers([newConversationAccountKeypair])
+                .rpc();
+            assert.ok(false);
+        } catch (e) {
+            const err = handleAnchorError(e);
+            assert.strictEqual(err.error.errorCode.code, "RepeatedChatters");
+            assert.strictEqual(err.error.errorCode.number, 6002);
+            // Logging.logProgramLogs(err);
+        }
+    });
 });
