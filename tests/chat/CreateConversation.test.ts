@@ -3,60 +3,74 @@ import * as IDL from "../../target/types/chat.ts";
 import { describe, it } from "node:test";
 import { assert, use } from "chai";
 import chaiAsPromised from "chai-as-promised";
-import Logging from "../utils/Logging.ts";
+// import Logging from "../utils/Logging.ts";
 
 use(chaiAsPromised);
 
 function handleAnchorError(_error: any): anchor.AnchorError {
-    assert.isTrue(_error instanceof anchor.AnchorError);
-    const error: anchor.AnchorError = _error;
-    // Logging.logAnchorError(error);
-    // Logging.logProgramLogs(error);
+    if (_error instanceof anchor.AnchorError) {
+        const error: anchor.AnchorError = _error;
+        // Logging.logAnchorError(error);
+        // Logging.logProgramLogs(error);
 
-    return error;
+        return error;
+    }
+
+    assert.ok(_error instanceof anchor.AnchorError, `Expected an AnchorError but got something else: ${_error}`);
+}
+
+function generateRandomString(min: number, max: number): string {
+    const length = Math.floor(Math.random() * (max - min + 1)) + min;
+    const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    let result = "";
+    for (let i = 0; i < length; i++) {
+        result += characters.charAt(Math.floor(Math.random() * characters.length));
+    }
+    return result;
 }
 
 describe("CreateConversation", () => {
-    const provider = anchor.AnchorProvider.env();
+    const provider = anchor.AnchorProvider.local();
     anchor.setProvider(provider);
     const payer = provider.wallet as anchor.Wallet;
 
-    const program = anchor.workspace.Chat as anchor.Program<IDL.Chat>;
+    var program = anchor.workspace.Chat as anchor.Program<IDL.Chat>;
 
     it("Create conversation when passed 2-4 chatters", async () => {
-        const newConversationAccountKeypair = new anchor.web3.Keypair();
         const anotherChatterKeypair = new anchor.web3.Keypair();
         const chatters = [payer.publicKey, anotherChatterKeypair.publicKey];
-
-        var instruction = await program.methods
-            .createConversation(chatters)
-            .accounts({
-                payer: payer.publicKey,
-                conversationAccount: newConversationAccountKeypair.publicKey,
-            })
-            .instruction();
-        var transaction = new anchor.web3.Transaction().add(instruction);
-        const tx = await provider.sendAndConfirm(transaction, [newConversationAccountKeypair]);
-
-        const accInfo = await provider.connection.getAccountInfo(newConversationAccountKeypair.publicKey);
-        assert(accInfo.lamports > 0, "Account not found");
-        // Logging.logProgramLogs(provider, tx);
-    });
-
-    it("Reject with 'NotEnoughChatters' when passed less than 2 chatters", async () => {
-        const newConversationAccountKeypair = new anchor.web3.Keypair();
-        const chatters = [payer.publicKey];
+        const conversationId: string = generateRandomString(1, 32);
+        const seeds = [Buffer.from(conversationId)];
+        const [conversationPda] = anchor.web3.PublicKey.findProgramAddressSync(seeds, program.programId);
 
         try {
             const tx = await program.methods
-                .createConversation(chatters)
+                .createConversation(conversationId, chatters)
                 .accounts({
                     payer: payer.publicKey,
-                    conversationAccount: newConversationAccountKeypair.publicKey,
                 })
-                .signers([newConversationAccountKeypair])
                 .rpc();
-            assert.ok(false);
+        } catch (e) {
+            const err = handleAnchorError(e);
+        }
+
+        // Logging.logProgramLogs(provider, tx);
+        const accInfo = await provider.connection.getAccountInfo(conversationPda);
+        assert(accInfo.lamports > 0, "Account not found");
+    });
+
+    it("Reject with 'NotEnoughChatters' when passed less than 2 chatters", async () => {
+        const chatters = [payer.publicKey];
+        const conversationId: string = generateRandomString(1, 32);
+
+        try {
+            const tx = await program.methods
+                .createConversation(conversationId, chatters)
+                .accounts({
+                    payer: payer.publicKey,
+                })
+                .rpc();
+            assert.ok(false, "The transaction is expected to fail.");
         } catch (e) {
             const err = handleAnchorError(e);
             assert.strictEqual(err.error.errorCode.code, "NotEnoughChatters");
@@ -66,7 +80,6 @@ describe("CreateConversation", () => {
     });
 
     it("Reject with 'TooManyChatters' when passed more than 4 chatters", async () => {
-        const newConversationAccountKeypair = new anchor.web3.Keypair();
         const chatters = [
             payer.publicKey,
             new anchor.web3.Keypair().publicKey,
@@ -74,17 +87,16 @@ describe("CreateConversation", () => {
             new anchor.web3.Keypair().publicKey,
             new anchor.web3.Keypair().publicKey,
         ];
+        const conversationId: string = generateRandomString(1, 32);
 
         try {
             const tx = await program.methods
-                .createConversation(chatters)
+                .createConversation(conversationId, chatters)
                 .accounts({
                     payer: payer.publicKey,
-                    conversationAccount: newConversationAccountKeypair.publicKey,
                 })
-                .signers([newConversationAccountKeypair])
                 .rpc();
-            assert.ok(false);
+            assert.ok(false, "The transaction is expected to fail.");
         } catch (e) {
             const err = handleAnchorError(e);
             assert.strictEqual(err.error.errorCode.code, "TooManyChatters");
@@ -94,19 +106,17 @@ describe("CreateConversation", () => {
     });
 
     it("Reject with 'PayerNotInChatters' when payer is not in chatters", async () => {
-        const newConversationAccountKeypair = new anchor.web3.Keypair();
         const chatters = [new anchor.web3.Keypair().publicKey, new anchor.web3.Keypair().publicKey];
+        const conversationId: string = generateRandomString(1, 32);
 
         try {
             const tx = await program.methods
-                .createConversation(chatters)
+                .createConversation(conversationId, chatters)
                 .accounts({
                     payer: payer.publicKey,
-                    conversationAccount: newConversationAccountKeypair.publicKey,
                 })
-                .signers([newConversationAccountKeypair])
                 .rpc();
-            assert.ok(false);
+            assert.ok(false, "The transaction is expected to fail.");
         } catch (e) {
             const err = handleAnchorError(e);
             assert.strictEqual(err.error.errorCode.code, "PayerNotInChatters");
@@ -116,19 +126,19 @@ describe("CreateConversation", () => {
     });
 
     it("Reject with 'ConversationAccountIsChatter' when conversation account is in chatters", async () => {
-        const newConversationAccountKeypair = new anchor.web3.Keypair();
-        const chatters = [newConversationAccountKeypair.publicKey, payer.publicKey];
+        const conversationId: string = generateRandomString(1, 32);
+        const seeds = [Buffer.from(conversationId)];
+        const [conversationPda] = anchor.web3.PublicKey.findProgramAddressSync(seeds, program.programId);
+        const chatters = [conversationPda, payer.publicKey];
 
         try {
             const tx = await program.methods
-                .createConversation(chatters)
+                .createConversation(conversationId, chatters)
                 .accounts({
                     payer: payer.publicKey,
-                    conversationAccount: newConversationAccountKeypair.publicKey,
                 })
-                .signers([newConversationAccountKeypair])
                 .rpc();
-            assert.ok(false);
+            assert.ok(false, "The transaction is expected to fail.");
         } catch (e) {
             const err = handleAnchorError(e);
             assert.strictEqual(err.error.errorCode.code, "ConversationAccountIsChatter");
@@ -138,25 +148,40 @@ describe("CreateConversation", () => {
     });
 
     it("Reject with 'RepeatedChatters' when passed repeated chatters", async () => {
-        const newConversationAccountKeypair = new anchor.web3.Keypair();
         const repeatedChatterKeypair = new anchor.web3.Keypair();
         const chatters = [payer.publicKey, repeatedChatterKeypair.publicKey, repeatedChatterKeypair.publicKey];
+        const conversationId: string = generateRandomString(1, 32);
 
         try {
             const tx = await program.methods
-                .createConversation(chatters)
+                .createConversation(conversationId, chatters)
                 .accounts({
                     payer: payer.publicKey,
-                    conversationAccount: newConversationAccountKeypair.publicKey,
                 })
-                .signers([newConversationAccountKeypair])
                 .rpc();
-            assert.ok(false);
+            assert.ok(false, "The transaction is expected to fail.");
         } catch (e) {
             const err = handleAnchorError(e);
             assert.strictEqual(err.error.errorCode.code, "RepeatedChatters");
             assert.strictEqual(err.error.errorCode.number, 6002);
             // Logging.logProgramLogs(err);
+        }
+    });
+
+    it("Reject with 'TooLongConversationId' when conversationId is too long", async () => {
+        const anotherChatterKeypair = new anchor.web3.Keypair();
+        const chatters = [payer.publicKey, anotherChatterKeypair.publicKey];
+        const conversationId: string = generateRandomString(33, 40);
+        try {
+            await program.methods
+                .createConversation(conversationId, chatters)
+                .accounts({
+                    payer: payer.publicKey,
+                })
+                .rpc();
+            assert.ok(false, "The transaction is expected to fail.");
+        } catch (e) {
+            // console.log(e);
         }
     });
 });

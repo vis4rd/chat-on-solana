@@ -12,4 +12,6 @@ pub enum ConversationError {
     PayerNotInChatters,
     #[msg("The conversation account cannot be one of the chatters.")]
     ConversationAccountIsChatter,
+    #[msg("The conversation ID is too long. It must be 32 characters or less.")]
+    TooLongConversationId,
 }

@@ -1,3 +1,5 @@
+#![allow(unexpected_cfgs)]
+
 use anchor_lang::prelude::*;
 mod errors;
 
@@ -7,7 +9,11 @@ declare_id!("F8NS3dkPenxhREk1fAHB35psLf5b7dT7AHtu1voL8F79");
 pub mod chat {
     use super::*;
 
-    pub fn create_conversation(ctx: Context<CreateConversation>, chatters: Vec<Pubkey>) -> Result<()> {
+    pub fn create_conversation(
+        ctx: Context<CreateConversation>,
+        conversation_id: String,
+        chatters: Vec<Pubkey>,
+    ) -> Result<()> {
         require!(chatters.len() <= 4, errors::ConversationError::TooManyChatters);
         require!(chatters.len() >= 2, errors::ConversationError::NotEnoughChatters);
         require!(
@@ -23,7 +29,11 @@ pub mod chat {
                 require_keys_neq!(chatters[i], chatters[j], errors::ConversationError::RepeatedChatters);
             }
         }
-        // TODO: Check if conversation account address is derived from the chatters
+        require!(
+            conversation_id.len() <= 32,
+            errors::ConversationError::TooLongConversationId
+        );
+
         ctx.accounts.conversation_account.chatter_count = chatters.len() as u8;
         ctx.accounts.conversation_account.chatters = chatters;
         Ok(())
@@ -31,7 +41,7 @@ pub mod chat {
 }
 
 #[derive(Accounts)]
-#[instruction(chatters: Vec<Pubkey>)]
+#[instruction(conversation_id: String)]
 pub struct CreateConversation<'info> {
     #[account(mut)]
     pub payer: Signer<'info>,
@@ -40,6 +50,8 @@ pub struct CreateConversation<'info> {
     #[account(
         init,
         payer = payer,
+        seeds = [conversation_id.as_ref()],
+        bump,
         space = 8 + ConversationAccount::INIT_SPACE // 8 bytes for the account discriminator
     )]
     pub conversation_account: Account<'info, ConversationAccount>,
