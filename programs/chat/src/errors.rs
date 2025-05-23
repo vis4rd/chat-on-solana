@@ -14,4 +14,8 @@ pub enum ConversationError {
     ConversationAccountIsChatter,
     #[msg("The conversation ID is too long. It must be 32 characters or less.")]
     TooLongConversationId,
+    #[msg("The message is too long. It must be 100 characters or less.")]
+    MessageTooLong,
+    #[msg("The conversation has reached the maximum number of messages.")]
+    TooManyMessages,
 }

@@ -8,6 +8,7 @@ mod errors;
 use anchor_lang::prelude::*;
 use errors::ConversationError;
 use instructions::*;
+use state::Message;
 
 declare_id!("F8NS3dkPenxhREk1fAHB35psLf5b7dT7AHtu1voL8F79");
 
@@ -39,6 +40,27 @@ pub mod chat {
 
         ctx.accounts.conversation_account.chatter_count = chatters.len() as u8;
         ctx.accounts.conversation_account.chatters = chatters;
+        Ok(())
+    }
+
+    pub fn append_message(ctx: Context<AppendMessage>, message: String) -> Result<()> {
+        require!(message.len() <= 100, ConversationError::MessageTooLong);
+        let conversation = &mut ctx.accounts.conversation_account;
+        require!(
+            conversation.chatters.contains(&ctx.accounts.author.key()),
+            ConversationError::PayerNotInChatters
+        );
+
+        if conversation.messages.len() == 50 {
+            conversation.messages.remove(0);
+        }
+
+        let msg = Message {
+            data: message,
+            author: ctx.accounts.author.key(),
+            timestamp: Clock::get()?.unix_timestamp,
+        };
+        conversation.messages.push(msg);
         Ok(())
     }
 }
