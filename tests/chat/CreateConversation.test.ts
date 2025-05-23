@@ -3,31 +3,11 @@ import * as IDL from "../../target/types/chat.ts";
 import { describe, it } from "node:test";
 import { assert, use } from "chai";
 import chaiAsPromised from "chai-as-promised";
+import { handleAnchorError } from "../utils/Error.ts";
+import { generateRandomString } from "../utils/Random.ts";
 // import Logging from "../utils/Logging.ts";
 
 use(chaiAsPromised);
-
-function handleAnchorError(_error: any): anchor.AnchorError {
-    if (_error instanceof anchor.AnchorError) {
-        const error: anchor.AnchorError = _error;
-        // Logging.logAnchorError(error);
-        // Logging.logProgramLogs(error);
-
-        return error;
-    }
-
-    assert.ok(_error instanceof anchor.AnchorError, `Expected an AnchorError but got something else: ${_error}`);
-}
-
-function generateRandomString(min: number, max: number): string {
-    const length = Math.floor(Math.random() * (max - min + 1)) + min;
-    const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    let result = "";
-    for (let i = 0; i < length; i++) {
-        result += characters.charAt(Math.floor(Math.random() * characters.length));
-    }
-    return result;
-}
 
 describe("CreateConversation", () => {
     const provider = anchor.AnchorProvider.local();
