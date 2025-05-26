@@ -17,3 +17,5 @@ wallet = "~/.config/solana/id.json"
 
 [scripts]
 test = "yarn run ts-mocha -p ./tsconfig.json 'tests/**/*.ts'"
+# export = "cp ./target/idl/chat.json ./app/solana-chat-frontend/public/chat_idl.json"
+export = "cp ./target/types/chat.ts ./app/solana-chat-frontend/src/anchor/chat.idl.ts"
