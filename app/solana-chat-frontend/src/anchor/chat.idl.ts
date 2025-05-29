@@ -5,197 +5,170 @@
  * IDL can be found at `target/idl/chat.json`.
  */
 export type Chat = {
-  "address": "F8NS3dkPenxhREk1fAHB35psLf5b7dT7AHtu1voL8F79",
-  "metadata": {
-    "name": "chat",
-    "version": "0.1.0",
-    "spec": "0.1.0",
-    "description": "Created with Anchor"
-  },
-  "instructions": [
-    {
-      "name": "appendMessage",
-      "discriminator": [
-        180,
-        85,
-        91,
-        83,
-        18,
-        62,
-        31,
-        7
-      ],
-      "accounts": [
+    address: "EQbBHuPvwwpEjckervdPSYzaQp4uumwANJYCUyNz46hF";
+    metadata: {
+        name: "chat";
+        version: "0.1.0";
+        spec: "0.1.0";
+        description: "Created with Anchor";
+    };
+    instructions: [
         {
-          "name": "conversationAccount",
-          "writable": true
+            name: "appendMessage";
+            discriminator: [180, 85, 91, 83, 18, 62, 31, 7];
+            accounts: [
+                {
+                    name: "conversationAccount";
+                    writable: true;
+                },
+                {
+                    name: "author";
+                    signer: true;
+                },
+            ];
+            args: [
+                {
+                    name: "message";
+                    type: "string";
+                },
+            ];
         },
         {
-          "name": "author",
-          "signer": true
-        }
-      ],
-      "args": [
+            name: "createConversation";
+            discriminator: [30, 90, 208, 53, 75, 232, 26, 102];
+            accounts: [
+                {
+                    name: "payer";
+                    writable: true;
+                    signer: true;
+                },
+                {
+                    name: "conversationAccount";
+                    writable: true;
+                    pda: {
+                        seeds: [
+                            {
+                                kind: "arg";
+                                path: "conversationId";
+                            },
+                        ];
+                    };
+                },
+                {
+                    name: "systemProgram";
+                    address: "11111111111111111111111111111111";
+                },
+            ];
+            args: [
+                {
+                    name: "conversationId";
+                    type: "string";
+                },
+                {
+                    name: "chatters";
+                    type: {
+                        vec: "pubkey";
+                    };
+                },
+            ];
+        },
+    ];
+    accounts: [
         {
-          "name": "message",
-          "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "createConversation",
-      "discriminator": [
-        30,
-        90,
-        208,
-        53,
-        75,
-        232,
-        26,
-        102
-      ],
-      "accounts": [
+            name: "conversationAccount";
+            discriminator: [49, 27, 167, 114, 0, 28, 72, 47];
+        },
+    ];
+    errors: [
         {
-          "name": "payer",
-          "writable": true,
-          "signer": true
+            code: 6000;
+            name: "notEnoughChatters";
+            msg: "Not enough chatters provided. At least 2 are required.";
         },
         {
-          "name": "conversationAccount",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "arg",
-                "path": "conversationId"
-              }
-            ]
-          }
+            code: 6001;
+            name: "tooManyChatters";
+            msg: "The number of chatters exceeds the maximum limit of 4.";
         },
         {
-          "name": "systemProgram",
-          "address": "11111111111111111111111111111111"
-        }
-      ],
-      "args": [
-        {
-          "name": "conversationId",
-          "type": "string"
+            code: 6002;
+            name: "repeatedChatters";
+            msg: "Chatters cannot be the same.";
         },
         {
-          "name": "chatters",
-          "type": {
-            "vec": "pubkey"
-          }
-        }
-      ]
-    }
-  ],
-  "accounts": [
-    {
-      "name": "conversationAccount",
-      "discriminator": [
-        49,
-        27,
-        167,
-        114,
-        0,
-        28,
-        72,
-        47
-      ]
-    }
-  ],
-  "errors": [
-    {
-      "code": 6000,
-      "name": "notEnoughChatters",
-      "msg": "Not enough chatters provided. At least 2 are required."
-    },
-    {
-      "code": 6001,
-      "name": "tooManyChatters",
-      "msg": "The number of chatters exceeds the maximum limit of 4."
-    },
-    {
-      "code": 6002,
-      "name": "repeatedChatters",
-      "msg": "Chatters cannot be the same."
-    },
-    {
-      "code": 6003,
-      "name": "payerNotInChatters",
-      "msg": "The payer must be one of the chatters."
-    },
-    {
-      "code": 6004,
-      "name": "conversationAccountIsChatter",
-      "msg": "The conversation account cannot be one of the chatters."
-    },
-    {
-      "code": 6005,
-      "name": "tooLongConversationId",
-      "msg": "The conversation ID is too long. It must be 32 characters or less."
-    },
-    {
-      "code": 6006,
-      "name": "messageTooLong",
-      "msg": "The message is too long. It must be 100 characters or less."
-    },
-    {
-      "code": 6007,
-      "name": "tooManyMessages",
-      "msg": "The conversation has reached the maximum number of messages."
-    }
-  ],
-  "types": [
-    {
-      "name": "conversationAccount",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "chatterCount",
-            "type": "u8"
-          },
-          {
-            "name": "chatters",
-            "type": {
-              "vec": "pubkey"
-            }
-          },
-          {
-            "name": "messages",
-            "type": {
-              "vec": {
-                "defined": {
-                  "name": "message"
-                }
-              }
-            }
-          }
-        ]
-      }
-    },
-    {
-      "name": "message",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "data",
-            "type": "string"
-          },
-          {
-            "name": "author",
-            "type": "pubkey"
-          },
-          {
-            "name": "timestamp",
-            "type": "i64"
-          }
-        ]
-      }
-    }
-  ]
+            code: 6003;
+            name: "payerNotInChatters";
+            msg: "The payer must be one of the chatters.";
+        },
+        {
+            code: 6004;
+            name: "conversationAccountIsChatter";
+            msg: "The conversation account cannot be one of the chatters.";
+        },
+        {
+            code: 6005;
+            name: "tooLongConversationId";
+            msg: "The conversation ID is too long. It must be 32 characters or less.";
+        },
+        {
+            code: 6006;
+            name: "messageTooLong";
+            msg: "The message is too long. It must be 100 characters or less.";
+        },
+        {
+            code: 6007;
+            name: "tooManyMessages";
+            msg: "The conversation has reached the maximum number of messages.";
+        },
+    ];
+    types: [
+        {
+            name: "conversationAccount";
+            type: {
+                kind: "struct";
+                fields: [
+                    {
+                        name: "chatterCount";
+                        type: "u8";
+                    },
+                    {
+                        name: "chatters";
+                        type: {
+                            vec: "pubkey";
+                        };
+                    },
+                    {
+                        name: "messages";
+                        type: {
+                            vec: {
+                                defined: {
+                                    name: "message";
+                                };
+                            };
+                        };
+                    },
+                ];
+            };
+        },
+        {
+            name: "message";
+            type: {
+                kind: "struct";
+                fields: [
+                    {
+                        name: "data";
+                        type: "string";
+                    },
+                    {
+                        name: "author";
+                        type: "pubkey";
+                    },
+                    {
+                        name: "timestamp";
+                        type: "i64";
+                    },
+                ];
+            };
+        },
+    ];
 };

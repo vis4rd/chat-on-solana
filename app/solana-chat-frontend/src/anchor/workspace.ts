@@ -2,15 +2,23 @@ import { computed, type ComputedRef, type Ref } from "vue";
 import { useAnchorWallet, type AnchorWallet } from "solana-wallets-vue";
 import { Connection, clusterApiUrl, PublicKey } from "@solana/web3.js";
 import { AnchorProvider, Program } from "@coral-xyz/anchor";
-import * as IDL from "./chat.idl";
+import { type Chat } from "@/anchor/chat.idl";
+import ChatIDL from "#/chat_idl.json";
 
 const preflightCommitment = "processed";
 const commitment = "confirmed";
-// const programID = new PublicKey(IDL.Chat.address);
-const apiUrl = "localhost";
-// const apiUrl = clusterApiUrl("devnet");
+// const programID = new PublicKey(Chat.address);
+// const apiUrl = "http://localhost";
+const apiUrl = clusterApiUrl("devnet");
 
-var workspace: any | null = null;
+export interface Workspace {
+    wallet: Ref<AnchorWallet | undefined>;
+    connection: Connection;
+    provider: ComputedRef<AnchorProvider>;
+    program: ComputedRef<Program<Chat>>;
+}
+
+var workspace: Workspace | null = null;
 export const useWorkspace = () => workspace;
 
 export const initWorkspace = () => {
@@ -23,7 +31,7 @@ export const initWorkspace = () => {
                 commitment,
             }),
     );
-    const program = computed(() => new Program(IDL.Chat));
+    const program = computed(() => new Program(ChatIDL as Chat, provider.value));
 
     workspace = {
         wallet,

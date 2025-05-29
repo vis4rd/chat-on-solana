@@ -12,7 +12,8 @@ chat = "F8NS3dkPenxhREk1fAHB35psLf5b7dT7AHtu1voL8F79"
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "localnet"
+# cluster = "localnet"
+cluster = "devnet"
 wallet = "~/.config/solana/id.json"
 
 [scripts]
