@@ -36,6 +36,42 @@ async function createConversation() {
             document.getElementById("essa").innerHTML = `Error creating conversation: ${error}`;
         });
 }
+
+async function fetchConversations() {
+    try {
+        const conversations = await workspace.program.value.account.conversationAccount.fetch(
+            "DECV4rgx1zy3H62xN7xLwAnBsBbzUWzDnZu95YeFCJrs",
+        );
+        console.log("Conversations:", conversations);
+        document.getElementById("oof").innerHTML = JSON.stringify(conversations, null, 2);
+    } catch (error) {
+        console.error("Error fetching conversations:", error);
+        document.getElementById("oof").innerHTML = `Error fetching conversations: ${error}`;
+    }
+}
+
+async function appendMessage() {
+    try {
+        const tx = await workspace.program.value.methods
+            .appendMessage("Hello, world!")
+            .accounts({
+                conversationAccount: "DECV4rgx1zy3H62xN7xLwAnBsBbzUWzDnZu95YeFCJrs",
+                author: workspace.wallet.value.publicKey,
+            })
+            .signers([workspace.wallet.value])
+            .transaction();
+
+        const latestBlockhash = await workspace.provider.value.connection.getLatestBlockhash();
+        tx.recentBlockhash = latestBlockhash.blockhash;
+        tx.feePayer = workspace.wallet.value.publicKey;
+
+        const signedTx = await workspace.wallet.value.signTransaction(tx);
+        const txSignature = await workspace.provider.value.connection.sendRawTransaction(signedTx.serialize());
+        console.log("Message appended, transaction signature:", txSignature);
+    } catch (error) {
+        console.error("Error appending message:", error);
+    }
+}
 </script>
 
 <template>
@@ -64,6 +100,15 @@ async function createConversation() {
             <button @click="createConversation">Create Conversation</button>
         </div>
         <div id="essa"></div>
+        <br />
+        <br />
+        <div>
+            <button @click="fetchConversations">Fetch all conversationAccounts</button>
+        </div>
+        <div id="oof"></div>
+        <div>
+            <button @click="appendMessage">Append Message</button>
+        </div>
     </div>
 </template>
 
