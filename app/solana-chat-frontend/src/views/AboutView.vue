@@ -1,11 +1,41 @@
 <script setup>
 import { WalletMultiButton } from "solana-wallets-vue";
-import { useWorkspace, initWorkspace } from "@/anchor/workspace";
+import { useWorkspace } from "@/anchor/workspace";
+import * as anchor from "@coral-xyz/anchor";
 
-// TODO: try to create a conversation with wallet address
-initWorkspace();
-// TODO: figure out where initWorkspace should be called
 const workspace = useWorkspace();
+
+async function createConversation() {
+    const anotherChatterKeypair = new anchor.web3.Keypair();
+
+    const tx = workspace.program.value.methods
+        .createConversation("some-conversation", [workspace.wallet.value.publicKey, anotherChatterKeypair.publicKey])
+        .accounts({
+            payer: workspace.wallet.value.publicKey,
+        })
+        .signers([workspace.wallet.value])
+        .transaction();
+
+    tx.then(async (transaction) => {
+        console.log("Transaction created:", transaction);
+        const latestBlockhash = await workspace.provider.value.connection.getLatestBlockhash();
+        transaction.recentBlockhash = latestBlockhash.blockhash;
+        transaction.feePayer = workspace.wallet.value.publicKey;
+        return workspace.wallet.value.signTransaction(transaction);
+    })
+        .then((signedTx) => {
+            console.log("Signed transaction:", signedTx);
+            return workspace.provider.value.connection.sendRawTransaction(signedTx.serialize());
+        })
+        .then((txSignature) => {
+            console.log("Transaction signature:", txSignature);
+            document.getElementById("essa").innerHTML = `Transaction signature: ${txSignature}`;
+        })
+        .catch((error) => {
+            console.error("Error creating conversation:", error);
+            document.getElementById("essa").innerHTML = `Error creating conversation: ${error}`;
+        });
+}
 </script>
 
 <template>
@@ -30,6 +60,10 @@ const workspace = useWorkspace();
                 {{ workspace.program.value.idl }}
             </p>
         </div>
+        <div>
+            <button @click="createConversation">Create Conversation</button>
+        </div>
+        <div id="essa"></div>
     </div>
 </template>
 
