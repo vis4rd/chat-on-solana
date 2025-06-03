@@ -1,82 +1,60 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from "vue-router";
+import BlockWrapper from "@/components/BlockWrapper.vue";
 </script>
 
 <template>
-    <header>
-        <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
+    <BlockWrapper>
+        <header>
+            <!-- TODO: logo -->
+            <h1>Chat On Solana</h1>
+        </header>
+    </BlockWrapper>
 
-        <div class="wrapper">
+    <BlockWrapper>
+        <!-- TODO: Wallet settings -->
+    </BlockWrapper>
+
+    <div class="horizontal-layout">
+        <BlockWrapper class="sidebar">
+            <!-- TODO: remove router for now -->
             <nav>
                 <RouterLink to="/">Home</RouterLink>
                 <RouterLink to="/about">About</RouterLink>
             </nav>
-        </div>
-    </header>
+            <!-- TODO: list of chats -->
+        </BlockWrapper>
 
-    <RouterView />
+        <BlockWrapper class="content">
+            <main>
+                <RouterView />
+                <!-- TODO: conversation view -->
+            </main>
+        </BlockWrapper>
+    </div>
 </template>
 
 <style scoped>
 header {
-    line-height: 1.5;
-    max-height: 100vh;
+    /* border: solid white 1px; */
 }
 
-.logo {
-    display: block;
-    margin: 0 auto 2rem;
+.horizontal-layout {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
 }
 
-nav {
-    width: 100%;
-    font-size: 12px;
+.sidebar {
+    width: 20%;
+    min-width: 200px;
     text-align: center;
-    margin-top: 2rem;
+    border: solid red 1px;
 }
 
-nav a.router-link-exact-active {
-    color: var(--color-text);
-}
-
-nav a.router-link-exact-active:hover {
-    background-color: transparent;
-}
-
-nav a {
-    display: inline-block;
-    padding: 0 1rem;
-    border-left: 1px solid var(--color-border);
-}
-
-nav a:first-of-type {
-    border: 0;
-}
-
-@media (min-width: 1024px) {
-    header {
-        display: flex;
-        place-items: center;
-        padding-right: calc(var(--section-gap) / 2);
-    }
-
-    .logo {
-        margin: 0 2rem 0 0;
-    }
-
-    header .wrapper {
-        display: flex;
-        place-items: flex-start;
-        flex-wrap: wrap;
-    }
-
-    nav {
-        text-align: left;
-        margin-left: -1rem;
-        font-size: 1rem;
-
-        padding: 1rem 0;
-        margin-top: 1rem;
-    }
+.content {
+    flex-grow: 1;
+    /* width: auto; */
+    border: solid blue 1px;
 }
 </style>
