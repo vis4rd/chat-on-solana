@@ -6,7 +6,7 @@ resolution = true
 skip-lint = false
 
 [programs.localnet]
-chat = "EQbBHuPvwwpEjckervdPSYzaQp4uumwANJYCUyNz46hF"
+chat = "F8NS3dkPenxhREk1fAHB35psLf5b7dT7AHtu1voL8F79"
 
 [registry]
 url = "https://api.apr.dev"
@@ -16,5 +16,7 @@ cluster = "devnet"
 wallet = "~/.config/solana/id.json"
 
 [scripts]
-export = "cp ./target/types/chat.ts ./app/solana-chat-frontend/src/anchor/chat.idl.ts"
+export = "anchor run export_json && anchor run export_ts"
+export_json = "cp ./target/idl/chat.json ./app/solana-chat-frontend/src/anchor/chat_idl.json"
+export_ts = "cp ./target/types/chat.ts ./app/solana-chat-frontend/src/anchor/chat.idl.ts"
 test = "yarn run ts-mocha -p ./tsconfig.json 'tests/**/*.ts'"

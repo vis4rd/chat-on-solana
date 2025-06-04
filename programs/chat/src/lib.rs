@@ -10,7 +10,7 @@ use errors::ConversationError;
 use instructions::*;
 use state::Message;
 
-declare_id!("EQbBHuPvwwpEjckervdPSYzaQp4uumwANJYCUyNz46hF");
+declare_id!("F8NS3dkPenxhREk1fAHB35psLf5b7dT7AHtu1voL8F79");
 
 #[program]
 pub mod chat {
