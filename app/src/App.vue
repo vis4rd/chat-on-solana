@@ -46,15 +46,14 @@ header {
 }
 
 .sidebar {
-    width: 20%;
-    min-width: 200px;
+    min-width: max(20%, 200px);
     text-align: center;
     border: solid red 1px;
 }
 
 .content {
+    min-width: 200px;
     flex-grow: 1;
-    /* width: auto; */
     border: solid blue 1px;
 }
 </style>
