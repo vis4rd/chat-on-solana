@@ -14,7 +14,7 @@ describe("CreateConversation", () => {
     anchor.setProvider(provider);
     const payer = provider.wallet as anchor.Wallet;
 
-    var program = anchor.workspace.Chat as anchor.Program<IDL.Chat>;
+    const program = anchor.workspace.Chat as anchor.Program<IDL.Chat>;
 
     it("Create conversation when passed 2-4 chatters", async () => {
         const anotherChatterKeypair = new anchor.web3.Keypair();

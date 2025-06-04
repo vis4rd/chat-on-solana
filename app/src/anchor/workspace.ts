@@ -1,8 +1,8 @@
 import { computed, type ComputedRef, type Ref } from "vue";
 import { useAnchorWallet, type AnchorWallet } from "solana-wallets-vue";
-import { Connection, clusterApiUrl, PublicKey } from "@solana/web3.js";
+import { Connection, clusterApiUrl } from "@solana/web3.js";
 import { AnchorProvider, Program } from "@coral-xyz/anchor";
-import { type Chat } from "@/anchor/chat.idl";
+import { type Chat } from "@/anchor/chat.idl.ts";
 import ChatIDL from "@/anchor/chat_idl.json";
 
 const preflightCommitment = "processed";
@@ -18,7 +18,7 @@ export interface Workspace {
     program: ComputedRef<Program<Chat>>;
 }
 
-var workspace: Workspace | null = null;
+let workspace: Workspace | null = null;
 export const useWorkspace = () => workspace;
 
 export const initWorkspace = () => {

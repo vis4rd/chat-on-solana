@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { WalletMultiButton } from "solana-wallets-vue";
 import { useWorkspace } from "@/anchor/workspace";
 import * as anchor from "@coral-xyz/anchor";

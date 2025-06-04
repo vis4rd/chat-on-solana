@@ -7,7 +7,6 @@ import SolanaWallets from "solana-wallets-vue";
 import App from "./App.vue";
 import router from "./router";
 
-import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
 import { PhantomWalletAdapter } from "@solana/wallet-adapter-wallets";
 
 import "solana-wallets-vue/styles.css";

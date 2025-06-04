@@ -1,24 +1,51 @@
 {
-    "name": "global_counter_test",
+    "name": "solana_chat",
     "version": "1.0.0",
-    "main": "index.js",
+    "private": true,
     "type": "module",
-    "scripts": {},
-    "author": "",
+    "scripts": {
+        "dev": "vite ./app",
+        "build": "run-p type-check \"build-only {@}\" --",
+        "preview": "vite preview ./app",
+        "build-only": "vite build ./app",
+        "type-check": "vue-tsc --build",
+        "lint": "eslint . --fix",
+        "format": "prettier --write src/"
+    },
+    "author": "vis4rd",
     "license": "ISC",
     "description": "",
     "dependencies": {
+        "@coral-xyz/anchor": "^0.31.1",
         "@solana-developers/helpers": "^2.8.1",
+        "@solana/wallet-adapter-wallets": "^0.19.36",
         "@solana/web3.js": "^1.98.2",
         "bs58": "^6.0.0",
-        "typescript": "^5.8.3"
+        "pinia": "^3.0.1",
+        "solana-wallets-vue": "^0.7.1",
+        "typescript": "^5.8.3",
+        "vue": "^3.5.13",
+        "vue-router": "^4.5.0"
     },
     "devDependencies": {
+        "@tsconfig/node22": "^22.0.1",
         "@types/chai": "^5.2.2",
         "@types/chai-as-promised": "^8.0.2",
         "@types/node": "^22.15.18",
+        "@vitejs/plugin-vue": "^5.2.3",
+        "@vue/eslint-config-prettier": "^10.2.0",
+        "@vue/eslint-config-typescript": "^14.5.0",
+        "@vue/tsconfig": "^0.7.0",
         "chai": "^5.2.0",
         "chai-as-promised": "^8.0.1",
-        "ts-mocha": "^11.1.0"
+        "eslint": "^9.22.0",
+        "eslint-plugin-vue": "~10.0.0",
+        "jiti": "^2.4.2",
+        "npm-run-all2": "^7.0.2",
+        "prettier": "3.5.3",
+        "ts-mocha": "^11.1.0",
+        "vite": "^6.2.4",
+        "vite-plugin-vue-devtools": "^7.7.2",
+        "vue-tsc": "^2.2.8"
     }
 }

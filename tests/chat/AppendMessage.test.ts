@@ -9,7 +9,7 @@ use(chaiAsPromised);
 describe("append_message instruction", () => {
     const provider = anchor.AnchorProvider.local();
     anchor.setProvider(provider);
-    var program = anchor.workspace.Chat as anchor.Program<typeof IDL.Chat>;
+    const program = anchor.workspace.Chat as anchor.Program<typeof IDL.Chat>;
     const payer = provider.wallet as anchor.Wallet;
     const conversationId: string = "test-convo";
     const [conversationPda] = anchor.web3.PublicKey.findProgramAddressSync(
