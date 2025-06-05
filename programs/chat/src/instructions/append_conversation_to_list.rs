@@ -10,5 +10,5 @@ pub struct AppendConversationToList<'info> {
         seeds = [user.key().as_ref(), b"chats"],
         bump,
     )]
-    pub user_chats: Account<'info, ConversationListAccount>,
+    pub conversation_list_account: Account<'info, ConversationListAccount>,
 }

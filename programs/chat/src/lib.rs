@@ -74,7 +74,7 @@ pub mod chat {
         conversation_address: Pubkey,
     ) -> Result<()> {
         let conversation_str = conversation_address.to_string();
-        let user_chats = &mut ctx.accounts.user_chats;
+        let user_chats = &mut ctx.accounts.conversation_list_account;
         if !user_chats.conversation_ids.contains(&conversation_str) {
             user_chats.conversation_ids.push(conversation_str);
         }

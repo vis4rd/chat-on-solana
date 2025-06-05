@@ -1,13 +1,22 @@
 import * as anchor from "@coral-xyz/anchor";
-import { describe, it } from "node:test";
+import { beforeEach, describe, it } from "node:test";
 import { assert } from "chai";
 import * as IDL from "../../target/types/chat.ts";
 
 describe("create_conversation_list instruction", () => {
     const provider = anchor.AnchorProvider.local();
     anchor.setProvider(provider);
-    const payer = provider.wallet as anchor.Wallet;
+    const payer = anchor.web3.Keypair.generate();
     const program = anchor.workspace.Chat as anchor.Program<IDL.Chat>;
+
+    beforeEach(async () => {
+        const connection = provider.connection;
+        const sig = await connection.requestAirdrop(payer.publicKey, 2 * anchor.web3.LAMPORTS_PER_SOL);
+        await connection.confirmTransaction(
+            { signature: sig, ...(await connection.getLatestBlockhash()) },
+            "confirmed",
+        );
+    });
 
     const [conversationListPDA] = anchor.web3.PublicKey.findProgramAddressSync(
         [payer.publicKey.toBuffer(), Buffer.from("chats")],
@@ -19,9 +28,8 @@ describe("create_conversation_list instruction", () => {
             .createConversationList()
             .accounts({
                 user: payer.publicKey,
-                conversationListAccount: conversationListPDA,
-                systemProgram: anchor.web3.SystemProgram.programId,
             })
+            .signers([payer])
             .rpc();
 
         const acc = await program.account.conversationListAccount.fetch(conversationListPDA);
@@ -35,9 +43,8 @@ describe("create_conversation_list instruction", () => {
                 .createConversationList()
                 .accounts({
                     user: payer.publicKey,
-                    conversationListAccount: conversationListPDA,
-                    systemProgram: anchor.web3.SystemProgram.programId,
                 })
+                .signers([payer])
                 .rpc(),
             /already in use|Account in use/,
         );
