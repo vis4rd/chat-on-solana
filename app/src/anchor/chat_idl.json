@@ -8,6 +8,54 @@
   },
   "instructions": [
     {
+      "name": "append_conversation_to_list",
+      "discriminator": [
+        114,
+        240,
+        202,
+        151,
+        47,
+        184,
+        106,
+        167
+      ],
+      "accounts": [
+        {
+          "name": "user",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "conversation_list_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "user"
+              },
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  104,
+                  97,
+                  116,
+                  115
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "conversation_address",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
       "name": "append_message",
       "discriminator": [
         180,
@@ -83,6 +131,53 @@
           }
         }
       ]
+    },
+    {
+      "name": "create_conversation_list",
+      "discriminator": [
+        44,
+        145,
+        217,
+        62,
+        213,
+        184,
+        37,
+        214
+      ],
+      "accounts": [
+        {
+          "name": "user",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "conversation_list_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "user"
+              },
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  104,
+                  97,
+                  116,
+                  115
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
     }
   ],
   "accounts": [
@@ -97,6 +192,19 @@
         28,
         72,
         47
+      ]
+    },
+    {
+      "name": "ConversationListAccount",
+      "discriminator": [
+        36,
+        110,
+        111,
+        100,
+        166,
+        209,
+        120,
+        91
       ]
     }
   ],
@@ -166,6 +274,20 @@
                   "name": "Message"
                 }
               }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "ConversationListAccount",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "conversation_ids",
+            "type": {
+              "vec": "string"
             }
           }
         ]

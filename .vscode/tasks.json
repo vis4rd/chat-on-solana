@@ -26,9 +26,6 @@
             "runOptions": {
                 "instanceLimit": 1
             },
-            "options": {
-                "cwd": "${workspaceFolder}/app/solana-chat-frontend"
-            },
             "icon": {
                 "id": "cloud",
                 "color": "terminal.ansiCyan"

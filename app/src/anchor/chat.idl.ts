@@ -14,6 +14,54 @@ export type Chat = {
   },
   "instructions": [
     {
+      "name": "appendConversationToList",
+      "discriminator": [
+        114,
+        240,
+        202,
+        151,
+        47,
+        184,
+        106,
+        167
+      ],
+      "accounts": [
+        {
+          "name": "user",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "conversationListAccount",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "user"
+              },
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  104,
+                  97,
+                  116,
+                  115
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "conversationAddress",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
       "name": "appendMessage",
       "discriminator": [
         180,
@@ -89,6 +137,53 @@ export type Chat = {
           }
         }
       ]
+    },
+    {
+      "name": "createConversationList",
+      "discriminator": [
+        44,
+        145,
+        217,
+        62,
+        213,
+        184,
+        37,
+        214
+      ],
+      "accounts": [
+        {
+          "name": "user",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "conversationListAccount",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "user"
+              },
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  104,
+                  97,
+                  116,
+                  115
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "systemProgram",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
     }
   ],
   "accounts": [
@@ -103,6 +198,19 @@ export type Chat = {
         28,
         72,
         47
+      ]
+    },
+    {
+      "name": "conversationListAccount",
+      "discriminator": [
+        36,
+        110,
+        111,
+        100,
+        166,
+        209,
+        120,
+        91
       ]
     }
   ],
@@ -172,6 +280,20 @@ export type Chat = {
                   "name": "message"
                 }
               }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "conversationListAccount",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "conversationIds",
+            "type": {
+              "vec": "string"
             }
           }
         ]

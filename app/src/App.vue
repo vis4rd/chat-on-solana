@@ -5,6 +5,7 @@ import ElementWrapper from "@/components/ElementWrapper.vue";
 import { WalletMultiButton } from "solana-wallets-vue";
 import { useWorkspace } from "@/anchor/workspace";
 import WalletBalanceElement from "@/components/WalletBalanceElement.vue";
+import ConversationList from "@/components/ConversationList.vue";
 
 const workspace = useWorkspace();
 </script>
@@ -33,11 +34,11 @@ const workspace = useWorkspace();
     <div class="horizontal-layout">
         <BlockWrapper class="sidebar">
             <!-- TODO: remove router for now -->
-            <nav>
+            <!-- <nav>
                 <RouterLink to="/">Home</RouterLink>
                 <RouterLink to="/about">About</RouterLink>
-            </nav>
-            <!-- TODO: list of chats -->
+            </nav> -->
+            <ConversationList />
         </BlockWrapper>
 
         <BlockWrapper class="content">
@@ -50,10 +51,6 @@ const workspace = useWorkspace();
 </template>
 
 <style scoped>
-header {
-    /* border: solid white 1px; */
-}
-
 .horizontal-layout {
     display: flex;
     flex-direction: row;
@@ -62,6 +59,7 @@ header {
 
 .sidebar {
     min-width: max(20%, 200px);
+    max-width: 20%;
     text-align: center;
     border: solid red 1px;
 }
