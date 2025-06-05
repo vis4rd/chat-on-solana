@@ -1,13 +1,13 @@
 #![allow(unexpected_cfgs)]
 
-pub mod instructions;
+pub mod context;
 pub mod state;
 
 mod errors;
 
 use anchor_lang::prelude::*;
+use context::*;
 use errors::ConversationError;
-use instructions::*;
 use state::Message;
 
 declare_id!("F8NS3dkPenxhREk1fAHB35psLf5b7dT7AHtu1voL8F79");
