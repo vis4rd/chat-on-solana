@@ -63,4 +63,9 @@ pub mod chat {
         conversation.messages.push(msg);
         Ok(())
     }
+
+    pub fn create_conversation_list(ctx: Context<CreateConversationListAccount>) -> Result<()> {
+        ctx.accounts.user_chats.conversation_ids = Vec::new();
+        Ok(())
+    }
 }
