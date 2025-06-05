@@ -3,7 +3,7 @@ use anchor_lang::prelude::*;
 
 #[derive(Accounts)]
 #[instruction()]
-pub struct CreateConversationListAccount<'info> {
+pub struct CreateConversationList<'info> {
     #[account(mut)]
     pub user: Signer<'info>,
     #[account(

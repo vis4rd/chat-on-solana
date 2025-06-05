@@ -64,8 +64,20 @@ pub mod chat {
         Ok(())
     }
 
-    pub fn create_conversation_list(ctx: Context<CreateConversationListAccount>) -> Result<()> {
+    pub fn create_conversation_list(ctx: Context<CreateConversationList>) -> Result<()> {
         ctx.accounts.user_chats.conversation_ids = Vec::new();
+        Ok(())
+    }
+
+    pub fn append_conversation_to_list(
+        ctx: Context<AppendConversationToList>,
+        conversation_address: Pubkey,
+    ) -> Result<()> {
+        let conversation_str = conversation_address.to_string();
+        let user_chats = &mut ctx.accounts.user_chats;
+        if !user_chats.conversation_ids.contains(&conversation_str) {
+            user_chats.conversation_ids.push(conversation_str);
+        }
         Ok(())
     }
 }
