@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { WalletMultiButton } from "solana-wallets-vue";
 import { useWorkspace } from "@/anchor/workspace";
 import * as anchor from "@coral-xyz/anchor";
 
@@ -76,8 +75,6 @@ async function appendMessage() {
 
 <template>
     <div class="about">
-        <WalletMultiButton></WalletMultiButton>
-        <br />
         <h1>This is an about page</h1>
         <div v-if="workspace !== null">
             <p>

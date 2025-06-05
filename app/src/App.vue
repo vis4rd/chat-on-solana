@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from "vue-router";
 import BlockWrapper from "@/components/BlockWrapper.vue";
+import ElementWrapper from "@/components/ElementWrapper.vue";
+import { WalletMultiButton } from "solana-wallets-vue";
+import { useWorkspace } from "@/anchor/workspace";
+import WalletBalanceElement from "@/components/WalletBalanceElement.vue";
+
+const workspace = useWorkspace();
 </script>
 
 <template>
@@ -11,8 +17,17 @@ import BlockWrapper from "@/components/BlockWrapper.vue";
         </header>
     </BlockWrapper>
 
-    <BlockWrapper>
-        <!-- TODO: Wallet settings -->
+    <BlockWrapper class="horizontal-layout">
+        <!-- TODO: Wallet info -->
+        <WalletMultiButton></WalletMultiButton>
+        <ElementWrapper>{{ workspace.wallet.value?.publicKey.toBase58() || "Wallet not connected" }} </ElementWrapper>
+        <ElementWrapper>{{ workspace.connection.rpcEndpoint }} </ElementWrapper>
+        <ElementWrapper>
+            <Suspense>
+                <WalletBalanceElement />
+                <template #fallback>Loading balance...</template>
+            </Suspense>
+        </ElementWrapper>
     </BlockWrapper>
 
     <div class="horizontal-layout">

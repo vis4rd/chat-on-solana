@@ -10,7 +10,6 @@ import router from "./router";
 import { PhantomWalletAdapter } from "@solana/wallet-adapter-wallets";
 
 import "solana-wallets-vue/styles.css";
-import { initWorkspace } from "./anchor/workspace";
 
 const walletOptions = {
     wallets: [new PhantomWalletAdapter()],
@@ -24,5 +23,3 @@ app.use(router);
 app.use(SolanaWallets, walletOptions);
 
 app.mount("#app");
-
-initWorkspace();

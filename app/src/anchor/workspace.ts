@@ -7,7 +7,6 @@ import ChatIDL from "@/anchor/chat_idl.json";
 
 const preflightCommitment = "processed";
 const commitment = "confirmed";
-// const programID = new PublicKey(Chat.address);
 // const apiUrl = "http://localhost";
 const apiUrl = clusterApiUrl("devnet");
 
@@ -19,9 +18,16 @@ export interface Workspace {
 }
 
 let workspace: Workspace | null = null;
-export const useWorkspace = () => workspace;
 
-export const initWorkspace = () => {
+export function useWorkspace(): Workspace {
+    if (workspace === null) {
+        initWorkspace();
+    }
+
+    return workspace!;
+}
+
+const initWorkspace = () => {
     const wallet = useAnchorWallet();
     const connection = new Connection(apiUrl, commitment);
     const provider = computed(
