@@ -13,6 +13,6 @@ pub struct CreateConversationList<'info> {
         bump,
         space = 8 + ConversationListAccount::INIT_SPACE
     )]
-    pub user_chats: Account<'info, ConversationListAccount>,
+    pub conversation_list_account: Account<'info, ConversationListAccount>,
     pub system_program: Program<'info, System>,
 }
