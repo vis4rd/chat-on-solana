@@ -2,44 +2,29 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Run TypeScript file",
-            "type": "shell",
-            "command": "npx tsx ${file}",
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
-            "problemMatcher": [],
-            "presentation": {
-                "reveal": "always",
-                "showReuseMessage": false
-            },
-            "options": {
-                "cwd": "${workspaceFolder}/tests"
-            }
-        },
-        {
             "label": "Run Solana Test Validator",
+            "detail": "Start the Solana test validator for local development",
             "type": "shell",
             "command": "solana-test-validator",
             "runOptions": {
-                "instanceLimit": 1,
+                "instanceLimit": 1
             },
             "isBackground": true,
             "icon": {
-                "id": "link",
-                "color": "terminal.ansiGreen"
+                "id": "beaker-stop",
+                "color": "terminal.ansiCyan"
             },
             "presentation": {
                 "panel": "dedicated"
             }
         },
         {
-            "label": "Run Frontend Dev Server",
+            "label": "Run frontend dev server",
+            "detail": "Run the frontend development server using Vite",
             "type": "shell",
             "command": "npm run dev",
             "runOptions": {
-                "instanceLimit": 1,
+                "instanceLimit": 1
             },
             "options": {
                 "cwd": "${workspaceFolder}/app/solana-chat-frontend"
@@ -49,7 +34,23 @@
                 "color": "terminal.ansiCyan"
             },
             "presentation": {
-                "panel": "dedicated",
+                "panel": "dedicated"
+            }
+        },
+        {
+            "label": "Run tests",
+            "detail": "Run test suite with Anchor",
+            "type": "shell",
+            "command": "anchor test --provider.cluster localnet",
+            "runOptions": {
+                "instanceLimit": 1
+            },
+            "icon": {
+                "id": "beaker",
+                "color": "terminal.ansiGreen"
+            },
+            "presentation": {
+                "panel": "dedicated"
             }
         }
     ]
