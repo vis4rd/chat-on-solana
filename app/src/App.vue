@@ -1,13 +1,14 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from "vue-router";
 import BlockWrapper from "@/components/BlockWrapper.vue";
-import ElementWrapper from "@/components/ElementWrapper.vue";
-import { WalletMultiButton } from "solana-wallets-vue";
-import { useWorkspace } from "@/anchor/workspace";
-import WalletBalanceElement from "@/components/WalletBalanceElement.vue";
+import Button from "@/components/Button.vue";
 import ConversationList from "@/components/ConversationList.vue";
+import ElementWrapper from "@/components/ElementWrapper.vue";
+import WalletBalanceElement from "@/components/WalletBalanceElement.vue";
 import { PublicKey } from "@solana/web3.js";
+import { RouterLink, RouterView } from "vue-router";
+import { WalletMultiButton } from "solana-wallets-vue";
 import { computed, ref, watch } from "vue";
+import { useWorkspace } from "@/anchor/workspace";
 
 const workspace = useWorkspace();
 
@@ -44,6 +45,10 @@ watch(
     },
     { immediate: true },
 );
+
+function echo() {
+    console.log("Echo function called");
+}
 </script>
 
 <template>
@@ -85,6 +90,7 @@ watch(
                     Looks like your Wallet is present on Solana ledger! Please register a Chat account using button
                     below.
                     <!-- TODO: create_conversation_list account button -->
+                    <Button @click="echo()">Essa</Button>
                 </div>
                 <div v-else-if="walletRegistered">Content</div>
                 <div v-else>Wallet not connected. Please connect your Wallet in order to use the Chat.</div>
