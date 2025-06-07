@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Button from "@/components/Button.vue";
 import { PublicKey } from "@solana/web3.js";
 import { computed, ref, watch } from "vue";
 import { useWorkspace } from "@/anchor/workspace";

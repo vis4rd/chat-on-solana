@@ -1,16 +1,19 @@
 <script setup lang="ts">
-import { ref, watchEffect } from "vue";
-import { useWorkspace } from "@/anchor/workspace";
 import { PublicKey } from "@solana/web3.js";
+import { ref, watchEffect } from "vue";
+import { useConversationListStore } from "@/stores/conversation_list";
+import { useWorkspace } from "@/anchor/workspace";
 
+const conversationListStore = useConversationListStore();
 const workspace = useWorkspace();
-const conversationIds = ref<string[] | null>(null);
+
 const loading = ref(false);
 const error = ref<string | null>(null);
 
 async function fetchConversationList() {
+    // TODO: move to conversation_list store
     if (!workspace.wallet.value?.publicKey) {
-        conversationIds.value = null;
+        conversationListStore.conversations = [];
         return;
     }
     loading.value = true;
@@ -23,10 +26,10 @@ async function fetchConversationList() {
         );
         // Fetch the account
         const acc = await workspace.program.value.account.conversationListAccount.fetch(conversationListPDA);
-        conversationIds.value = acc.conversationIds;
+        conversationListStore.conversations = acc.conversationIds;
     } catch (e) {
         error.value = (e as Error)?.message || String(e);
-        conversationIds.value = null;
+        conversationListStore.conversations = [];
     } finally {
         loading.value = false;
     }
@@ -42,13 +45,17 @@ watchEffect(() => {
         <h3>Conversations</h3>
         <div v-if="loading">Loading...</div>
         <!-- <div v-else-if="error">Error: {{ error }}</div> -->
-        <div v-else-if="error || (conversationIds && conversationIds.length === 0)">
+        <div
+            v-else-if="
+                error || (conversationListStore.conversations && conversationListStore.conversations.length === 0)
+            "
+        >
             No conversations found.
             <br />
             <RouterLink to="/newconversation">Create new conversation</RouterLink>
         </div>
-        <ul v-else-if="conversationIds">
-            <li v-for="id in conversationIds" :key="id">
+        <ul v-else-if="conversationListStore.conversations">
+            <li v-for="id in conversationListStore.conversations" :key="id">
                 {{ id }}
             </li>
         </ul>
