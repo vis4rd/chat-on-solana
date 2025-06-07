@@ -42,7 +42,11 @@ watchEffect(() => {
         <h3>Conversations</h3>
         <div v-if="loading">Loading...</div>
         <!-- <div v-else-if="error">Error: {{ error }}</div> -->
-        <div v-else-if="error || (conversationIds && conversationIds.length === 0)">No conversations found.</div>
+        <div v-else-if="error || (conversationIds && conversationIds.length === 0)">
+            No conversations found.
+            <br />
+            <RouterLink to="/newconversation">Create new conversation</RouterLink>
+        </div>
         <ul v-else-if="conversationIds">
             <li v-for="id in conversationIds" :key="id">
                 {{ id }}

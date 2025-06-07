@@ -10,7 +10,7 @@ use context::*;
 use errors::ConversationError;
 use state::Message;
 
-declare_id!("F8NS3dkPenxhREk1fAHB35psLf5b7dT7AHtu1voL8F79");
+declare_id!("2GvsbRqky5o32Aft5jFmP9v4vuMC77mAZVxhLsfDRSiP");
 
 #[program]
 pub mod chat {
@@ -71,7 +71,7 @@ pub mod chat {
 
     pub fn append_conversation_to_list(
         ctx: Context<AppendConversationToList>,
-        conversation_address: Pubkey,
+        conversation_address: Pubkey, // BUG: should take conversation_id instead
     ) -> Result<()> {
         let conversation_str = conversation_address.to_string();
         let user_chats = &mut ctx.accounts.conversation_list_account;
