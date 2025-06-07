@@ -11,7 +11,7 @@ describe("append_message instruction", () => {
     anchor.setProvider(provider);
     const program = anchor.workspace.Chat as anchor.Program<IDL.Chat>;
     const payer = provider.wallet as anchor.Wallet;
-    const conversationId: string = "test-convo";
+    const conversationId: string = "test-convo-something";
     const [conversationPda] = anchor.web3.PublicKey.findProgramAddressSync(
         [Buffer.from(conversationId)],
         program.programId,

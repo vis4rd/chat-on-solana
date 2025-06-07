@@ -50,8 +50,8 @@
       ],
       "args": [
         {
-          "name": "conversation_address",
-          "type": "pubkey"
+          "name": "conversation_id",
+          "type": "string"
         }
       ]
     },

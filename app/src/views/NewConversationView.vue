@@ -38,11 +38,6 @@ async function createConversation() {
     try {
         loading.value = true;
         const chatterPubkeys = chatters.value.map((c) => new PublicKey(c));
-        // Derive the conversation PDA
-        const [conversationPDA] = PublicKey.findProgramAddressSync(
-            [Buffer.from(conversationId.value)],
-            workspace.program.value.programId,
-        );
         // Compose both instructions in a single transaction
         const ix1 = await workspace.program.value.methods
             .createConversation(conversationId.value, chatterPubkeys)
@@ -51,7 +46,7 @@ async function createConversation() {
             })
             .instruction();
         const ix2 = await workspace.program.value.methods
-            .appendConversationToList(conversationPDA)
+            .appendConversationToList(conversationId.value)
             .accounts({
                 user: payer,
             })

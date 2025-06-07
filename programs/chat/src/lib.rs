@@ -69,14 +69,11 @@ pub mod chat {
         Ok(())
     }
 
-    pub fn append_conversation_to_list(
-        ctx: Context<AppendConversationToList>,
-        conversation_address: Pubkey, // BUG: should take conversation_id instead
-    ) -> Result<()> {
-        let conversation_str = conversation_address.to_string();
+    pub fn append_conversation_to_list(ctx: Context<AppendConversationToList>, conversation_id: String) -> Result<()> {
+        // TODO: check that the account exists here if needed
         let user_chats = &mut ctx.accounts.conversation_list_account;
-        if !user_chats.conversation_ids.contains(&conversation_str) {
-            user_chats.conversation_ids.push(conversation_str);
+        if !user_chats.conversation_ids.contains(&conversation_id) {
+            user_chats.conversation_ids.push(conversation_id);
         }
         Ok(())
     }

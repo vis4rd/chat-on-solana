@@ -56,8 +56,8 @@ export type Chat = {
       ],
       "args": [
         {
-          "name": "conversationAddress",
-          "type": "pubkey"
+          "name": "conversationId",
+          "type": "string"
         }
       ]
     },
