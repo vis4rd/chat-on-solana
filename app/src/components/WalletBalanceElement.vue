@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
-import { useWorkspace } from "@/anchor/workspace";
+import { useAnchorWorkspaceStore, WalletConnectionState } from "@/stores/anchor_workspace";
 
-const workspace = useWorkspace();
+const workspace = useAnchorWorkspaceStore();
 const balance = ref<number | null>(null);
 
 // Watch for wallet connection.
@@ -17,10 +17,10 @@ await new Promise<void>((resolve) => {
     }, 5 * second);
 
     watch(
-        () => workspace.wallet.value?.publicKey,
-        async (publicKey) => {
-            if (publicKey) {
-                balance.value = await workspace.connection.getBalance(publicKey);
+        () => workspace.walletConnectionState,
+        async (state) => {
+            if (state === WalletConnectionState.Connected) {
+                balance.value = await workspace.connection!.getBalance(workspace.wallet!.publicKey);
                 clearTimeout(timeout);
                 resolve();
             } else {

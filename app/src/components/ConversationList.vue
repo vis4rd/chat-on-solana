@@ -2,30 +2,31 @@
 import { PublicKey } from "@solana/web3.js";
 import { ref, watchEffect } from "vue";
 import { useConversationListStore } from "@/stores/conversation_list";
-import { useWorkspace } from "@/anchor/workspace";
+import { useAnchorWorkspaceStore, WalletConnectionState } from "@/stores/anchor_workspace";
 
 const conversationListStore = useConversationListStore();
-const workspace = useWorkspace();
+const workspace = useAnchorWorkspaceStore();
 
 const loading = ref(false);
 const error = ref<string | null>(null);
 
 async function fetchConversationList() {
     // TODO: move to conversation_list store
-    if (!workspace.wallet.value?.publicKey) {
+    if (workspace.walletConnectionState !== WalletConnectionState.Connected) {
         conversationListStore.conversations = [];
         return;
     }
+
     loading.value = true;
     error.value = null;
     try {
         // Derive the PDA for the conversation_list_account
         const [conversationListPDA] = PublicKey.findProgramAddressSync(
-            [workspace.wallet.value.publicKey.toBuffer(), Buffer.from("chats")],
-            workspace.program.value.programId,
+            [workspace.wallet!.publicKey.toBuffer(), Buffer.from("chats")],
+            workspace.program!.programId,
         );
         // Fetch the account
-        const acc = await workspace.program.value.account.conversationListAccount.fetch(conversationListPDA);
+        const acc = await workspace.program!.account.conversationListAccount.fetch(conversationListPDA);
         conversationListStore.conversations = acc.conversationIds;
     } catch (e) {
         error.value = (e as Error)?.message || String(e);

@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { useWorkspace } from "@/anchor/workspace";
 import { PublicKey } from "@solana/web3.js";
 import { Transaction } from "@solana/web3.js";
+import { useAnchorWorkspaceStore, WalletConnectionState } from "@/stores/anchor_workspace";
 
-const workspace = useWorkspace();
+const workspace = useAnchorWorkspaceStore();
 const conversationId = ref("");
 const chatters = ref<string[]>([""]);
 const loading = ref(false);
@@ -29,34 +29,36 @@ async function createConversation() {
         error.value = "At least 2 chatters required.";
         return;
     }
-    const payer = workspace.wallet.value?.publicKey;
-    const wallet = workspace.wallet.value;
-    if (!payer || !wallet) {
+
+    if (workspace.walletConnectionState !== WalletConnectionState.Connected) {
         error.value = "Wallet not connected.";
         return;
     }
+
+    const payer = workspace.wallet!.publicKey;
+    const wallet = workspace.wallet!;
     try {
         loading.value = true;
         const chatterPubkeys = chatters.value.map((c) => new PublicKey(c));
         // Compose both instructions in a single transaction
-        const ix1 = await workspace.program.value.methods
-            .createConversation(conversationId.value, chatterPubkeys)
+        const ix1 = await workspace
+            .program!.methods.createConversation(conversationId.value, chatterPubkeys)
             .accounts({
                 payer: payer,
             })
             .instruction();
-        const ix2 = await workspace.program.value.methods
-            .appendConversationToList(conversationId.value)
+        const ix2 = await workspace
+            .program!.methods.appendConversationToList(conversationId.value)
             .accounts({
                 user: payer,
             })
             .instruction();
         const transaction = new Transaction().add(ix1, ix2);
-        const latestBlockhash = await workspace.connection.getLatestBlockhash();
+        const latestBlockhash = await workspace.connection!.getLatestBlockhash();
         transaction.feePayer = payer;
         transaction.recentBlockhash = latestBlockhash.blockhash;
         const signed = await wallet.signTransaction(transaction);
-        const sig = await workspace.connection.sendRawTransaction(signed.serialize());
+        const sig = await workspace.connection!.sendRawTransaction(signed.serialize());
         success.value = `Conversation created! Tx: ${sig}`;
     } catch (e) {
         error.value = e instanceof Error ? e.message : String(e);

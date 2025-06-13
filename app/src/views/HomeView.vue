@@ -2,9 +2,9 @@
 import Button from "@/components/Button.vue";
 import { PublicKey } from "@solana/web3.js";
 import { computed, ref, watch } from "vue";
-import { useWorkspace } from "@/anchor/workspace";
+import { useAnchorWorkspaceStore, WalletConnectionState } from "@/stores/anchor_workspace";
 
-const workspace = useWorkspace();
+const workspace = useAnchorWorkspaceStore();
 
 const hasSolanaAccount = ref<boolean>(false);
 const hasConversationListAccount = ref<boolean>(false);
@@ -12,20 +12,20 @@ const walletExists = computed((): boolean => hasSolanaAccount.value && !hasConve
 const walletRegistered = computed((): boolean => hasSolanaAccount.value && hasConversationListAccount.value);
 
 async function checkWalletAccounts() {
-    const publicKey = workspace.wallet.value?.publicKey;
-    if (!publicKey) {
+    if (workspace.walletConnectionState !== WalletConnectionState.Connected) {
         hasSolanaAccount.value = false;
         hasConversationListAccount.value = false;
         return;
     }
 
+    const publicKey = workspace.wallet!.publicKey;
     const [conversationListPDA] = PublicKey.findProgramAddressSync(
         [publicKey.toBuffer(), Buffer.from("chats")],
-        workspace.program.value.programId,
+        workspace.program!.programId,
     );
     console.log("Conversation List PDA:", conversationListPDA.toBase58());
-    const accountInfo = await workspace.connection.getAccountInfo(publicKey);
-    const conversationListInfo = await workspace.connection.getAccountInfo(conversationListPDA);
+    const accountInfo = await workspace.connection!.getAccountInfo(publicKey);
+    const conversationListInfo = await workspace.connection!.getAccountInfo(conversationListPDA);
     console.log("COnversation List Account Info:", conversationListInfo);
     hasSolanaAccount.value = !!accountInfo;
     hasConversationListAccount.value = conversationListInfo !== null;
@@ -33,7 +33,7 @@ async function checkWalletAccounts() {
 
 // Optionally, watch wallet changes and check automatically
 watch(
-    () => workspace.wallet.value?.publicKey,
+    () => workspace.walletConnectionState,
     () => {
         checkWalletAccounts();
     },
@@ -41,13 +41,14 @@ watch(
 );
 
 async function createConversationListAccount() {
-    const publicKey = workspace.wallet.value?.publicKey;
-    if (!publicKey) {
+    if (workspace.walletConnectionState !== WalletConnectionState.Connected) {
         return;
     }
+
     try {
-        await workspace.program.value.methods
-            .createConversationList()
+        const publicKey = workspace.wallet!.publicKey;
+        await workspace
+            .program!.methods.createConversationList()
             .accounts({
                 user: publicKey,
             })
