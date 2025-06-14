@@ -1,5 +1,13 @@
 {
     "$schema": "https://json.schemastore.org/prettierrc",
     "printWidth": 120,
-    "tabWidth": 4
+    "tabWidth": 4,
+    "plugins": [
+        "prettier-plugin-imports"
+    ],
+    "importOrder": [
+        "^[a-zA-Z0-9_./]+$"
+    ],
+    "importOrderSeparation": true,
+    "importOrderSortSpecifiers": true
 }
