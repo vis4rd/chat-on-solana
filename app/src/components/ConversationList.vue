@@ -1,8 +1,8 @@
 <script setup lang="ts">
+import { useAnchorWorkspaceStore, WalletConnectionState } from "@/stores/anchor_workspace";
+import { useConversationListStore } from "@/stores/conversation_list";
 import { PublicKey } from "@solana/web3.js";
 import { ref, watchEffect } from "vue";
-import { useConversationListStore } from "@/stores/conversation_list";
-import { useAnchorWorkspaceStore, WalletConnectionState } from "@/stores/anchor_workspace";
 
 const conversationListStore = useConversationListStore();
 const workspace = useAnchorWorkspaceStore();
@@ -42,6 +42,12 @@ watchEffect(() => {
 </script>
 
 <template>
+    <!-- TODO:
+            if wallet not selected: Display "Please connect with your wallet."
+            if wallet connecting:   Display "Connecting to your wallet."
+            if wallet connected but not on blockchain: Display "It seems your wallet does not have an account on Solana."
+            if wallet connected but not registered in app: Display "Wallet not registered"
+            if wallet registered: Display list of conversations -->
     <div class="conversation-list">
         <h3>Conversations</h3>
         <div v-if="loading">Loading...</div>

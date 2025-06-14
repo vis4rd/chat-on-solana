@@ -3,11 +3,11 @@ import BlockWrapper from "@/components/BlockWrapper.vue";
 import ConversationList from "@/components/ConversationList.vue";
 import ElementWrapper from "@/components/ElementWrapper.vue";
 import WalletBalanceElement from "@/components/WalletBalanceElement.vue";
-import { RouterLink, RouterView } from "vue-router";
+import { useAnchorWorkspaceStore, WalletConnectionState } from "@/stores/anchor_workspace";
 import { WalletMultiButton } from "solana-wallets-vue";
-import { useWorkspace } from "@/anchor/workspace";
+import { RouterLink, RouterView } from "vue-router";
 
-const workspace = useWorkspace();
+const workspace = useAnchorWorkspaceStore();
 </script>
 
 <template>
@@ -21,8 +21,12 @@ const workspace = useWorkspace();
     <BlockWrapper class="horizontal-layout">
         <!-- TODO: Wallet info -->
         <WalletMultiButton></WalletMultiButton>
-        <ElementWrapper>{{ workspace.wallet.value?.publicKey.toBase58() || "Wallet not connected" }} </ElementWrapper>
-        <ElementWrapper>{{ workspace.connection.rpcEndpoint }} </ElementWrapper>
+        <ElementWrapper v-if="workspace.walletConnectionState === WalletConnectionState.Connected">
+            {{ workspace.wallet?.publicKey.toBase58() || "Wallet not connected" }}
+        </ElementWrapper>
+        <ElementWrapper v-if="workspace.walletConnectionState === WalletConnectionState.Connected">
+            {{ workspace.connection!.rpcEndpoint }}
+        </ElementWrapper>
         <ElementWrapper>
             <Suspense>
                 <WalletBalanceElement />
@@ -31,7 +35,13 @@ const workspace = useWorkspace();
         </ElementWrapper>
     </BlockWrapper>
 
-    <div class="horizontal-layout">
+    <BlockWrapper v-if="workspace.walletConnectionState === WalletConnectionState.Disconnected">
+        Please select your wallet using button above.
+    </BlockWrapper>
+    <BlockWrapper v-else-if="workspace.walletConnectionState === WalletConnectionState.Connecting">
+        Connecting to your wallet...
+    </BlockWrapper>
+    <div v-else class="horizontal-layout">
         <BlockWrapper class="sidebar">
             <!-- TODO: remove router for now -->
             <!-- <nav>
