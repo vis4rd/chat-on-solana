@@ -1,7 +1,7 @@
 import ChatIDL from "@/anchor/chat_idl.json";
 import { type Chat } from "@/anchor/chat.idl.ts";
 import { AnchorProvider, Program } from "@coral-xyz/anchor";
-import { clusterApiUrl, Connection } from "@solana/web3.js";
+import { clusterApiUrl, Connection, PublicKey } from "@solana/web3.js";
 import { useAnchorWallet, type AnchorWallet } from "solana-wallets-vue";
 import { defineStore } from "pinia";
 import { ref, watch, type Ref } from "vue";
@@ -11,10 +11,11 @@ const commitment = "confirmed";
 const apiUrl = clusterApiUrl("devnet");
 
 export enum WalletConnectionState {
-    Disconnected = 0,
-    Connecting = 1,
-    Connected = 2,
-    Error = 3,
+    Disconnected,
+    Connecting,
+    Connected,
+    Registered,
+    Error,
 }
 
 interface AnchorWorkspaceStore {
@@ -24,6 +25,10 @@ interface AnchorWorkspaceStore {
     provider: Ref<AnchorProvider | undefined>;
     program: Ref<Program<Chat> | undefined>;
     initialize: () => void;
+    isDisconnected: () => boolean;
+    isConnecting: () => boolean;
+    isConnected: () => boolean;
+    isRegistered: () => boolean;
 }
 
 export const useAnchorWorkspaceStore = defineStore("anchor_workspace", (): AnchorWorkspaceStore => {
@@ -59,6 +64,7 @@ export const useAnchorWorkspaceStore = defineStore("anchor_workspace", (): Ancho
                     });
                     program.value = new Program<Chat>(ChatIDL as Chat, provider.value);
                     walletConnectionState.value = WalletConnectionState.Connected;
+                    updateConnectionStateIfRegistered();
                 } else {
                     // Connection dropped OR
                     // Wallet disconnected by the user OR
@@ -72,12 +78,57 @@ export const useAnchorWorkspaceStore = defineStore("anchor_workspace", (): Ancho
         );
     }
 
+    function updateConnectionStateIfRegistered(): void {
+        // Assuming the wallet is connected
+        const publicKey = wallet.value!.publicKey;
+        const [conversationListPDA] = PublicKey.findProgramAddressSync(
+            [publicKey.toBuffer(), Buffer.from("chats")],
+            program.value!.programId,
+        );
+        const conversationListInfo = connection.value!.getAccountInfo(conversationListPDA);
+        conversationListInfo
+            .then((info) => {
+                if (info) {
+                    // If the account exists, the user is registered
+                    walletConnectionState.value = WalletConnectionState.Registered;
+                } else {
+                    // Otherwise, leave wallet in conncted state
+                    walletConnectionState.value = WalletConnectionState.Connected;
+                }
+            })
+            .catch((error) => {
+                console.error("Error checking registration:", error);
+            });
+    }
+
+    function isDisconnected(): boolean {
+        return walletConnectionState.value === WalletConnectionState.Disconnected;
+    }
+
+    function isConnecting(): boolean {
+        return walletConnectionState.value === WalletConnectionState.Connecting;
+    }
+
+    function isConnected(): boolean {
+        return walletConnectionState.value === WalletConnectionState.Connected;
+    }
+
+    function isRegistered(): boolean {
+        return walletConnectionState.value === WalletConnectionState.Registered;
+    }
+
     return {
+        // variables
         wallet,
         walletConnectionState,
         connection,
         provider,
         program,
+        //functions
         initialize,
+        isDisconnected,
+        isConnecting,
+        isConnected,
+        isRegistered,
     };
 });
