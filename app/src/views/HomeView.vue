@@ -1,8 +1,8 @@
 <script setup lang="ts">
+import BlockWrapper from "@/components/BlockWrapper.vue";
 import Button from "@/components/Button.vue";
+import ConversationList from "@/components/ConversationList.vue";
 import { useAnchorWorkspaceStore, WalletConnectionState } from "@/stores/anchor_workspace";
-import { PublicKey } from "@solana/web3.js";
-import { computed, ref, watch } from "vue";
 
 const workspace = useAnchorWorkspaceStore();
 
@@ -28,15 +28,35 @@ async function createConversationListAccount() {
 </script>
 
 <template>
-    <div>
-        <div v-if="workspace.isConnected()">
-            Looks like your Wallet is present on Solana ledger! Please register a Chat account using button below.
-            <Button @click="createConversationListAccount()">Register now!</Button>
-        </div>
-        <div v-else-if="workspace.isRegistered()">Content</div>
-        <div v-else-if="workspace.isDisconnected()">
-            Wallet not connected. Please connect your Wallet in order to use the Chat.
-        </div>
-        <div v-else>Unknown Wallet state...</div>
+    <div class="horizontal-layout">
+        <BlockWrapper class="sidebar">
+            <ConversationList />
+        </BlockWrapper>
+
+        <BlockWrapper class="chat">
+            <div v-if="workspace.isConnected()">
+                Looks like your Wallet is present on Solana ledger! Please register a Chat account using button below.
+                <Button @click="createConversationListAccount()">Register now!</Button>
+            </div>
+            <div v-else-if="workspace.isRegistered()">Content</div>
+            <div v-else-if="workspace.isDisconnected()">
+                Wallet not connected. Please connect your Wallet in order to use the Chat.
+            </div>
+            <div v-else>Unknown Wallet state...</div>
+        </BlockWrapper>
     </div>
 </template>
+
+<style scoped>
+.sidebar {
+    min-width: max(20%, 200px);
+    max-width: 20%;
+    text-align: center;
+    border: solid red 1px;
+}
+
+.chat {
+    flex: 1;
+    width: 100%;
+}
+</style>
