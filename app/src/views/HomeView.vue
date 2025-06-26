@@ -52,7 +52,6 @@ async function createConversationListAccount() {
     min-width: max(20%, 200px);
     max-width: 20%;
     text-align: center;
-    border: solid red 1px;
 }
 
 .chat {

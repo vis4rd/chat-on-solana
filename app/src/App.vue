@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import BlockWrapper from "@/components/BlockWrapper.vue";
 import ElementWrapper from "@/components/ElementWrapper.vue";
+import ThemeSwitcher from "@/components/ThemeSwitcher.vue";
 import WalletBalanceElement from "@/components/WalletBalanceElement.vue";
 import { useAnchorWorkspaceStore, WalletConnectionState } from "@/stores/anchor_workspace";
 import { WalletMultiButton } from "solana-wallets-vue";
@@ -46,6 +47,7 @@ watch(
                 <template #fallback>Loading balance...</template>
             </Suspense>
         </ElementWrapper>
+        <ThemeSwitcher />
     </BlockWrapper>
 
     <main class="full-width">
@@ -74,6 +76,5 @@ watch(
 .content {
     min-width: 200px;
     flex-grow: 1;
-    border: solid blue 1px;
 }
 </style>

@@ -20,6 +20,5 @@
     border-style: solid;
     border-radius: 6px;
     border-width: 1px;
-    border-color: white;
 }
 </style>
