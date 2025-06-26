@@ -7,6 +7,7 @@ import SolanaWallets from "solana-wallets-vue";
 import { createPinia } from "pinia";
 import { createApp } from "vue";
 import "solana-wallets-vue/styles.css";
+import "basecoat-css/all";
 
 const walletOptions = {
     wallets: [new PhantomWalletAdapter()],
