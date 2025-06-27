@@ -1,24 +1,24 @@
 <script setup lang="ts"></script>
 
 <template>
-    <div class="block-wrapper card">
+    <div class="block-wrapper">
         <slot></slot>
     </div>
 </template>
 
 <style scoped>
 .block-wrapper {
-    /* display: flex;
+    display: flex;
     flex-direction: column;
     place-items: center;
-    box-sizing: border-box; */
+    box-sizing: border-box;
 
     margin-top: 1rem;
     margin-bottom: 1rem;
     padding: 1rem;
 
-    /* border-style: solid;
+    border-style: solid;
     border-radius: 6px;
-    border-width: 1px; */
+    border-width: 1px;
 }
 </style>

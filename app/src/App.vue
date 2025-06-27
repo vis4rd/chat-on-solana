@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import BlockWrapper from "@/components/BlockWrapper.vue";
+import DarkModeToggle from "@/components/DarkModeToggle.vue";
 import ElementWrapper from "@/components/ElementWrapper.vue";
-import ThemeSwitcher from "@/components/ThemeSwitcher.vue";
 import WalletBalanceElement from "@/components/WalletBalanceElement.vue";
 import { useAnchorWorkspaceStore, WalletConnectionState } from "@/stores/anchor_workspace";
 import { WalletMultiButton } from "solana-wallets-vue";
@@ -30,7 +30,7 @@ watch(
         <h1 class="">Chat On Solana</h1>
     </BlockWrapper>
 
-    <BlockWrapper class="horizontal-layout">
+    <div class="horizontal-layout">
         <!-- TODO: Wallet info -->
         <WalletMultiButton></WalletMultiButton>
         <ElementWrapper v-if="workspace.isConnected()">
@@ -45,8 +45,8 @@ watch(
                 <template #fallback>Loading balance...</template>
             </Suspense>
         </ElementWrapper>
-        <ThemeSwitcher />
-    </BlockWrapper>
+        <DarkModeToggle />
+    </div>
 
     <main class="full-width">
         <BlockWrapper v-if="workspace.isDisconnected()"> Please select your wallet using button above. </BlockWrapper>

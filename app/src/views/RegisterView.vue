@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import BlockWrapper from "@/components/BlockWrapper.vue";
-import Button from "@/components/Button.vue";
+import { Button } from "@/components/ui/button";
 import { useAnchorWorkspaceStore, WalletConnectionState } from "@/stores/anchor_workspace";
 
 const workspace = useAnchorWorkspaceStore();

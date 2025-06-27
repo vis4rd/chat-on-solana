@@ -20,5 +20,11 @@
         "emitDeclarationOnly": true,
         "declaration": true,
         "resolveJsonModule": true,
+        "baseUrl": "./app/src",
+        "paths": {
+            "@/*": [
+                "./*"
+            ]
+        }
     }
 }

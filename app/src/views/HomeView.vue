@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import BlockWrapper from "@/components/BlockWrapper.vue";
-import Button from "@/components/Button.vue";
 import ConversationList from "@/components/ConversationList.vue";
+import { Button } from "@/components/ui/button";
 import { useAnchorWorkspaceStore, WalletConnectionState } from "@/stores/anchor_workspace";
 
 const workspace = useAnchorWorkspaceStore();
@@ -29,9 +29,7 @@ async function createConversationListAccount() {
 
 <template>
     <div class="horizontal-layout">
-        <BlockWrapper class="sidebar">
-            <ConversationList />
-        </BlockWrapper>
+        <ConversationList class="sidebar" />
 
         <BlockWrapper class="chat">
             <div v-if="workspace.isConnected()">
@@ -55,9 +53,11 @@ async function createConversationListAccount() {
 }
 
 .sidebar {
-    min-width: max(20%, 200px);
+    min-width: max(20%, 280px);
     max-width: 20%;
     text-align: center;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
 }
 
 .chat {
