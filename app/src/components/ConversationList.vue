@@ -48,35 +48,41 @@ watchEffect(() => {
             if wallet connected but not on blockchain: Display "It seems your wallet does not have an account on Solana."
             if wallet connected but not registered in app: Display "Wallet not registered"
             if wallet registered: Display list of conversations -->
-    <div class="conversation-list">
-        <h3>Conversations</h3>
-        <div v-if="loading">Loading...</div>
-        <!-- <div v-else-if="error">Error: {{ error }}</div> -->
-        <div
-            v-else-if="
-                error || (conversationListStore.conversations && conversationListStore.conversations.length === 0)
-            "
-        >
-            No conversations found.
-            <br />
-            <RouterLink to="/newconversation">Create new conversation</RouterLink>
-        </div>
-        <ul v-else-if="conversationListStore.conversations">
-            <li v-for="id in conversationListStore.conversations" :key="id">
-                {{ id }}
-            </li>
-        </ul>
-        <div v-else>Wallet not connected.</div>
+    <header>
+        <h2>Conversations</h2>
+        <p v-if="error || (conversationListStore.conversations && conversationListStore.conversations.length === 0)">
+            No conversation found. Create your first chat using button below!
+        </p>
+    </header>
+
+    <div v-if="loading">Loading...</div>
+    <!-- <div v-else-if="error">Error: {{ error }}</div> -->
+    <div v-else-if="error || (conversationListStore.conversations && conversationListStore.conversations.length === 0)">
+        <RouterLink to="/newconversation">
+            <button class="btn">Create a new conversation</button>
+        </RouterLink>
     </div>
+    <ul v-else-if="conversationListStore.conversations">
+        <li v-for="id in conversationListStore.conversations" :key="id">
+            {{ id }}
+        </li>
+    </ul>
+    <div v-else>Wallet not connected.</div>
 </template>
 
 <style scoped>
-ul {
-    list-style: none;
-    padding: 0;
+.conversation-list {
+    width: 100%;
 }
+
+ul {
+    padding: 0;
+    margin: 0;
+}
+
 li {
     padding: 0.25rem 0;
-    border-bottom: 1px solid #444;
+    text-overflow: ellipsis;
+    overflow-x: hidden;
 }
 </style>

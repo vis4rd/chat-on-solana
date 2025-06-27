@@ -26,10 +26,8 @@ watch(
 
 <template>
     <BlockWrapper>
-        <header>
-            <!-- TODO: logo -->
-            <h1>Chat On Solana</h1>
-        </header>
+        <!-- TODO: logo -->
+        <h1 class="">Chat On Solana</h1>
     </BlockWrapper>
 
     <BlockWrapper class="horizontal-layout">

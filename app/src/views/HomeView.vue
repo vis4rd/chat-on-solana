@@ -48,6 +48,12 @@ async function createConversationListAccount() {
 </template>
 
 <style scoped>
+.horizontal-layout {
+    display: flex;
+    width: 100%;
+    gap: 1rem;
+}
+
 .sidebar {
     min-width: max(20%, 200px);
     max-width: 20%;
@@ -55,7 +61,7 @@ async function createConversationListAccount() {
 }
 
 .chat {
-    flex: 1;
     width: 100%;
+    margin-left: 0;
 }
 </style>
