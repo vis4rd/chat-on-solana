@@ -1,7 +1,8 @@
 import ChatIDL from "@/anchor/chat_idl.json";
 import { type Chat } from "@/anchor/chat.idl.ts";
+import { getConversationListAccount, getWalletAccount } from "@/lib/solana";
 import { AnchorProvider, Program } from "@coral-xyz/anchor";
-import { clusterApiUrl, Connection, PublicKey } from "@solana/web3.js";
+import { clusterApiUrl, Connection } from "@solana/web3.js";
 import { useAnchorWallet, type AnchorWallet } from "solana-wallets-vue";
 import { defineStore } from "pinia";
 import { ref, watch, type Ref } from "vue";
@@ -11,11 +12,12 @@ const commitment = "confirmed";
 const apiUrl = clusterApiUrl("devnet");
 
 export enum WalletConnectionState {
-    Disconnected,
-    Connecting,
-    Connected,
-    Registered,
     Error,
+    Disconnected, // wallet not selected or disconnected
+    Connecting, //   wallet selected, but not connected yet
+    Connected, //    wallet connected, but not checked if present on solana ledger yet
+    Present, //      wallet connected and present on solana ledger
+    Registered, //   wallet present and has conversation list account
 }
 
 interface AnchorWorkspaceStore {
@@ -28,6 +30,7 @@ interface AnchorWorkspaceStore {
     isDisconnected: () => boolean;
     isConnecting: () => boolean;
     isConnected: () => boolean;
+    isPresent: () => boolean;
     isRegistered: () => boolean;
 }
 
@@ -43,7 +46,7 @@ export const useAnchorWorkspaceStore = defineStore("anchor_workspace", (): Ancho
         () => walletConnectionState.value,
         (newState, oldState) => {
             console.log(
-                `Wallet connection state ${WalletConnectionState[oldState]} -> ${WalletConnectionState[newState]}`,
+                `Wallet connection state changed: ${WalletConnectionState[oldState]} -> ${WalletConnectionState[newState]}`,
             );
         },
     );
@@ -64,7 +67,7 @@ export const useAnchorWorkspaceStore = defineStore("anchor_workspace", (): Ancho
                     });
                     program.value = new Program<Chat>(ChatIDL as Chat, provider.value);
                     walletConnectionState.value = WalletConnectionState.Connected;
-                    updateConnectionStateIfRegistered();
+                    updateConnectionStateIfPresent();
                 } else {
                     // Connection dropped OR
                     // Wallet disconnected by the user OR
@@ -78,22 +81,34 @@ export const useAnchorWorkspaceStore = defineStore("anchor_workspace", (): Ancho
         );
     }
 
+    function updateConnectionStateIfPresent(): void {
+        // Assuming the wallet is connected
+        const accountInfo = getWalletAccount(wallet.value!.publicKey, connection.value!);
+        accountInfo
+            .then((info) => {
+                if (info) {
+                    // If the account exists on Solana ledger, the user is present
+                    walletConnectionState.value = WalletConnectionState.Present;
+                    updateConnectionStateIfRegistered();
+                }
+            })
+            .catch((error) => {
+                console.error("Error checking presence on Solana ledger:", error);
+            });
+    }
+
     function updateConnectionStateIfRegistered(): void {
         // Assuming the wallet is connected
-        const publicKey = wallet.value!.publicKey;
-        const [conversationListPDA] = PublicKey.findProgramAddressSync(
-            [publicKey.toBuffer(), Buffer.from("chats")],
+        const conversationListInfo = getConversationListAccount(
+            wallet.value!.publicKey,
             program.value!.programId,
+            connection.value!,
         );
-        const conversationListInfo = connection.value!.getAccountInfo(conversationListPDA);
         conversationListInfo
             .then((info) => {
                 if (info) {
                     // If the account exists, the user is registered
                     walletConnectionState.value = WalletConnectionState.Registered;
-                } else {
-                    // Otherwise, leave wallet in conncted state
-                    walletConnectionState.value = WalletConnectionState.Connected;
                 }
             })
             .catch((error) => {
@@ -117,6 +132,10 @@ export const useAnchorWorkspaceStore = defineStore("anchor_workspace", (): Ancho
         return walletConnectionState.value === WalletConnectionState.Registered;
     }
 
+    function isPresent(): boolean {
+        return walletConnectionState.value === WalletConnectionState.Present;
+    }
+
     return {
         // variables
         wallet,
@@ -129,6 +148,7 @@ export const useAnchorWorkspaceStore = defineStore("anchor_workspace", (): Ancho
         isDisconnected,
         isConnecting,
         isConnected,
+        isPresent,
         isRegistered,
     };
 });

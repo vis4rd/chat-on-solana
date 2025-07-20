@@ -5,22 +5,31 @@ import ElementWrapper from "@/components/ElementWrapper.vue";
 import WalletBalanceElement from "@/components/WalletBalanceElement.vue";
 import { useAnchorWorkspaceStore, WalletConnectionState } from "@/stores/anchor_workspace";
 import { WalletMultiButton } from "solana-wallets-vue";
-import { RouterView, useRouter } from "vue-router";
+import { RouterView, useRoute, useRouter } from "vue-router";
 import { watch } from "vue";
 
 const workspace = useAnchorWorkspaceStore();
 const router = useRouter();
+const route = useRoute();
 
 watch(
     () => workspace.walletConnectionState,
     (newState) => {
-        if (newState === WalletConnectionState.Connected) {
+        if (newState === WalletConnectionState.Present) {
             router.replace("/register");
         } else {
             router.replace("/");
         }
     },
     { immediate: true },
+);
+
+watch(
+    // TODO: DEBUG, please remove
+    () => route.fullPath,
+    (newRoute, oldRoute) => {
+        console.log("Route changed: ", oldRoute, "->", newRoute);
+    },
 );
 </script>
 
