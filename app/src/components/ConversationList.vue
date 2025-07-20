@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useAnchorWorkspaceStore, WalletConnectionState } from "@/stores/anchor_workspace";
+import { useAnchorWorkspaceStore } from "@/stores/anchor_workspace";
 import { useConversationListStore } from "@/stores/conversation_list";
 import { PublicKey } from "@solana/web3.js";
 import { ref, watchEffect } from "vue";
@@ -14,7 +14,7 @@ const error = ref<string | null>(null);
 
 async function fetchConversationList() {
     // TODO: move to conversation_list store
-    if (workspace.walletConnectionState !== WalletConnectionState.Connected) {
+    if (!workspace.isAtLeastConnected()) {
         conversationListStore.conversations = [];
         return;
     }

@@ -84,7 +84,7 @@ export const useAnchorWorkspaceStore = defineStore("anchor_workspace", (): Ancho
 
     function updateConnectionStateIfPresent(): void {
         // Assuming the wallet is connected
-        const accountInfo = getWalletAccount(wallet.value!.publicKey, connection.value!);
+        const accountInfo = getWalletAccount(wallet.value!.publicKey);
         accountInfo
             .then((info) => {
                 if (info) {
@@ -100,11 +100,7 @@ export const useAnchorWorkspaceStore = defineStore("anchor_workspace", (): Ancho
 
     function updateConnectionStateIfRegistered(): void {
         // Assuming the wallet is connected
-        const conversationListInfo = getConversationListAccount(
-            wallet.value!.publicKey,
-            program.value!.programId,
-            connection.value!,
-        );
+        const conversationListInfo = getConversationListAccount(wallet.value!.publicKey);
         conversationListInfo
             .then((info) => {
                 if (info) {

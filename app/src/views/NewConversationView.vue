@@ -3,68 +3,15 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useAnchorWorkspaceStore, WalletConnectionState } from "@/stores/anchor_workspace";
+import { createConversation } from "@/lib/solana";
+import { useAnchorWorkspaceStore } from "@/stores/anchor_workspace";
 import { Icon } from "@iconify/vue";
-import { PublicKey, Transaction } from "@solana/web3.js";
 import { toTypedSchema } from "@vee-validate/zod";
 import { useForm } from "vee-validate";
 import { ref, watch } from "vue";
 import * as z from "zod";
 
 const workspace = useAnchorWorkspaceStore();
-const conversationId = ref("");
-const loading = ref(false);
-const error = ref<string | null>(null);
-const success = ref<string | null>(null);
-
-// async function createConversation() {
-//     error.value = null;
-//     success.value = null;
-//     if (!conversationId.value) {
-//         error.value = "Conversation ID is required.";
-//         return;
-//     }
-//     if (chatters.value.length < 2) {
-//         error.value = "At least 2 chatters required.";
-//         return;
-//     }
-
-//     if (workspace.walletConnectionState !== WalletConnectionState.Connected) {
-//         error.value = "Wallet not connected.";
-//         return;
-//     }
-
-//     const payer = workspace.wallet!.publicKey;
-//     const wallet = workspace.wallet!;
-//     try {
-//         loading.value = true;
-//         const chatterPubkeys = chatters.value.map((c) => new PublicKey(c));
-//         // Compose both instructions in a single transaction
-//         const ix1 = await workspace
-//             .program!.methods.createConversation(conversationId.value, chatterPubkeys)
-//             .accounts({
-//                 payer: payer,
-//             })
-//             .instruction();
-//         const ix2 = await workspace
-//             .program!.methods.appendConversationToList(conversationId.value)
-//             .accounts({
-//                 user: payer,
-//             })
-//             .instruction();
-//         const transaction = new Transaction().add(ix1, ix2);
-//         const latestBlockhash = await workspace.connection!.getLatestBlockhash();
-//         transaction.feePayer = payer;
-//         transaction.recentBlockhash = latestBlockhash.blockhash;
-//         const signed = await wallet.signTransaction(transaction);
-//         const sig = await workspace.connection!.sendRawTransaction(signed.serialize());
-//         success.value = `Conversation created! Tx: ${sig}`;
-//     } catch (e) {
-//         error.value = e instanceof Error ? e.message : String(e);
-//     } finally {
-//         loading.value = false;
-//     }
-// }
 
 // DOCS: https://zod.dev/basics
 const formSchema = toTypedSchema(
@@ -90,6 +37,14 @@ setFieldValue("chatters", [workspace.wallet!.publicKey.toBase58()]);
 
 const onSubmit = handleSubmit((values) => {
     console.log("Form submitted!", values);
+
+    createConversation(values.conversation_id, values.chatters)
+        .then((signature: string) => {
+            console.debug("Transaction sent:", signature);
+        })
+        .catch((error: Error) => {
+            console.error("Error creating conversation:", error);
+        });
 });
 
 // const onSubmitDebug = (event: Event) => {
@@ -118,13 +73,13 @@ function subtractChatterRow() {
 </script>
 
 <template>
-    <Card>
+    <Card class="margins">
         <CardHeader>
             <CardTitle>New Conversation</CardTitle>
             <CardDescription>Card Description</CardDescription>
         </CardHeader>
         <CardContent>
-            <form @submit="onSubmit">
+            <form @submit="onSubmit" class="form-component">
                 <FormField v-slot="{ componentField }" name="conversation_id">
                     <FormItem>
                         <FormLabel>Conversation ID</FormLabel>
@@ -136,7 +91,7 @@ function subtractChatterRow() {
                     </FormItem>
                 </FormField>
                 <br />
-                <FormField v-slot="{ componentField }" name="disabled_chatter_zero">
+                <FormField v-slot="{ componentField }" name="chatters[0]">
                     <FormItem>
                         <FormLabel>Chatters</FormLabel>
                         <FormDescription>Solana ledger users.</FormDescription>
@@ -181,6 +136,10 @@ function subtractChatterRow() {
 </template>
 
 <style scoped>
+.margins {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
 .chatter-row {
     display: flex;
     flex-direction: row;
@@ -188,5 +147,10 @@ function subtractChatterRow() {
 }
 .error-msg {
     color: var(--destructive);
+}
+.form-component {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
 }
 </style>
