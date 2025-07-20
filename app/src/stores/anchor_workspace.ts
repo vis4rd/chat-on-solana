@@ -32,6 +32,7 @@ interface AnchorWorkspaceStore {
     isConnected: () => boolean;
     isPresent: () => boolean;
     isRegistered: () => boolean;
+    isAtLeastConnected: () => boolean;
 }
 
 export const useAnchorWorkspaceStore = defineStore("anchor_workspace", (): AnchorWorkspaceStore => {
@@ -136,6 +137,10 @@ export const useAnchorWorkspaceStore = defineStore("anchor_workspace", (): Ancho
         return walletConnectionState.value === WalletConnectionState.Present;
     }
 
+    function isAtLeastConnected(): boolean {
+        return walletConnectionState.value >= WalletConnectionState.Connected;
+    }
+
     return {
         // variables
         wallet,
@@ -150,5 +155,6 @@ export const useAnchorWorkspaceStore = defineStore("anchor_workspace", (): Ancho
         isConnected,
         isPresent,
         isRegistered,
+        isAtLeastConnected,
     };
 });

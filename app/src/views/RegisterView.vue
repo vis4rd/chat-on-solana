@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import BlockWrapper from "@/components/BlockWrapper.vue";
 import { Button } from "@/components/ui/button";
-import { useAnchorWorkspaceStore, WalletConnectionState } from "@/stores/anchor_workspace";
+import { useAnchorWorkspaceStore } from "@/stores/anchor_workspace";
 
 const workspace = useAnchorWorkspaceStore();
 
 async function createConversationListAccount() {
     // TODO: Extract to helper file, remove from here and HomeView.vue
-    if (workspace.walletConnectionState !== WalletConnectionState.Connected) {
+    if (!workspace.isAtLeastConnected()) {
         return;
     }
 

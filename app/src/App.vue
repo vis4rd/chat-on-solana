@@ -42,10 +42,10 @@ watch(
     <div class="horizontal-layout">
         <!-- TODO: Wallet info -->
         <WalletMultiButton></WalletMultiButton>
-        <ElementWrapper v-if="workspace.isConnected()">
+        <ElementWrapper v-if="workspace.isAtLeastConnected()">
             {{ workspace.wallet?.publicKey.toBase58() || "Wallet not connected" }}
         </ElementWrapper>
-        <ElementWrapper v-if="workspace.isConnected()">
+        <ElementWrapper v-if="workspace.isAtLeastConnected()">
             {{ workspace.connection!.rpcEndpoint }}
         </ElementWrapper>
         <ElementWrapper>
