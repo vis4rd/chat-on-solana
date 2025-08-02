@@ -2,27 +2,15 @@
 import BlockWrapper from "@/components/BlockWrapper.vue";
 import DarkModeToggle from "@/components/DarkModeToggle.vue";
 import ElementWrapper from "@/components/ElementWrapper.vue";
+import ViewManager from "@/components/ViewManager.vue";
 import WalletBalanceElement from "@/components/WalletBalanceElement.vue";
-import { useAnchorWorkspaceStore, WalletConnectionState } from "@/stores/anchor_workspace";
+import { useAnchorWorkspaceStore } from "@/stores/anchor_workspace";
 import { WalletMultiButton } from "solana-wallets-vue";
-import { RouterView, useRoute, useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 import { watch } from "vue";
 
 const workspace = useAnchorWorkspaceStore();
-const router = useRouter();
 const route = useRoute();
-
-watch(
-    () => workspace.walletConnectionState,
-    (newState) => {
-        if (newState === WalletConnectionState.Present) {
-            router.replace("/register");
-        } else {
-            router.replace("/");
-        }
-    },
-    { immediate: true },
-);
 
 watch(
     // TODO: DEBUG, please remove
@@ -51,18 +39,17 @@ watch(
         <ElementWrapper>
             <Suspense>
                 <WalletBalanceElement />
-                <template #fallback>Loading balance...</template>
+                <template #fallback>Loading...</template>
             </Suspense>
+        </ElementWrapper>
+        <ElementWrapper>
+            {{ workspace.ready ? "RDY" : "%" }}
         </ElementWrapper>
         <DarkModeToggle />
     </div>
 
     <main class="full-width">
-        <BlockWrapper v-if="workspace.isDisconnected()"> Please select your wallet using button above. </BlockWrapper>
-        <BlockWrapper v-else-if="workspace.isConnecting()"> Connecting to your wallet... </BlockWrapper>
-        <!-- if isConnected() ==> using router.replace with watch() -->
-        <RouterView v-else class="content" />
-        <!-- TODO: conversation view -->
+        <ViewManager />
     </main>
 </template>
 

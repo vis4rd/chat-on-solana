@@ -26,6 +26,7 @@ interface AnchorWorkspaceStore {
     connection: Ref<Connection | undefined>;
     provider: Ref<AnchorProvider | undefined>;
     program: Ref<Program<Chat> | undefined>;
+    ready: Ref<boolean>;
     initialize: () => void;
     isDisconnected: () => boolean;
     isConnecting: () => boolean;
@@ -41,6 +42,7 @@ export const useAnchorWorkspaceStore = defineStore("anchor_workspace", (): Ancho
     const provider: Ref<AnchorProvider | undefined> = ref(undefined);
     const program: Ref<Program<Chat> | undefined> = ref(undefined);
     const walletConnectionState = ref<WalletConnectionState>(WalletConnectionState.Connecting);
+    const ready = ref(false);
 
     watch(
         // TODO: DEBUG, please remove
@@ -52,13 +54,22 @@ export const useAnchorWorkspaceStore = defineStore("anchor_workspace", (): Ancho
         },
     );
 
+    watch(
+        () => ready.value,
+        (newReady) => {
+            console.log(`${newReady ? "RDY" : "NOT RDY"}`);
+        },
+    );
+
     function initialize() {
         connection.value = new Connection(apiUrl, commitment);
+        ready.value = false;
 
         // Re-initialize provider/program if wallet changes
         watch(
             () => wallet.value,
             (newWallet /*, oldWallet*/) => {
+                ready.value = false;
                 if (newWallet && connection.value) {
                     // Wallet selected by the user OR
                     // Wallet already selected when loading site
@@ -94,6 +105,7 @@ export const useAnchorWorkspaceStore = defineStore("anchor_workspace", (): Ancho
                 }
             })
             .catch((error) => {
+                ready.value = true;
                 console.error("Error checking presence on Solana ledger:", error);
             });
     }
@@ -107,8 +119,10 @@ export const useAnchorWorkspaceStore = defineStore("anchor_workspace", (): Ancho
                     // If the account exists, the user is registered
                     walletConnectionState.value = WalletConnectionState.Registered;
                 }
+                ready.value = true;
             })
             .catch((error) => {
+                ready.value = true;
                 console.error("Error checking registration:", error);
             });
     }
@@ -144,6 +158,7 @@ export const useAnchorWorkspaceStore = defineStore("anchor_workspace", (): Ancho
         connection,
         provider,
         program,
+        ready,
         //functions
         initialize,
         isDisconnected,

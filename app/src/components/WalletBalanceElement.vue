@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref, watch } from "vue";
 import { useAnchorWorkspaceStore, WalletConnectionState } from "@/stores/anchor_workspace";
+import { ref, watch } from "vue";
 
 const workspace = useAnchorWorkspaceStore();
 const balance = ref<number | null>(null);
@@ -19,7 +19,7 @@ await new Promise<void>((resolve) => {
     watch(
         () => workspace.walletConnectionState,
         async (state) => {
-            if (state === WalletConnectionState.Connected) {
+            if (state >= WalletConnectionState.Connected) {
                 balance.value = await workspace.connection!.getBalance(workspace.wallet!.publicKey);
                 clearTimeout(timeout);
                 resolve();
@@ -35,10 +35,10 @@ await new Promise<void>((resolve) => {
 <template>
     <div>
         <span v-if="balance !== null">
-            Balance: <span>~{{ balance / 1e9 }} SOL</span>
+            Balance: <span>~{{ (balance / 1e9).toFixed(2) }} SOL</span>
         </span>
         <span v-else>
-            <span>Wallet not connected</span>
+            <span>Not connected</span>
         </span>
     </div>
 </template>

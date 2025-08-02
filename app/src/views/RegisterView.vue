@@ -6,7 +6,7 @@ import { useAnchorWorkspaceStore } from "@/stores/anchor_workspace";
 const workspace = useAnchorWorkspaceStore();
 
 async function createConversationListAccount() {
-    // TODO: Extract to helper file, remove from here and HomeView.vue
+    // TODO: Extract to helper file
     if (!workspace.isAtLeastConnected()) {
         return;
     }
