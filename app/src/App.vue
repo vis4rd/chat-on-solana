@@ -6,19 +6,8 @@
     import WalletBalanceElement from "@/components/WalletBalanceElement.vue";
     import { useAnchorWorkspaceStore } from "@/stores/anchor_workspace";
     import { WalletMultiButton } from "solana-wallets-vue";
-    import { useRoute } from "vue-router";
-    import { watch } from "vue";
 
     const workspace = useAnchorWorkspaceStore();
-    const route = useRoute();
-
-    watch(
-        // TODO: DEBUG, please remove
-        () => route.fullPath,
-        (newRoute, oldRoute) => {
-            console.log("Route changed: ", oldRoute, "->", newRoute);
-        }
-    );
 </script>
 
 <template>

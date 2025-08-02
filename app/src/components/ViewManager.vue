@@ -1,10 +1,11 @@
 <script setup lang="ts">
     import { useAnchorWorkspaceStore, WalletConnectionState } from "@/stores/anchor_workspace";
-    import { RouterView, useRouter } from "vue-router";
+    import { RouterView, useRoute, useRouter } from "vue-router";
     import { watch } from "vue";
 
     const workspace = useAnchorWorkspaceStore();
     const router = useRouter();
+    const route = useRoute();
 
     watch(
         () => workspace.walletConnectionState,
@@ -20,6 +21,14 @@
             }
         },
         { immediate: true }
+    );
+
+    watch(
+        // TODO: DEBUG, please remove
+        () => route.fullPath,
+        (newRoute, oldRoute) => {
+            console.log("Route changed: ", oldRoute, "->", newRoute);
+        }
     );
 </script>
 
