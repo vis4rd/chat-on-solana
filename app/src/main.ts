@@ -8,10 +8,7 @@ import { createPinia } from "pinia";
 import { createApp } from "vue";
 import "solana-wallets-vue/styles.css";
 
-const walletOptions = {
-    wallets: [new PhantomWalletAdapter()],
-    autoConnect: true,
-};
+const walletOptions = { wallets: [new PhantomWalletAdapter()], autoConnect: true };
 
 const app = createApp(App);
 

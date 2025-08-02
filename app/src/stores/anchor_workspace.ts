@@ -49,16 +49,16 @@ export const useAnchorWorkspaceStore = defineStore("anchor_workspace", (): Ancho
         () => walletConnectionState.value,
         (newState, oldState) => {
             console.log(
-                `Wallet connection state changed: ${WalletConnectionState[oldState]} -> ${WalletConnectionState[newState]}`,
+                `Wallet connection state changed: ${WalletConnectionState[oldState]} -> ${WalletConnectionState[newState]}`
             );
-        },
+        }
     );
 
     watch(
         () => ready.value,
         (newReady) => {
             console.log(`${newReady ? "RDY" : "NOT RDY"}`);
-        },
+        }
     );
 
     function initialize() {
@@ -89,7 +89,7 @@ export const useAnchorWorkspaceStore = defineStore("anchor_workspace", (): Ancho
                     walletConnectionState.value = WalletConnectionState.Disconnected;
                 }
             },
-            { immediate: true },
+            { immediate: true }
         );
     }
 

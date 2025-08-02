@@ -7,18 +7,18 @@
 </template>
 
 <style scoped>
-.block-wrapper {
-    display: flex;
-    flex-direction: column;
-    place-items: center;
-    box-sizing: border-box;
+    .block-wrapper {
+        display: flex;
+        flex-direction: column;
+        place-items: center;
+        box-sizing: border-box;
 
-    margin-top: 1rem;
-    margin-bottom: 1rem;
-    padding: 1rem;
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        padding: 1rem;
 
-    border-style: solid;
-    border-radius: 6px;
-    border-width: 1px;
-}
+        border-style: solid;
+        border-radius: 6px;
+        border-width: 1px;
+    }
 </style>

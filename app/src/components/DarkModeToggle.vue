@@ -1,16 +1,16 @@
 <script setup lang="ts">
-import { Button } from "@/components/ui/button";
-import { Icon } from "@iconify/vue";
-import { useColorMode } from "@vueuse/core";
-import { ref } from "vue";
+    import { Button } from "@/components/ui/button";
+    import { Icon } from "@iconify/vue";
+    import { useColorMode } from "@vueuse/core";
+    import { ref } from "vue";
 
-const mode = useColorMode();
-const isDark = ref(false);
+    const mode = useColorMode();
+    const isDark = ref(false);
 
-function toggleTheme() {
-    isDark.value = !isDark.value;
-    mode.value = isDark.value ? "dark" : "light";
-}
+    function toggleTheme() {
+        isDark.value = !isDark.value;
+        mode.value = isDark.value ? "dark" : "light";
+    }
 </script>
 
 <template>

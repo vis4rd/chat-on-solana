@@ -1,13 +1,28 @@
 {
     "$schema": "https://json.schemastore.org/prettierrc",
-    "printWidth": 120,
-    "tabWidth": 4,
-    "plugins": [
-        "prettier-plugin-imports"
-    ],
+    "arrowParens": "always",
+    "bracketSameLine": false,
+    "bracketSpacing": true,
+    "checkIgnorePragma": true,
+    "endOfLine": "lf",
+    "experimentalOperatorPosition": "end",
+    "experimentalTernaries": true,
     "importOrder": [
         "^[a-zA-Z0-9_./]+$"
     ],
     "importOrderSeparation": true,
-    "importOrderSortSpecifiers": true
+    "importOrderSortSpecifiers": true,
+    "jsxSingleQuote": false,
+    "objectWrap": "collapse",
+    "plugins": [
+        "prettier-plugin-imports"
+    ],
+    "printWidth": 120,
+    "quoteProps": "consistent",
+    "semi": true,
+    "singleQuote": false,
+    "tabWidth": 4,
+    "trailingComma": "es5",
+    "useTabs": false,
+    "vueIndentScriptAndStyle": true
 }

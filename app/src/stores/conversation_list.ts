@@ -1,7 +1,7 @@
+import { useAnchorWorkspaceStore } from "@/stores/anchor_workspace";
 import * as anchor from "@coral-xyz/anchor";
 import { defineStore } from "pinia";
-import { ref, computed, type ComputedRef, type Ref } from "vue";
-import { useWorkspace } from "@/anchor/workspace";
+import { computed, ref, type ComputedRef, type Ref } from "vue";
 
 export const useConversationListStore = defineStore("conversation_list", () => {
     const conversations: Ref<string[], string[]> = ref([]);
@@ -14,10 +14,10 @@ export const useConversationListStore = defineStore("conversation_list", () => {
     });
     const selected_conversation_account_pda: ComputedRef<anchor.web3.PublicKey | undefined> = computed(() => {
         if (selected_conversation_id.value.length !== 0) {
-            const workspace = useWorkspace();
+            const workspace = useAnchorWorkspaceStore();
             const [pda] = anchor.web3.PublicKey.findProgramAddressSync(
                 [Buffer.from(selected_conversation_id.value)],
-                workspace.program.value.programId,
+                workspace.program!.programId
             );
             return pda;
         }

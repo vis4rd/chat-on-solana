@@ -1,46 +1,46 @@
 <script setup lang="ts">
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useAnchorWorkspaceStore } from "@/stores/anchor_workspace";
-import { useConversationListStore } from "@/stores/conversation_list";
-import { PublicKey } from "@solana/web3.js";
-import { ref, watchEffect } from "vue";
+    import { Button } from "@/components/ui/button";
+    import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+    import { useAnchorWorkspaceStore } from "@/stores/anchor_workspace";
+    import { useConversationListStore } from "@/stores/conversation_list";
+    import { PublicKey } from "@solana/web3.js";
+    import { ref, watchEffect } from "vue";
 
-const conversationListStore = useConversationListStore();
-const workspace = useAnchorWorkspaceStore();
+    const conversationListStore = useConversationListStore();
+    const workspace = useAnchorWorkspaceStore();
 
-const loading = ref(false);
-const error = ref<string | null>(null);
+    const loading = ref(false);
+    const error = ref<string | null>(null);
 
-async function fetchConversationList() {
-    // TODO: move to conversation_list store
-    if (!workspace.isAtLeastConnected()) {
-        conversationListStore.conversations = [];
-        return;
+    async function fetchConversationList() {
+        // TODO: move to conversation_list store
+        if (!workspace.isAtLeastConnected()) {
+            conversationListStore.conversations = [];
+            return;
+        }
+
+        loading.value = true;
+        error.value = null;
+        try {
+            // Derive the PDA for the conversation_list_account
+            const [conversationListPDA] = PublicKey.findProgramAddressSync(
+                [workspace.wallet!.publicKey.toBuffer(), Buffer.from("chats")],
+                workspace.program!.programId
+            );
+            // Fetch the account
+            const acc = await workspace.program!.account.conversationListAccount.fetch(conversationListPDA);
+            conversationListStore.conversations = acc.conversationIds;
+        } catch (e) {
+            error.value = (e as Error)?.message || String(e);
+            conversationListStore.conversations = [];
+        } finally {
+            loading.value = false;
+        }
     }
 
-    loading.value = true;
-    error.value = null;
-    try {
-        // Derive the PDA for the conversation_list_account
-        const [conversationListPDA] = PublicKey.findProgramAddressSync(
-            [workspace.wallet!.publicKey.toBuffer(), Buffer.from("chats")],
-            workspace.program!.programId,
-        );
-        // Fetch the account
-        const acc = await workspace.program!.account.conversationListAccount.fetch(conversationListPDA);
-        conversationListStore.conversations = acc.conversationIds;
-    } catch (e) {
-        error.value = (e as Error)?.message || String(e);
-        conversationListStore.conversations = [];
-    } finally {
-        loading.value = false;
-    }
-}
-
-watchEffect(() => {
-    fetchConversationList();
-});
+    watchEffect(() => {
+        fetchConversationList();
+    });
 </script>
 
 <template>
@@ -84,14 +84,14 @@ watchEffect(() => {
 </template>
 
 <style scoped>
-ul {
-    padding: 0;
-    margin: 0;
-}
+    ul {
+        padding: 0;
+        margin: 0;
+    }
 
-li {
-    padding: 0.25rem 0;
-    text-overflow: ellipsis;
-    overflow-x: hidden;
-}
+    li {
+        padding: 0.25rem 0;
+        text-overflow: ellipsis;
+        overflow-x: hidden;
+    }
 </style>

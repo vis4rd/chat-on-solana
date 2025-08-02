@@ -1,75 +1,73 @@
 <script setup lang="ts">
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { createConversation } from "@/lib/solana";
-import { useAnchorWorkspaceStore } from "@/stores/anchor_workspace";
-import { Icon } from "@iconify/vue";
-import { toTypedSchema } from "@vee-validate/zod";
-import { useForm } from "vee-validate";
-import { ref, watch } from "vue";
-import * as z from "zod";
+    import { Button } from "@/components/ui/button";
+    import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+    import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+    import { Input } from "@/components/ui/input";
+    import { createConversation } from "@/lib/solana";
+    import { useAnchorWorkspaceStore } from "@/stores/anchor_workspace";
+    import { Icon } from "@iconify/vue";
+    import { toTypedSchema } from "@vee-validate/zod";
+    import { useForm } from "vee-validate";
+    import { ref, watch } from "vue";
+    import * as z from "zod";
 
-const workspace = useAnchorWorkspaceStore();
+    const workspace = useAnchorWorkspaceStore();
 
-// DOCS: https://zod.dev/basics
-const formSchema = toTypedSchema(
-    z.object({
-        conversation_id: z.string().min(4).max(32),
-        chatters: z.array(z.string().min(43).max(44)).min(2).max(4),
-    }),
-);
-
-const { handleSubmit, errors, setFieldValue } = useForm({
-    validationSchema: formSchema,
-});
-watch(
-    // TODO: DEBUG ONLY, please remove
-    () => errors.value,
-    (newErrors) => {
-        console.debug("Form errors updated:", newErrors);
-    },
-);
-
-// NOTE: required to set the field manually as HTML element is disabled
-setFieldValue("chatters", [workspace.wallet!.publicKey.toBase58()]);
-
-const onSubmit = handleSubmit((values) => {
-    console.log("Form submitted!", values);
-
-    createConversation(values.conversation_id, values.chatters)
-        .then((signature: string) => {
-            console.debug("Transaction sent:", signature);
+    // DOCS: https://zod.dev/basics
+    const formSchema = toTypedSchema(
+        z.object({
+            conversation_id: z.string().min(4).max(32),
+            chatters: z.array(z.string().min(43).max(44)).min(2).max(4),
         })
-        .catch((error: Error) => {
-            console.error("Error creating conversation:", error);
-        });
-});
+    );
 
-// const onSubmitDebug = (event: Event) => {
-//     console.debug("Submit button clicked", event);
-//     if (event.target instanceof HTMLFormElement) {
-//         const formData = new FormData(event.target);
-//         for (const [key, value] of formData.entries()) {
-//             console.debug(`${key}: ${value}`);
-//         }
-//     }
-//     onSubmit(event);
-// };
+    const { handleSubmit, errors, setFieldValue } = useForm({ validationSchema: formSchema });
+    watch(
+        // TODO: DEBUG ONLY, please remove
+        () => errors.value,
+        (newErrors) => {
+            console.debug("Form errors updated:", newErrors);
+        }
+    );
 
-const chatterRowsCount = ref(1);
+    // NOTE: required to set the field manually as HTML element is disabled
+    setFieldValue("chatters", [workspace.wallet!.publicKey.toBase58()]);
 
-function addChatterRow() {
-    if (chatterRowsCount.value < 3) {
-        chatterRowsCount.value++;
+    const onSubmit = handleSubmit((values) => {
+        console.log("Form submitted!", values);
+
+        createConversation(values.conversation_id, values.chatters)
+            .then((signature: string) => {
+                console.debug("Transaction sent:", signature);
+            })
+            .catch((error: Error) => {
+                console.error("Error creating conversation:", error);
+            });
+    });
+
+    // const onSubmitDebug = (event: Event) => {
+    //     console.debug("Submit button clicked", event);
+    //     if (event.target instanceof HTMLFormElement) {
+    //         const formData = new FormData(event.target);
+    //         for (const [key, value] of formData.entries()) {
+    //             console.debug(`${key}: ${value}`);
+    //         }
+    //     }
+    //     onSubmit(event);
+    // };
+
+    const chatterRowsCount = ref(1);
+
+    function addChatterRow() {
+        if (chatterRowsCount.value < 3) {
+            chatterRowsCount.value++;
+        }
     }
-}
-function subtractChatterRow() {
-    if (chatterRowsCount.value > 1) {
-        chatterRowsCount.value--;
+    function subtractChatterRow() {
+        if (chatterRowsCount.value > 1) {
+            chatterRowsCount.value--;
+        }
     }
-}
 </script>
 
 <template>
@@ -136,21 +134,21 @@ function subtractChatterRow() {
 </template>
 
 <style scoped>
-.margins {
-    margin-top: 1rem;
-    margin-bottom: 1rem;
-}
-.chatter-row {
-    display: flex;
-    flex-direction: row;
-    gap: 1rem;
-}
-.error-msg {
-    color: var(--destructive);
-}
-.form-component {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-}
+    .margins {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+    }
+    .chatter-row {
+        display: flex;
+        flex-direction: row;
+        gap: 1rem;
+    }
+    .error-msg {
+        color: var(--destructive);
+    }
+    .form-component {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
 </style>

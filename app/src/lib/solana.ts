@@ -6,7 +6,7 @@ export async function getConversationListAccount(userPublicKey: PublicKey): Prom
 
     const [conversationListPDA] = PublicKey.findProgramAddressSync(
         [userPublicKey.toBuffer(), Buffer.from("chats")],
-        workspace.program!.programId,
+        workspace.program!.programId
     );
     return workspace.connection!.getAccountInfo(conversationListPDA);
 }
@@ -26,15 +26,11 @@ export async function createConversation(conversationId: string, chatters: strin
         // Compose both instructions in a single transaction
         const ix1 = await workspace
             .program!.methods.createConversation(conversationId, chatterPubkeys)
-            .accounts({
-                payer: payer,
-            })
+            .accounts({ payer: payer })
             .instruction();
         const ix2 = await workspace
             .program!.methods.appendConversationToList(conversationId)
-            .accounts({
-                user: payer,
-            })
+            .accounts({ user: payer })
             .instruction();
         const transaction = new Transaction().add(ix1, ix2);
         const latestBlockhash = await workspace.connection!.getLatestBlockhash();

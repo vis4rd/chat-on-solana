@@ -1,24 +1,24 @@
 <script setup lang="ts">
-import BlockWrapper from "@/components/BlockWrapper.vue";
-import DarkModeToggle from "@/components/DarkModeToggle.vue";
-import ElementWrapper from "@/components/ElementWrapper.vue";
-import ViewManager from "@/components/ViewManager.vue";
-import WalletBalanceElement from "@/components/WalletBalanceElement.vue";
-import { useAnchorWorkspaceStore } from "@/stores/anchor_workspace";
-import { WalletMultiButton } from "solana-wallets-vue";
-import { useRoute } from "vue-router";
-import { watch } from "vue";
+    import BlockWrapper from "@/components/BlockWrapper.vue";
+    import DarkModeToggle from "@/components/DarkModeToggle.vue";
+    import ElementWrapper from "@/components/ElementWrapper.vue";
+    import ViewManager from "@/components/ViewManager.vue";
+    import WalletBalanceElement from "@/components/WalletBalanceElement.vue";
+    import { useAnchorWorkspaceStore } from "@/stores/anchor_workspace";
+    import { WalletMultiButton } from "solana-wallets-vue";
+    import { useRoute } from "vue-router";
+    import { watch } from "vue";
 
-const workspace = useAnchorWorkspaceStore();
-const route = useRoute();
+    const workspace = useAnchorWorkspaceStore();
+    const route = useRoute();
 
-watch(
-    // TODO: DEBUG, please remove
-    () => route.fullPath,
-    (newRoute, oldRoute) => {
-        console.log("Route changed: ", oldRoute, "->", newRoute);
-    },
-);
+    watch(
+        // TODO: DEBUG, please remove
+        () => route.fullPath,
+        (newRoute, oldRoute) => {
+            console.log("Route changed: ", oldRoute, "->", newRoute);
+        }
+    );
 </script>
 
 <template>
@@ -54,21 +54,21 @@ watch(
 </template>
 
 <style scoped>
-.horizontal-layout {
-    display: flex;
-    flex-direction: row;
-    gap: 1rem;
-    margin: 0;
-}
+    .horizontal-layout {
+        display: flex;
+        flex-direction: row;
+        gap: 1rem;
+        margin: 0;
+    }
 
-.full-width {
-    width: 100%;
-    margin: 0;
-    padding: 0;
-}
+    .full-width {
+        width: 100%;
+        margin: 0;
+        padding: 0;
+    }
 
-.content {
-    min-width: 200px;
-    flex-grow: 1;
-}
+    .content {
+        min-width: 200px;
+        flex-grow: 1;
+    }
 </style>
