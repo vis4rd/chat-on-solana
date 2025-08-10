@@ -70,8 +70,8 @@
                 </ElementWrapper>
 
                 <br />
-                Once you've some SOL in your wallet, you should be automatically redirected to next the next step in
-                setting your account!
+                Once you've some SOL in your wallet, you should be automatically redirected to the next step in setting
+                your account!
                 <br />
                 (if not, please refresh the site)
             </div>

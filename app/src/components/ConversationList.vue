@@ -12,6 +12,15 @@
     const loading = ref(false);
     const error = ref<string | null>(null);
 
+    function setCurrentChat(event: MouseEvent) {
+        const target = event.target as HTMLElement;
+        const conversationId = target.textContent?.trim();
+        const index = conversationListStore.conversations.findIndex((id: string) => id === conversationId);
+        if (index !== -1) {
+            conversationListStore.conversation_index = index;
+        }
+    }
+
     async function fetchConversationList() {
         // TODO: move to conversation_list store
         if (!workspace.isAtLeastConnected()) {
@@ -50,7 +59,7 @@
             if wallet connected but not on blockchain: Display "It seems your wallet does not have an account on Solana."
             if wallet connected but not registered in app: Display "Wallet not registered"
             if wallet registered: Display list of conversations -->
-    <Card>
+    <Card class="conversation-list">
         <CardHeader>
             <CardTitle>Conversations</CardTitle>
         </CardHeader>
@@ -74,7 +83,7 @@
             </div>
             <ul v-else-if="conversationListStore.conversations">
                 <li v-for="id in conversationListStore.conversations" :key="id">
-                    {{ id }}
+                    <span @click="setCurrentChat">{{ id }}</span>
                 </li>
             </ul>
             <div v-else>Wallet not connected.</div>
@@ -84,6 +93,11 @@
 </template>
 
 <style scoped>
+    .conversation-list {
+        display: flex;
+        flex-grow: 0.1;
+    }
+
     ul {
         padding: 0;
         margin: 0;
