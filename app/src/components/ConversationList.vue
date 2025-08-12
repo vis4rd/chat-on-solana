@@ -1,111 +1,48 @@
 <script setup lang="ts">
+    import ConversationListDynamicLinks from "@/components/ConversationListDynamicLinks.vue";
+    import ElementWrapper from "@/components/ElementWrapper.vue";
     import { Button } from "@/components/ui/button";
-    import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-    import { useAnchorWorkspaceStore } from "@/stores/anchor_workspace";
-    import { useConversationListStore } from "@/stores/conversation_list";
-    import { PublicKey } from "@solana/web3.js";
-    import { ref, watchEffect } from "vue";
-
-    const conversationListStore = useConversationListStore();
-    const workspace = useAnchorWorkspaceStore();
-
-    const loading = ref(false);
-    const error = ref<string | null>(null);
-
-    function setCurrentChat(event: MouseEvent) {
-        const target = event.target as HTMLElement;
-        const conversationId = target.textContent?.trim();
-        const index = conversationListStore.conversations.findIndex((id: string) => id === conversationId);
-        if (index !== -1) {
-            conversationListStore.conversation_index = index;
-        }
-    }
-
-    async function fetchConversationList() {
-        // TODO: move to conversation_list store
-        if (!workspace.isAtLeastConnected()) {
-            conversationListStore.conversations = [];
-            return;
-        }
-
-        loading.value = true;
-        error.value = null;
-        try {
-            // Derive the PDA for the conversation_list_account
-            const [conversationListPDA] = PublicKey.findProgramAddressSync(
-                [workspace.wallet!.publicKey.toBuffer(), Buffer.from("chats")],
-                workspace.program!.programId
-            );
-            // Fetch the account
-            const acc = await workspace.program!.account.conversationListAccount.fetch(conversationListPDA);
-            conversationListStore.conversations = acc.conversationIds;
-        } catch (e) {
-            error.value = (e as Error)?.message || String(e);
-            conversationListStore.conversations = [];
-        } finally {
-            loading.value = false;
-        }
-    }
-
-    watchEffect(() => {
-        fetchConversationList();
-    });
+    import { Skeleton } from "@/components/ui/skeleton";
 </script>
 
 <template>
-    <!-- TODO:
-            if wallet not selected: Display "Please connect with your wallet."
-            if wallet connecting:   Display "Connecting to your wallet."
-            if wallet connected but not on blockchain: Display "It seems your wallet does not have an account on Solana."
-            if wallet connected but not registered in app: Display "Wallet not registered"
-            if wallet registered: Display list of conversations -->
-    <Card class="conversation-list">
-        <CardHeader>
-            <CardTitle>Conversations</CardTitle>
-        </CardHeader>
-        <CardContent>
-            <div v-if="loading">Loading...</div>
-            <!-- <div v-else-if="error">Error: {{ error }}</div> -->
-            <div
-                v-else-if="
-                    error || (conversationListStore.conversations && conversationListStore.conversations.length === 0)
-                "
-            >
-                No conversations found.
-                <br />
-                Create your first chat using button below!
-                <br />
-                <br />
+    <div class="column">
+        <ElementWrapper class="conversation-list-title"> Chats </ElementWrapper>
 
-                <RouterLink to="/newconversation">
-                    <Button>Create a new conversation</Button>
-                </RouterLink>
-            </div>
-            <ul v-else-if="conversationListStore.conversations">
-                <li v-for="id in conversationListStore.conversations" :key="id">
-                    <span @click="setCurrentChat">{{ id }}</span>
-                </li>
-            </ul>
-            <div v-else>Wallet not connected.</div>
-        </CardContent>
-        <!-- <CardFooter> Card Footer </CardFooter> -->
-    </Card>
+        <Transition mode="out-in">
+            <Suspense>
+                <template #fallback>
+                    <Skeleton class="skeleton" />
+                </template>
+
+                <ConversationListDynamicLinks />
+            </Suspense>
+        </Transition>
+
+        <RouterLink to="/newconversation">
+            <Button class="full-width">Create a new conversation</Button>
+        </RouterLink>
+    </div>
 </template>
 
 <style scoped>
-    .conversation-list {
+    .column {
         display: flex;
-        flex-grow: 0.1;
+        flex-direction: column;
+        gap: 0.5rem;
     }
 
-    ul {
-        padding: 0;
-        margin: 0;
+    .conversation-list-title {
+        font-size: 1.25rem;
+        font-weight: bold;
+        background-color: var(--color-card);
     }
 
-    li {
-        padding: 0.25rem 0;
-        text-overflow: ellipsis;
-        overflow-x: hidden;
+    .full-width {
+        width: 100%;
+    }
+
+    .skeleton {
+        height: calc(var(--spacing) * 9);
     }
 </style>

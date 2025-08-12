@@ -8,13 +8,13 @@
 
 <template>
     <div class="chat-view">
-        <ConversationList />
-        <BlockWrapper class="full-height">
+        <ConversationList class="list" />
+        <BlockWrapper class="chat-window">
             Chat
 
-            <span>Selected: '{{ conversationListStore.conversation_id }}'</span>
-            <span>Index: '{{ conversationListStore.conversation_index }}'</span>
-            <span>PDA: '{{ conversationListStore.conversation_account_pda }}'</span>
+            <span>Selected: '{{ conversationListStore.selectedChat?.id }}'</span>
+            <span>Index: '{{ conversationListStore.selectedChat?.index }}'</span>
+            <span>PDA: '{{ conversationListStore.selectedChat?.pda }}'</span>
         </BlockWrapper>
     </div>
 </template>
@@ -28,9 +28,14 @@
         gap: 1rem;
     }
 
-    .full-height {
-        margin-block: 0;
+    .list {
+        min-width: 200px;
+        flex: 0 0 30%;
+    }
+
+    .chat-window {
         display: flex;
-        flex-grow: 1;
+        margin-block: 0;
+        flex: 1;
     }
 </style>
