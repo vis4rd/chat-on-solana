@@ -38,7 +38,7 @@
                 .string()
                 .min(1)
                 .max(100)
-                .refine((val) => isMessageValid(), { message: "Message must be between 1 and 100 characters." }),
+                .refine(() => isMessageValid(), { message: "Message must be between 1 and 100 characters." }),
         })
     );
 
@@ -128,6 +128,15 @@
         flex-direction: column;
         margin-block: 0;
         width: 100%;
+        /* 100vh = viewport height 100% */
+        /* 36px  = message input height */
+        /* 2rem  = message input margins */
+        /* 58px  = wallet button height */
+        /* 48px  = title element height */
+        /* 36px  = chat header row height */
+        /* 4rem  = the rest of gaps/margins */
+        height: calc(100vh - 36px - 2rem - 4rem - 58px - 48px - 36px);
+        min-height: 10rem;
     }
     .message-input {
         display: flex;

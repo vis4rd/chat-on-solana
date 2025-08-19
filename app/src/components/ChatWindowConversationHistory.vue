@@ -1,5 +1,6 @@
 <script setup lang="ts">
     import ChatMessage from "@/components/ChatMessage.vue";
+    import { ScrollArea } from "@/components/ui/scroll-area";
     import { useAnchorWorkspaceStore } from "@/stores/anchor_workspace";
     import type { PublicKey } from "@solana/web3.js";
     import { useVModel } from "@vueuse/core";
@@ -41,12 +42,23 @@
 </script>
 
 <template>
-    <ChatMessage
-        v-for="message in conversation.messages"
-        :key="message.timestamp"
-        :user="message.author.equals(workspace.wallet!.publicKey)"
-        >{{ message.data }}</ChatMessage
-    >
+    <ScrollArea class="chat-scroll-area">
+        <!-- TODO: timestamps? -->
+        <!-- TODO: authors -->
+        <ChatMessage
+            v-for="message in conversation.messages"
+            :key="message.timestamp"
+            :user="message.author.equals(workspace.wallet!.publicKey)"
+            >{{ message.data }}</ChatMessage
+        >
+    </ScrollArea>
 </template>
 
-<style scoped></style>
+<style scoped>
+    .chat-scroll-area {
+        width: 100%;
+        height: 100%;
+        padding-left: 0.6rem;
+        padding-right: 0.6rem;
+    }
+</style>
