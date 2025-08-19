@@ -60,7 +60,7 @@
             <span>Index: '{{ conversationListStore.selectedChat?.index }}'</span>
             <span>PDA: '{{ conversationListStore.selectedChat?.pda }}'</span>
 
-            <Suspense>
+            <Suspense :key="conversationListStore.selectedChat!.pda">
                 <ChatWindowConversationHistory
                     v-model="conversation"
                     :account-pda="conversationListStore.selectedChat?.pda"

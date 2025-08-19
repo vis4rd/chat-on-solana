@@ -32,6 +32,12 @@
     }
 
     await fetchConversationHistory();
+
+    const eventEmitter = workspace.program!.account.conversationAccount.subscribe(props.accountPda!);
+    eventEmitter.on("change", (updatedConversation: ConversationAccount) => {
+        console.debug("Conversation updated:", updatedConversation);
+        conversation.value = updatedConversation;
+    });
 </script>
 
 <template>
