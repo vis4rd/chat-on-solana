@@ -1,5 +1,5 @@
 import { useAnchorWorkspaceStore } from "@/stores/anchor_workspace";
-import { PublicKey, Transaction, type AccountInfo, type Connection } from "@solana/web3.js";
+import { PublicKey, Transaction, type AccountInfo } from "@solana/web3.js";
 
 export async function getConversationListAccount(userPublicKey: PublicKey): Promise<AccountInfo<Buffer> | null> {
     const workspace = useAnchorWorkspaceStore();
@@ -43,4 +43,37 @@ export async function createConversation(conversationId: string, chatters: strin
         console.error("Error creating conversation:", e);
         return Promise.reject(e);
     }
+}
+
+export async function appendMessage(conversationPDA: PublicKey, message: string): Promise<string> {
+    const trimmedMessage: string = message.trim();
+
+    function isMessageValid() {
+        const messageLength = trimmedMessage.length;
+        return messageLength > 0 && messageLength <= 100;
+    }
+
+    const workspace = useAnchorWorkspaceStore();
+
+    if (isMessageValid()) {
+        try {
+            const tx = await workspace
+                .program!.methods.appendMessage(trimmedMessage)
+                .accounts({ conversationAccount: conversationPDA, author: workspace.wallet!.publicKey })
+                .transaction();
+
+            const latestBlockhash = await workspace.connection!.getLatestBlockhash();
+            tx.feePayer = workspace.wallet!.publicKey;
+            tx.recentBlockhash = latestBlockhash.blockhash;
+            const signedTx = await workspace.wallet!.signTransaction(tx);
+            const txSignature = await workspace.provider!.connection.sendRawTransaction(signedTx.serialize());
+            console.log("Message sent, transaction signature:", txSignature);
+            return Promise.resolve(txSignature);
+        } catch (error) {
+            console.error("Error sending message:", error);
+            return Promise.reject(error);
+        }
+    }
+
+    return Promise.reject(new Error("Invalid message content"));
 }
