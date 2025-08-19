@@ -1,5 +1,7 @@
 <script setup lang="ts">
     import BlockWrapper from "@/components/BlockWrapper.vue";
+    import ChatMessage from "@/components/ChatMessage.vue";
+    import ChatWindow from "@/components/ChatWindow.vue";
     import ConversationList from "@/components/ConversationList.vue";
     import { useConversationListStore } from "@/stores/conversation_list";
 
@@ -9,12 +11,19 @@
 <template>
     <div class="chat-view">
         <ConversationList class="list" />
-        <BlockWrapper class="chat-window">
+        <BlockWrapper class="chat-window-block">
+            <!-- TODO: conversation name -->
+            <!-- TODO: number of chatters -->
             Chat
 
             <span>Selected: '{{ conversationListStore.selectedChat?.id }}'</span>
             <span>Index: '{{ conversationListStore.selectedChat?.index }}'</span>
             <span>PDA: '{{ conversationListStore.selectedChat?.pda }}'</span>
+
+            <ChatWindow>
+                <ChatMessage user>hello</ChatMessage>
+                <ChatMessage>hi there!</ChatMessage>
+            </ChatWindow>
         </BlockWrapper>
     </div>
 </template>
@@ -33,7 +42,7 @@
         flex: 0 0 30%;
     }
 
-    .chat-window {
+    .chat-window-block {
         display: flex;
         margin-block: 0;
         flex: 1;
