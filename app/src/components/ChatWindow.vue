@@ -24,6 +24,8 @@
     const input = ref("");
     const inputLength = computed(() => input.value.trim().length);
     const conversation = ref<ConversationAccount>({ chatterCount: 0, chatters: [], messages: [] });
+    const chatterCount = computed(() => conversation.value.chatterCount);
+    const messageCount = computed(() => conversation.value.messages.length);
 
     function isMessageValid() {
         return inputLength.value > 0 && inputLength.value <= 100;
@@ -47,19 +49,31 @@
             input.value = "";
         });
     });
+
+    function copyConversationAddress() {
+        if (conversationListStore.selectedChat?.pda) {
+            navigator.clipboard.writeText(conversationListStore.selectedChat.pda.toBase58());
+            // TODO: notification that address was copied successfully
+        } else {
+            // TODO: notification about failure
+        }
+    }
 </script>
 
 <template>
     <div class="column">
+        <div class="row">
+            <ElementWrapper class="w-1/2"
+                ><b>{{ conversationListStore.selectedChat?.id }}</b>
+            </ElementWrapper>
+            <ElementWrapper> chatters: {{ chatterCount }}</ElementWrapper>
+            <ElementWrapper> messages: {{ messageCount }}/50 </ElementWrapper>
+            <Button @click="copyConversationAddress()" variant="outline" aria-label="Share conversation address">
+                <Icon icon="fluent:share-24-regular" class="size-5" />
+                Share
+            </Button>
+        </div>
         <BlockWrapper class="chat-window">
-            <!-- TODO: conversation name -->
-            <!-- TODO: number of chatters -->
-            Chat
-
-            <span>Selected: '{{ conversationListStore.selectedChat?.id }}'</span>
-            <span>Index: '{{ conversationListStore.selectedChat?.index }}'</span>
-            <span>PDA: '{{ conversationListStore.selectedChat?.pda }}'</span>
-
             <Suspense :key="conversationListStore.selectedChat!.pda">
                 <ChatWindowConversationHistory
                     v-model="conversation"
@@ -84,7 +98,7 @@
 
                 <ElementWrapper class="character-count">{{ 100 - inputLength }}</ElementWrapper>
                 <Button variant="default" size="icon" aria-label="Send the message" :disabled="!isMessageValid()">
-                    <Icon icon="fluent:send-24-regular" class="size-5"></Icon>
+                    <Icon icon="fluent:send-24-regular" class="size-5" />
                 </Button>
             </form>
         </div>
@@ -97,6 +111,12 @@
         flex-direction: column;
         width: 100%;
         gap: 1rem;
+    }
+    .row {
+        display: flex;
+        flex-direction: row;
+        gap: 1rem;
+        width: 100%;
     }
     .skeleton {
         height: calc(var(--spacing) * 9);
