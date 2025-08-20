@@ -2,15 +2,30 @@
     import DarkModeToggle from "@/components/DarkModeToggle.vue";
     import ElementWrapper from "@/components/ElementWrapper.vue";
     import { H2 } from "@/components/typography";
+    import { Toaster } from "@/components/ui/sonner";
     import ViewManager from "@/components/ViewManager.vue";
     // import WalletBalanceElement from "@/components/WalletBalanceElement.vue";
     import { useAnchorWorkspaceStore } from "@/stores/anchor_workspace";
+    import { useColorMode } from "@vueuse/core";
     import { WalletMultiButton } from "solana-wallets-vue";
+    import { computed } from "vue";
 
     const workspace = useAnchorWorkspaceStore();
+    const colorMode = useColorMode();
+    const theme = computed(() => {
+        switch (colorMode.value) {
+            case "dark":
+                return "dark";
+            case "light":
+                return "light";
+            default:
+                return "system";
+        }
+    });
 </script>
 
 <template>
+    <Toaster richColors :theme="theme" />
     <div class="horizontal-layout">
         <H2 class="title">Chat on Solana</H2>
         <div class="right-align">
