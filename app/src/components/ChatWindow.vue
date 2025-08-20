@@ -13,6 +13,7 @@
     import type { PublicKey } from "@solana/web3.js";
     import { toTypedSchema } from "@vee-validate/zod";
     import { useForm } from "vee-validate";
+    import { toast } from "vue-sonner";
     import { computed, ref } from "vue";
     import * as z from "zod";
 
@@ -45,9 +46,13 @@
     const { handleSubmit } = useForm({ validationSchema: formSchema });
 
     const onSubmit = handleSubmit((values) => {
-        appendMessage(conversationListStore.selectedChat!.pda, values.message_content).then(() => {
-            input.value = "";
-        });
+        appendMessage(conversationListStore.selectedChat!.pda, values.message_content)
+            .then(() => {
+                input.value = "";
+            })
+            .catch((err: Error) => {
+                toast.error("Failed to send message.", { description: err.message, duration: 10000 });
+            });
     });
 
     function copyConversationAddress() {

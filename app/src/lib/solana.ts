@@ -67,10 +67,8 @@ export async function appendMessage(conversationPDA: PublicKey, message: string)
             tx.recentBlockhash = latestBlockhash.blockhash;
             const signedTx = await workspace.wallet!.signTransaction(tx);
             const txSignature = await workspace.provider!.connection.sendRawTransaction(signedTx.serialize());
-            console.log("Message sent, transaction signature:", txSignature);
             return Promise.resolve(txSignature);
         } catch (error) {
-            console.error("Error sending message:", error);
             return Promise.reject(error);
         }
     }

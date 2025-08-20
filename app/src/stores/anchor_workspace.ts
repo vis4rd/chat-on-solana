@@ -55,6 +55,7 @@ export const useAnchorWorkspaceStore = defineStore("anchor_workspace", (): Ancho
     );
 
     watch(
+        // TODO: DEBUG, please remove
         () => ready.value,
         (newReady) => {
             console.log(`${newReady ? "RDY" : "NOT RDY"}`);
