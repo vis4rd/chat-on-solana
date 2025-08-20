@@ -5,7 +5,7 @@
     import { ref } from "vue";
 
     const mode = useColorMode();
-    const isDark = ref(false);
+    const isDark = ref(mode.system.value === "dark");
 
     function toggleTheme() {
         isDark.value = !isDark.value;

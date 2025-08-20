@@ -1,9 +1,9 @@
 <script setup lang="ts">
-    import BlockWrapper from "@/components/BlockWrapper.vue";
     import DarkModeToggle from "@/components/DarkModeToggle.vue";
     import ElementWrapper from "@/components/ElementWrapper.vue";
+    import { H2 } from "@/components/typography";
     import ViewManager from "@/components/ViewManager.vue";
-    import WalletBalanceElement from "@/components/WalletBalanceElement.vue";
+    // import WalletBalanceElement from "@/components/WalletBalanceElement.vue";
     import { useAnchorWorkspaceStore } from "@/stores/anchor_workspace";
     import { WalletMultiButton } from "solana-wallets-vue";
 
@@ -11,30 +11,24 @@
 </script>
 
 <template>
-    <BlockWrapper>
-        <!-- TODO: logo -->
-        <h1 class="">Chat On Solana</h1>
-    </BlockWrapper>
-
     <div class="horizontal-layout">
-        <!-- TODO: Wallet info -->
-        <WalletMultiButton></WalletMultiButton>
-        <ElementWrapper v-if="workspace.isAtLeastConnected()">
-            {{ workspace.wallet?.publicKey.toBase58() || "Wallet not connected" }}
-        </ElementWrapper>
-        <ElementWrapper v-if="workspace.isAtLeastConnected()">
-            {{ workspace.connection!.rpcEndpoint }}
-        </ElementWrapper>
-        <ElementWrapper>
-            <Suspense>
-                <WalletBalanceElement />
-                <template #fallback>Loading...</template>
-            </Suspense>
-        </ElementWrapper>
-        <ElementWrapper>
-            {{ workspace.ready ? "RDY" : "%" }}
-        </ElementWrapper>
-        <DarkModeToggle />
+        <H2 class="title">Chat on Solana</H2>
+        <div class="right-align">
+            <WalletMultiButton />
+            <ElementWrapper>
+                {{ workspace.connection?.rpcEndpoint }}
+            </ElementWrapper>
+            <!-- <ElementWrapper>
+                <Suspense>
+                    <WalletBalanceElement />
+                    <template #fallback>Loading...</template>
+                </Suspense>
+            </ElementWrapper> -->
+            <ElementWrapper>
+                {{ workspace.ready ? "RDY" : "%" }}
+            </ElementWrapper>
+            <DarkModeToggle />
+        </div>
     </div>
 
     <main class="full-width">
@@ -48,6 +42,21 @@
         flex-direction: row;
         gap: 1rem;
         margin: 0;
+    }
+
+    .title {
+        display: flex;
+        padding: 0;
+        border: none;
+    }
+
+    .right-align {
+        margin-top: 1.5rem;
+        flex-grow: 1;
+
+        display: flex;
+        place-content: flex-end;
+        gap: 1rem;
     }
 
     .full-width {

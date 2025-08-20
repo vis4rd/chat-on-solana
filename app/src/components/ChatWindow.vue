@@ -68,7 +68,12 @@
             </ElementWrapper>
             <ElementWrapper> chatters: {{ chatterCount }}</ElementWrapper>
             <ElementWrapper> messages: {{ messageCount }}/50 </ElementWrapper>
-            <Button @click="copyConversationAddress()" variant="outline" aria-label="Share conversation address">
+            <Button
+                @click="copyConversationAddress()"
+                class="grow"
+                variant="outline"
+                aria-label="Share conversation address"
+            >
                 <Icon icon="fluent:share-24-regular" class="size-5" />
                 Share
             </Button>

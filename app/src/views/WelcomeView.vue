@@ -1,9 +1,6 @@
 <script setup lang="ts">
     import BlockWrapper from "@/components/BlockWrapper.vue";
-    import H1 from "@/components/typography/H1.vue";
-    import H2 from "@/components/typography/H2.vue";
-    import List from "@/components/typography/List.vue";
-    import { WalletMultiButton } from "solana-wallets-vue";
+    import { H1, H2, List } from "@/components/typography";
 </script>
 
 <template>
@@ -40,13 +37,7 @@
                 <li>It's secure - your crypto-wallet does the heavy lifting</li>
                 <li>It's free - connecting your wallet does not require any transactions</li>
             </List>
-            Use the button below to connect your wallet!
-            <br />
-            <br />
-
-            <div class="">
-                <WalletMultiButton></WalletMultiButton>
-            </div>
+            Press <b>"Select Wallet"</b> button in the top right corner to connect your wallet.
         </div>
     </BlockWrapper>
 </template>
