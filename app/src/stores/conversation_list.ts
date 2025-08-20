@@ -17,6 +17,9 @@ export const useConversationListStore = defineStore("conversation_list", () => {
     const chat_pda: ComputedRef<anchor.web3.PublicKey | undefined> = computed(() => {
         if (chat_id.value.length !== 0) {
             const workspace = useAnchorWorkspaceStore();
+            if (!workspace.program) {
+                return undefined;
+            }
             const [pda] = anchor.web3.PublicKey.findProgramAddressSync(
                 [Buffer.from(chat_id.value)],
                 workspace.program!.programId
