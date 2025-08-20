@@ -1,0 +1,329 @@
+:root {
+    /* Buttons. */
+    --swv-button-background-color: var(--color-primary);
+    --swv-button-text-color: var(--color-primary-foreground);
+    --swv-button-outline-color: var(--color-border);
+    --swv-button-hover-background-color: color-mix(in oklch, var(--color-primary), var(--color-primary-foreground) 20%);
+    --swv-button-disabled-background-color: var(--color-muted);
+    --swv-button-disabled-text-color: var(--color-muted-foreground);
+
+    /* Modal. */
+    --swv-overlay-background-color: color-mix(in hsl, var(--color-shadow-color), transparent 60%);
+    --swv-modal-background-color: var(--color-card);
+    --swv-modal-text-color: var(--color-card-foreground);
+    --swv-modal-close-button-background-color: var(--color-secondary);
+    --swv-modal-close-button-text-color: var(--color-secondary-foreground);
+    --swv-modal-close-button-hover-text-color: color-mix(
+        in oklch,
+        var(--color-secondary),
+        var(--color-secondary-foreground) 60%
+    );
+    --swv-modal-button-text-color: var(--color-foreground);
+    --swv-modal-wallet-status-text-color: var(--color-muted-foreground);
+    --swv-modal-button-hover-background-color: color-mix(in oklch, var(--color-background), white 18%);
+    --swv-modal-button-outline-color: var(--color-border);
+
+    /* Dropdown. */
+    --swv-dropdown-background-color: var(--color-card);
+    --swv-dropdown-item-hover-background-color: color-mix(
+        in oklch,
+        var(--color-card),
+        var(--color-card-foreground) 18%
+    );
+    --swv-dropdown-text-color: var(--color-card-foreground);
+
+    /* Shadows. */
+    --swm-modal-shadow: var(--shadow);
+    --swm-dropdown-shadow: var(--shadow);
+
+    /* Radius. */
+    --swv-button-radius: var(--radius-md);
+    --swv-modal-radius: var(--radius-md);
+    --swv-dropdown-radius: var(--radius-md);
+    --swv-dropdown-item-radius: var(--radius-md);
+}
+
+.swv-dark {
+    /* Modal. */
+    --swv-overlay-background-color: rgba(0, 0, 0, 0.7);
+    --swv-modal-background-color: #1e293b;
+    --swv-modal-text-color: white;
+    --swv-modal-close-button-background-color: #0f172a;
+    --swv-modal-close-button-text-color: #64748b;
+    --swv-modal-close-button-hover-text-color: white;
+    --swv-modal-button-text-color: white;
+    --swv-modal-wallet-status-text-color: #64748b;
+    --swv-modal-button-hover-background-color: #0f172a;
+    --swv-modal-button-outline-color: white;
+
+    /* Dropdown. */
+    --swv-dropdown-background-color: #1e293b;
+    --swv-dropdown-item-hover-background-color: #334155;
+    --swv-dropdown-text-color: white;
+
+    /* Shadows. */
+    --swm-modal-shadow: 0px 8px 20px rgba(0, 0, 0, 0.6);
+}
+
+.swv-button {
+    border: none;
+    background-color: transparent;
+    color: var(--swv-button-text-color);
+
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+
+    font-size: var(--text-sm);
+    line-height: var(--tw-leading, var(--text-sm--line-height));
+    padding-block: calc(var(--spacing) * 1);
+    padding-inline: calc(var(--spacing) * 3);
+    height: calc(var(--spacing) * 9);
+
+    border-radius: var(--swv-button-radius);
+
+    gap: 12px;
+}
+
+.swv-button-trigger {
+    background-color: var(--swv-button-background-color);
+}
+
+.swv-button:not([disabled]):focus-visible {
+    outline-color: var(--swv-button-outline-color);
+}
+
+.swv-button:not([disabled]):hover {
+    background-color: var(--swv-button-hover-background-color);
+}
+
+.swv-button[disabled] {
+    background: var(--swv-button-disabled-background-color);
+    color: var(--swv-button-disabled-text-color);
+    cursor: not-allowed;
+}
+
+.swv-button-icon,
+.swv-button-icon img {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+}
+
+.swv-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.swv-dropdown-list {
+    position: absolute;
+    z-index: 99;
+    display: grid;
+    grid-template-rows: 1fr;
+    grid-row-gap: 10px;
+    padding: 10px;
+    top: 100%;
+    right: 0;
+    margin: 0;
+    list-style: none;
+    background: var(--swv-dropdown-background-color);
+    color: var(--swv-dropdown-text-color);
+    border-radius: var(--swv-dropdown-radius);
+    box-shadow: var(--swm-dropdown-shadow);
+    opacity: 0;
+    visibility: hidden;
+    transition:
+        opacity 200ms ease,
+        transform 200ms ease,
+        visibility 200ms;
+    font-family: "DM Sans", "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.swv-dropdown-list-active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(10px);
+}
+
+.swv-dropdown-list-item {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    white-space: nowrap;
+    box-sizing: border-box;
+    padding: 0 20px;
+    width: 100%;
+    border-radius: var(--swv-dropdown-item-radius);
+    font-size: 14px;
+    font-weight: 500;
+    height: 37px;
+}
+
+.swv-dropdown-list-item:not([disabled]):hover {
+    background-color: var(--swv-dropdown-item-hover-background-color);
+}
+
+.swv-modal-collapse-button {
+    justify-content: space-between;
+    border-radius: 0px 0px var(--swv-modal-radius) var(--swv-modal-radius);
+}
+
+.swv-modal-collapse-button svg {
+    transition: transform ease-in 150ms;
+    align-self: center;
+    fill: #999;
+}
+
+.swv-modal-collapse-button.swv-modal-collapse-button-active svg {
+    transform: rotate(180deg);
+}
+
+.swv-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 1;
+    transition: opacity linear 150ms;
+    z-index: 1040;
+    overflow-y: auto;
+}
+
+.swv-modal-logo-wrapper {
+    padding: 60px;
+    padding-bottom: 0px;
+}
+
+.swv-modal-logo {
+    max-width: 100%;
+    max-height: 100px;
+}
+
+.swv-modal-button-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    padding: 12px;
+    cursor: pointer;
+    background: var(--swv-modal-close-button-background-color);
+    color: var(--swv-modal-close-button-text-color);
+    border: none;
+    border-radius: 50%;
+}
+
+.swv-modal-button-close:hover {
+    color: var(--swv-modal-close-button-hover-text-color);
+}
+
+.swv-modal-button-close:focus-visible {
+    outline-color: var(--swv-modal-button-outline-color);
+}
+
+.swv-modal-button-close svg {
+    fill: currentColor;
+    transition: fill 200ms ease 0s;
+}
+
+.swv-modal-overlay {
+    background: var(--swv-overlay-background-color);
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+}
+
+.swv-modal-container {
+    display: flex;
+    margin: 3rem;
+    min-height: calc(100vh - 6rem); /* 100vh - 2 * margin */
+    align-items: center;
+    justify-content: center;
+}
+
+@media (max-width: 480px) {
+    .swv-modal-container {
+        margin: 1rem;
+        min-height: calc(100vh - 2rem); /* 100vh - 2 * margin */
+    }
+}
+
+.swv-modal-wrapper {
+    box-sizing: border-box;
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    z-index: 1050;
+    max-width: 400px;
+    border-radius: var(--swv-modal-radius);
+    background: var(--swv-modal-background-color);
+    color: var(--swv-modal-text-color);
+    box-shadow: var(--swm-modal-shadow);
+    font-family: "DM Sans", "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    flex: 1;
+}
+
+.swv-modal-wrapper .swv-button {
+    width: 100%;
+    color: var(--swv-modal-button-text-color);
+}
+
+.swv-modal-wrapper .swv-button:not([disabled]):hover {
+    background: var(--swv-modal-button-hover-background-color);
+}
+
+.swv-modal-wrapper .swv-button:not([disabled]):focus-visible {
+    outline-color: var(--swv-modal-button-outline-color);
+}
+
+.swv-modal-title {
+    font-weight: 500;
+    font-size: 24px;
+    line-height: 36px;
+    margin: 0;
+    padding: 30px 60px;
+    text-align: center;
+}
+
+@media (max-width: 374px) {
+    .swv-modal-title {
+        font-size: 18px;
+    }
+}
+
+.swv-modal-list {
+    margin: 0 0 12px 0;
+    padding: 0;
+    width: 100%;
+    list-style: none;
+}
+
+.swv-modal-list .swv-button {
+    font-weight: 400;
+    border-radius: 0;
+    font-size: 18px;
+    justify-content: flex-start;
+}
+
+.swv-modal-list .swv-button .swv-wallet-status {
+    color: var(--swv-modal-wallet-status-text-color);
+    font-size: 16px;
+    margin-left: auto;
+}
+
+.swv-modal-list .swv-button-icon,
+.swv-modal-list .swv-button-icon img {
+    width: 28px;
+    height: 28px;
+}

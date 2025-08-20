@@ -22,7 +22,7 @@
 
         border-color: var(--input);
         border-style: var(--tw-border-style);
-        border-radius: calc(var(--radius) - 2px);
+        border-radius: var(--radius-md);
         border-width: 1px;
     }
 </style>
