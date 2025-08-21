@@ -2,13 +2,13 @@
     import DarkModeToggle from "@/components/DarkModeToggle.vue";
     import ElementWrapper from "@/components/ElementWrapper.vue";
     import { H2 } from "@/components/typography";
+    import { Skeleton } from "@/components/ui/skeleton";
     import { Toaster } from "@/components/ui/sonner";
-    import ViewManager from "@/components/ViewManager.vue";
-    // import WalletBalanceElement from "@/components/WalletBalanceElement.vue";
-    import { useAnchorWorkspaceStore } from "@/stores/anchor_workspace";
+    import { useAnchorWorkspaceStore, WalletConnectionState } from "@/stores/anchor_workspace";
     import { useColorMode } from "@vueuse/core";
     import { WalletMultiButton } from "solana-wallets-vue";
-    import { computed } from "vue";
+    import { RouterView, useRoute, useRouter } from "vue-router";
+    import { computed, watch } from "vue";
 
     const workspace = useAnchorWorkspaceStore();
     const colorMode = useColorMode();
@@ -22,6 +22,33 @@
                 return "system";
         }
     });
+
+    const router = useRouter();
+    const route = useRoute();
+
+    watch(
+        () => workspace.walletConnectionState,
+        (newState) => {
+            if (newState === WalletConnectionState.Disconnected) {
+                router.replace("/welcome");
+            } else if (newState === WalletConnectionState.Present || newState === WalletConnectionState.Connected) {
+                router.replace("/register");
+            } else if (newState === WalletConnectionState.Registered) {
+                router.replace("/chat");
+            } else {
+                router.replace("/");
+            }
+        },
+        { immediate: true }
+    );
+
+    watch(
+        // TODO: DEBUG, please remove
+        () => route.fullPath,
+        (newRoute, oldRoute) => {
+            console.log("Route changed: ", oldRoute, "->", newRoute);
+        }
+    );
 </script>
 
 <template>
@@ -40,14 +67,15 @@
                 </Suspense>
             </ElementWrapper> -->
             <ElementWrapper>
-                {{ workspace.ready ? "RDY" : "%" }}
+                {{ workspace.ready ? "RDY" : "..." }}
             </ElementWrapper>
             <DarkModeToggle />
         </div>
     </div>
 
     <main class="full-width">
-        <ViewManager />
+        <Skeleton v-if="!workspace.ready" class="skeleton-block" />
+        <RouterView v-else />
     </main>
 </template>
 
@@ -80,8 +108,9 @@
         padding: 0;
     }
 
-    .content {
-        min-width: 200px;
-        flex-grow: 1;
+    .skeleton-block {
+        margin-block: 1rem;
+        width: 100%;
+        min-height: 200px;
     }
 </style>

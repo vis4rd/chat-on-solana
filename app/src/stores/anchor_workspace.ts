@@ -3,7 +3,7 @@ import { type Chat } from "@/anchor/chat.idl.ts";
 import { getConversationListAccount, getWalletAccount } from "@/lib/solana";
 import { AnchorProvider, Program } from "@coral-xyz/anchor";
 import { clusterApiUrl, Connection } from "@solana/web3.js";
-import { useAnchorWallet, type AnchorWallet } from "solana-wallets-vue";
+import { useAnchorWallet, useWallet, type AnchorWallet } from "solana-wallets-vue";
 import { defineStore } from "pinia";
 import { ref, watch, type Ref } from "vue";
 
@@ -37,11 +37,12 @@ interface AnchorWorkspaceStore {
 }
 
 export const useAnchorWorkspaceStore = defineStore("anchor_workspace", (): AnchorWorkspaceStore => {
-    const wallet: Ref<AnchorWallet | undefined> = useAnchorWallet();
+    const walletStore = useWallet();
+    const wallet = ref<AnchorWallet | undefined>(undefined);
     const connection: Ref<Connection | undefined> = ref(undefined);
     const provider: Ref<AnchorProvider | undefined> = ref(undefined);
     const program: Ref<Program<Chat> | undefined> = ref(undefined);
-    const walletConnectionState = ref<WalletConnectionState>(WalletConnectionState.Connecting);
+    const walletConnectionState = ref<WalletConnectionState>(WalletConnectionState.Disconnected);
     const ready = ref(false);
 
     watch(
@@ -62,41 +63,57 @@ export const useAnchorWorkspaceStore = defineStore("anchor_workspace", (): Ancho
         }
     );
 
+    watch(
+        [walletStore.disconnecting, walletStore.connecting, walletStore.connected, walletStore.ready],
+        (
+            [newDisconnecting, newConnecting, newConnected, newReady],
+            [oldDisconnecting, oldConnecting, oldConnected, oldReady]
+        ) => {
+            if (walletStore.readyState.value.toString() === "Unsupported") {
+                walletConnectionState.value = WalletConnectionState.Disconnected;
+                return;
+            }
+            // else: walletStore.readyState is 'Installed'
+
+            const disconnectingChanged = newDisconnecting !== oldDisconnecting;
+            const connectingChanged = newConnecting !== oldConnecting;
+            const connectedChanged = newConnected !== oldConnected;
+            const readyChanged = newReady !== oldReady;
+
+            if (connectingChanged && newConnecting) {
+                walletConnectionState.value = WalletConnectionState.Connecting;
+                ready.value = false;
+                return;
+            }
+            if (connectedChanged && newConnected) {
+                walletConnectionState.value = WalletConnectionState.Connected;
+
+                wallet.value = useAnchorWallet().value;
+                provider.value = new AnchorProvider(connection.value!, wallet.value!, {
+                    preflightCommitment,
+                    commitment,
+                });
+                program.value = new Program<Chat>(ChatIDL as Chat, provider.value);
+                updateConnectionStateIfPresent();
+                return;
+            }
+        }
+    );
+
     function initialize() {
         connection.value = new Connection(apiUrl, commitment);
-        ready.value = false;
 
-        // Re-initialize provider/program if wallet changes
-        watch(
-            () => wallet.value,
-            (newWallet /*, oldWallet*/) => {
-                ready.value = false;
-                if (newWallet && connection.value) {
-                    // Wallet selected by the user OR
-                    // Wallet already selected when loading site
-                    provider.value = new AnchorProvider(connection.value, newWallet, {
-                        preflightCommitment,
-                        commitment,
-                    });
-                    program.value = new Program<Chat>(ChatIDL as Chat, provider.value);
-                    walletConnectionState.value = WalletConnectionState.Connected;
-                    updateConnectionStateIfPresent();
-                } else {
-                    // Connection dropped OR
-                    // Wallet disconnected by the user OR
-                    // Wallet not selected when loading site
-                    provider.value = undefined;
-                    program.value = undefined;
-                    walletConnectionState.value = WalletConnectionState.Disconnected;
-                }
-            },
-            { immediate: true }
-        );
+        if (walletStore.readyState.value.toString() === "Unsupported") {
+            setReadyWithDelay();
+        }
+        if (walletStore.readyState.value.toString() === "Installed") {
+            setReadyWithDelay();
+        }
     }
 
     function updateConnectionStateIfPresent(): void {
         // Assuming the wallet is connected
-        const accountInfo = getWalletAccount(wallet.value!.publicKey);
+        const accountInfo = getWalletAccount(walletStore.publicKey.value!);
         accountInfo
             .then((info) => {
                 if (info) {
@@ -106,26 +123,33 @@ export const useAnchorWorkspaceStore = defineStore("anchor_workspace", (): Ancho
                 }
             })
             .catch((error) => {
-                ready.value = true;
                 console.error("Error checking presence on Solana ledger:", error);
+                setReadyWithDelay();
             });
     }
 
     function updateConnectionStateIfRegistered(): void {
         // Assuming the wallet is connected
-        const conversationListInfo = getConversationListAccount(wallet.value!.publicKey);
+        const conversationListInfo = getConversationListAccount(walletStore.publicKey.value!);
         conversationListInfo
             .then((info) => {
                 if (info) {
                     // If the account exists, the user is registered
                     walletConnectionState.value = WalletConnectionState.Registered;
                 }
-                ready.value = true;
             })
             .catch((error) => {
-                ready.value = true;
                 console.error("Error checking registration:", error);
+            })
+            .finally(() => {
+                setReadyWithDelay();
             });
+    }
+
+    function setReadyWithDelay(): void {
+        setTimeout(() => {
+            ready.value = true;
+        }, 1000);
     }
 
     function isDisconnected(): boolean {
@@ -154,7 +178,7 @@ export const useAnchorWorkspaceStore = defineStore("anchor_workspace", (): Ancho
 
     return {
         // variables
-        wallet,
+        wallet: wallet,
         walletConnectionState,
         connection,
         provider,
