@@ -10,7 +10,7 @@ import { createApp } from "vue";
 import "vue-sonner/style.css";
 import "./assets/solana-wallets-vue.css";
 
-const walletOptions = { wallets: [new PhantomWalletAdapter()], autoConnect: false, cluster: "devnet" as Cluster };
+const walletOptions = { wallets: [new PhantomWalletAdapter()], autoConnect: true, cluster: "devnet" as Cluster };
 
 const app = createApp(App);
 
