@@ -23,7 +23,7 @@
 
             // Wait until props.accountPda is available before proceeding
             while (!props.accountPda) {
-                await new Promise((resolve) => setTimeout(resolve, 50));
+                await new Promise((resolve) => setTimeout(resolve, 1000));
             }
             const fetchedConversation = await workspace.program!.account.conversationAccount.fetch(props.accountPda);
             conversation.value = fetchedConversation;

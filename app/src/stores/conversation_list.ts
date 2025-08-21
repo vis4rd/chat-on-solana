@@ -1,3 +1,4 @@
+import { Buffer } from "buffer";
 import { useAnchorWorkspaceStore } from "@/stores/anchor_workspace";
 import * as anchor from "@coral-xyz/anchor";
 import { defineStore } from "pinia";

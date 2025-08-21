@@ -1,3 +1,4 @@
+import { Buffer } from "buffer";
 import { useAnchorWorkspaceStore } from "@/stores/anchor_workspace";
 import { PublicKey, Transaction, type AccountInfo } from "@solana/web3.js";
 

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+    import { Buffer } from "buffer";
     import { Button } from "@/components/ui/button";
     import { useAnchorWorkspaceStore } from "@/stores/anchor_workspace";
     import { useConversationListStore } from "@/stores/conversation_list";

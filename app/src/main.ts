@@ -2,7 +2,6 @@ import "./assets/main.css";
 import App from "@/App.vue";
 import router from "@/router";
 import { useAnchorWorkspaceStore } from "@/stores/anchor_workspace";
-import { PhantomWalletAdapter } from "@solana/wallet-adapter-wallets";
 import type { Cluster } from "@solana/web3.js";
 import SolanaWallets from "solana-wallets-vue";
 import { createPinia } from "pinia";
@@ -10,7 +9,7 @@ import { createApp } from "vue";
 import "vue-sonner/style.css";
 import "./assets/solana-wallets-vue.css";
 
-const walletOptions = { wallets: [new PhantomWalletAdapter()], autoConnect: true, cluster: "devnet" as Cluster };
+const walletOptions = { autoConnect: true, cluster: "devnet" as Cluster };
 
 const app = createApp(App);
 
