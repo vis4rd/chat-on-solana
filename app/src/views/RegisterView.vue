@@ -4,26 +4,10 @@
     import H2 from "@/components/typography/H2.vue";
     import List from "@/components/typography/List.vue";
     import { Button } from "@/components/ui/button";
+    import { createConversationListAccount } from "@/lib/solana";
     import { useAnchorWorkspaceStore } from "@/stores/anchor_workspace";
 
     const workspace = useAnchorWorkspaceStore();
-
-    async function createConversationListAccount() {
-        // TODO: Extract to helper file
-        if (!workspace.isAtLeastConnected()) {
-            // TODO: toast that wallet is not connected
-            return;
-        }
-
-        try {
-            const publicKey = workspace.wallet!.publicKey;
-            await workspace.program!.methods.createConversationList().accounts({ user: publicKey }).rpc();
-            // await checkWalletAccounts(); // TODO: Refresh state
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        } catch (e) {
-            // console.error(e);
-        }
-    }
 </script>
 
 <template>
@@ -101,7 +85,7 @@
                 To continue, press the button below.
                 <br />
                 <br />
-                <Button @click="createConversationListAccount"> Register now! </Button>
+                <Button @click="createConversationListAccount(workspace.wallet!.publicKey)"> Register now! </Button>
             </div>
         </span>
     </BlockWrapper>

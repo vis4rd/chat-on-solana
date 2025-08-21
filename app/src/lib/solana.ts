@@ -1,6 +1,7 @@
 import { Buffer } from "buffer";
 import { useAnchorWorkspaceStore } from "@/stores/anchor_workspace";
 import { PublicKey, Transaction, type AccountInfo } from "@solana/web3.js";
+import { toast } from "vue-sonner";
 
 export async function getConversationListAccount(userPublicKey: PublicKey): Promise<AccountInfo<Buffer> | null> {
     const workspace = useAnchorWorkspaceStore();
@@ -75,4 +76,27 @@ export async function appendMessage(conversationPDA: PublicKey, message: string)
     }
 
     return Promise.reject(new Error("Invalid message content"));
+}
+
+export async function createConversationListAccount(owner: PublicKey) {
+    const workspace = useAnchorWorkspaceStore();
+
+    if (!workspace.isAtLeastConnected()) {
+        toast.error("Failed to begin registration.", { description: "Wallet is not connected.", duration: 10000 });
+        return;
+    }
+
+    try {
+        const tx = await workspace.program!.methods.createConversationList().accounts({ user: owner }).transaction();
+
+        const latestBlockhash = await workspace.connection!.getLatestBlockhash();
+        tx.feePayer = owner;
+        tx.recentBlockhash = latestBlockhash.blockhash;
+        const signedTx = await workspace.wallet!.signTransaction(tx);
+        const txSignature = await workspace.provider!.connection.sendRawTransaction(signedTx.serialize());
+        return Promise.resolve(txSignature);
+    } catch (error) {
+        toast.error("Failed to register.", { description: error.message, duration: 10000 });
+        return Promise.reject(error);
+    }
 }
