@@ -6,8 +6,15 @@
     import { Button } from "@/components/ui/button";
     import { createConversationListAccount } from "@/lib/solana";
     import { useAnchorWorkspaceStore } from "@/stores/anchor_workspace";
+    import { toast } from "vue-sonner";
 
     const workspace = useAnchorWorkspaceStore();
+
+    function registerAccount(): void {
+        createConversationListAccount(workspace.wallet!.publicKey).catch((error: Error) => {
+            toast.error("Failed to register.", { description: error.message, duration: 10000 });
+        });
+    }
 </script>
 
 <template>
@@ -85,7 +92,7 @@
                 To continue, press the button below.
                 <br />
                 <br />
-                <Button @click="createConversationListAccount(workspace.wallet!.publicKey)"> Register now! </Button>
+                <Button @click="registerAccount()"> Register now! </Button>
             </div>
         </span>
     </BlockWrapper>

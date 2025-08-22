@@ -1,7 +1,6 @@
 import { Buffer } from "buffer";
 import { useAnchorWorkspaceStore } from "@/stores/anchor_workspace";
 import { PublicKey, Transaction, type AccountInfo } from "@solana/web3.js";
-import { toast } from "vue-sonner";
 
 export async function getConversationListAccount(userPublicKey: PublicKey): Promise<AccountInfo<Buffer> | null> {
     const workspace = useAnchorWorkspaceStore();
@@ -78,16 +77,25 @@ export async function appendMessage(conversationPDA: PublicKey, message: string)
     return Promise.reject(new Error("Invalid message content"));
 }
 
-export async function createConversationListAccount(owner: PublicKey) {
+export async function createConversationListAccount(owner: PublicKey): Promise<string> {
     const workspace = useAnchorWorkspaceStore();
 
     if (!workspace.isAtLeastConnected()) {
-        toast.error("Failed to begin registration.", { description: "Wallet is not connected.", duration: 10000 });
-        return;
+        return Promise.reject(new Error("Wallet is not connected."));
     }
 
     try {
-        const tx = await workspace.program!.methods.createConversationList().accounts({ user: owner }).transaction();
+        // TS client has problems with deriving PDA from seeds as recommended by Anchor program,
+        // so deriving it manually here
+        const [conversationListPDA] = PublicKey.findProgramAddressSync(
+            [workspace.wallet!.publicKey.toBuffer(), Buffer.from("chats")],
+            workspace.program!.programId
+        );
+
+        const tx = await workspace
+            .program!.methods.createConversationList()
+            .accountsPartial({ user: owner, conversationListAccount: conversationListPDA })
+            .transaction();
 
         const latestBlockhash = await workspace.connection!.getLatestBlockhash();
         tx.feePayer = owner;
@@ -96,7 +104,6 @@ export async function createConversationListAccount(owner: PublicKey) {
         const txSignature = await workspace.provider!.connection.sendRawTransaction(signedTx.serialize());
         return Promise.resolve(txSignature);
     } catch (error) {
-        toast.error("Failed to register.", { description: error.message, duration: 10000 });
         return Promise.reject(error);
     }
 }
