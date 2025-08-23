@@ -117,6 +117,8 @@ export const useAnchorWorkspaceStore = defineStore("anchor_workspace", (): Ancho
                     // If the account exists on Solana ledger, the user is present
                     walletConnectionState.value = WalletConnectionState.Present;
                     updateConnectionStateIfRegistered();
+                } else {
+                    setReadyWithDelay();
                 }
             })
             .catch((error) => {
