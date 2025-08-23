@@ -81,4 +81,15 @@ pub mod chat {
     pub fn delete_conversation(_ctx: Context<DeleteConversation>, _conversation_id: String) -> Result<()> {
         Ok(())
     }
+
+    pub fn remove_conversation_from_list(
+        ctx: Context<RemoveConversationFromList>,
+        conversation_id: String,
+    ) -> Result<()> {
+        let user_chats = &mut ctx.accounts.conversation_list_account;
+        if let Some(pos) = user_chats.conversation_ids.iter().position(|x| *x == conversation_id) {
+            user_chats.conversation_ids.remove(pos);
+        }
+        Ok(())
+    }
 }
