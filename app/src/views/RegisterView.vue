@@ -110,6 +110,7 @@
         display: block;
         place-items: start;
         width: 100%;
+        height: fit-content;
     }
 
     p,
