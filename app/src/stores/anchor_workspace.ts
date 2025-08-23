@@ -83,7 +83,7 @@ export const useAnchorWorkspaceStore = defineStore("anchor_workspace", (): Ancho
             if (connectingChanged && newConnecting) {
                 walletConnectionState.value = WalletConnectionState.Connecting;
                 ready.value = false;
-                return;
+                // return; // ! commenting this might break connection state resolution
             }
             if (connectedChanged && newConnected) {
                 walletConnectionState.value = WalletConnectionState.Connected;
@@ -104,9 +104,6 @@ export const useAnchorWorkspaceStore = defineStore("anchor_workspace", (): Ancho
         connection.value = new Connection(apiUrl, commitment);
 
         if (walletStore.readyState.value.toString() === "Unsupported") {
-            setReadyWithDelay();
-        }
-        if (walletStore.readyState.value.toString() === "Installed") {
             setReadyWithDelay();
         }
     }
