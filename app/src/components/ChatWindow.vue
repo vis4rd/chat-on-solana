@@ -79,6 +79,7 @@
                 class="grow"
                 variant="outline"
                 aria-label="Share conversation address"
+                :disabled="conversationListStore.selectedChat === null"
             >
                 <Icon icon="fluent:share-24-regular" class="size-5" />
                 Share
@@ -98,7 +99,7 @@
         </BlockWrapper>
 
         <div class="message-input">
-            <form class="form-component" @submit="onSubmit">
+            <form v-if="conversationListStore.selectedChat" class="form-component" @submit="onSubmit">
                 <FormField v-slot="{ componentField }" name="message_content">
                     <FormItem class="full-width">
                         <FormControl>
@@ -113,6 +114,9 @@
                     <Icon icon="fluent:send-24-regular" class="size-5" />
                 </Button>
             </form>
+            <ElementWrapper v-else class="form-component">
+                <Icon icon="fluent:lock-closed-24-regular" class="size-5" />
+            </ElementWrapper>
         </div>
     </div>
 </template>
