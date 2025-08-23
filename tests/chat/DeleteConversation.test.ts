@@ -27,7 +27,7 @@ describe("delete_conversation instruction", () => {
 
         await program.methods
             .createConversation(conversationId, [payer.publicKey, chatter.publicKey])
-            .accounts({ payer: payer.publicKey })
+            .accounts({ authority: payer.publicKey })
             .signers([payer])
             .rpc();
     });

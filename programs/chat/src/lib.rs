@@ -24,7 +24,7 @@ pub mod chat {
         require!(chatters.len() <= 4, ConversationError::TooManyChatters);
         require!(chatters.len() >= 2, ConversationError::NotEnoughChatters);
         require!(
-            chatters.contains(&ctx.accounts.payer.key()),
+            chatters.contains(&ctx.accounts.authority.key()),
             ConversationError::PayerNotInChatters
         );
         require!(
@@ -38,6 +38,7 @@ pub mod chat {
         }
         require!(conversation_id.len() <= 32, ConversationError::TooLongConversationId);
 
+        ctx.accounts.conversation_account.authority = ctx.accounts.authority.key();
         ctx.accounts.conversation_account.chatter_count = chatters.len() as u8;
         ctx.accounts.conversation_account.chatters = chatters;
         Ok(())

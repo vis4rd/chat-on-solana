@@ -13,6 +13,8 @@ pub struct Message {
 #[account]
 #[derive(InitSpace)]
 pub struct ConversationAccount {
+    pub authority: Pubkey,
+
     pub chatter_count: u8,
 
     #[max_len(4)]

@@ -1,8 +1,8 @@
+import { before, describe, it } from "node:test";
 import * as anchor from "@coral-xyz/anchor";
-import * as IDL from "../../target/types/chat.ts";
-import { describe, it, before } from "node:test";
-import { assert, use } from "chai";
 import chaiAsPromised from "chai-as-promised";
+import * as IDL from "../../target/types/chat.ts";
+import { assert, use } from "chai";
 
 use(chaiAsPromised);
 
@@ -14,16 +14,14 @@ describe("append_message instruction", () => {
     const conversationId: string = "test-convo-something";
     const [conversationPda] = anchor.web3.PublicKey.findProgramAddressSync(
         [Buffer.from(conversationId)],
-        program.programId,
+        program.programId
     );
     const chatters: anchor.web3.PublicKey[] = [payer.publicKey, anchor.web3.Keypair.generate().publicKey];
 
     before(async () => {
         await program.methods
             .createConversation(conversationId, chatters)
-            .accounts({
-                payer: payer.publicKey,
-            })
+            .accounts({ authority: payer.publicKey })
             .rpc();
     });
 
@@ -31,10 +29,7 @@ describe("append_message instruction", () => {
         const expectedMessage = "Hello, world!";
         await program.methods
             .appendMessage(expectedMessage)
-            .accounts({
-                conversationAccount: conversationPda,
-                author: payer.publicKey,
-            })
+            .accounts({ conversationAccount: conversationPda, author: payer.publicKey })
             .rpc();
         const acc = await program.account.conversationAccount.fetch(conversationPda);
         assert.equal(acc.messages[0].data, expectedMessage);
@@ -46,12 +41,9 @@ describe("append_message instruction", () => {
         await assert.isRejected(
             program.methods
                 .appendMessage(longMessage)
-                .accounts({
-                    conversationAccount: conversationPda,
-                    author: payer.publicKey,
-                })
+                .accounts({ conversationAccount: conversationPda, author: payer.publicKey })
                 .rpc(),
-            /MessageTooLong/,
+            /MessageTooLong/
         );
     });
 
@@ -60,13 +52,10 @@ describe("append_message instruction", () => {
         await assert.isRejected(
             program.methods
                 .appendMessage("Not allowed!")
-                .accounts({
-                    conversationAccount: conversationPda,
-                    author: outsider.publicKey,
-                })
+                .accounts({ conversationAccount: conversationPda, author: outsider.publicKey })
                 .signers([outsider])
                 .rpc(),
-            /PayerNotInChatters/,
+            /PayerNotInChatters/
         );
     });
 
@@ -77,10 +66,7 @@ describe("append_message instruction", () => {
             for (let i = 0; i < 25; i++) {
                 const ix = await program.methods
                     .appendMessage(`msg${i}`)
-                    .accounts({
-                        conversationAccount: conversationPda,
-                        author: payer.publicKey,
-                    })
+                    .accounts({ conversationAccount: conversationPda, author: payer.publicKey })
                     .instruction();
                 tx.add(ix);
             }
@@ -90,10 +76,7 @@ describe("append_message instruction", () => {
         // Add one more, should remove the oldest
         await program.methods
             .appendMessage("newest")
-            .accounts({
-                conversationAccount: conversationPda,
-                author: payer.publicKey,
-            })
+            .accounts({ conversationAccount: conversationPda, author: payer.publicKey })
             .rpc();
         const acc = await program.account.conversationAccount.fetch(conversationPda);
         assert.equal(acc.messages.length, 50);

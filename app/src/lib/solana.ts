@@ -27,7 +27,7 @@ export async function createConversation(conversationId: string, chatters: strin
         // Compose both instructions in a single transaction
         const ix1 = await workspace
             .program!.methods.createConversation(conversationId, chatterPubkeys)
-            .accounts({ payer: payer })
+            .accounts({ authority: payer })
             .instruction();
         const ix2 = await workspace
             .program!.methods.appendConversationToList(conversationId)

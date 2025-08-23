@@ -104,7 +104,7 @@ export type Chat = {
       ],
       "accounts": [
         {
-          "name": "payer",
+          "name": "authority",
           "writable": true,
           "signer": true
         },
@@ -340,6 +340,11 @@ export type Chat = {
       "code": 6007,
       "name": "tooManyMessages",
       "msg": "The conversation has reached the maximum number of messages."
+    },
+    {
+      "code": 6008,
+      "name": "invalidAuthority",
+      "msg": "Insufficient permission to perform the operation."
     }
   ],
   "types": [
@@ -348,6 +353,10 @@ export type Chat = {
       "type": {
         "kind": "struct",
         "fields": [
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
           {
             "name": "chatterCount",
             "type": "u8"

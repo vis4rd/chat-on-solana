@@ -5,12 +5,11 @@ use anchor_lang::prelude::*;
 #[instruction(conversation_id: String)]
 pub struct CreateConversation<'info> {
     #[account(mut)]
-    pub payer: Signer<'info>,
+    pub authority: Signer<'info>,
 
-    // PDA account for the conversation
     #[account(
         init,
-        payer = payer,
+        payer = authority,
         seeds = [conversation_id.as_ref()],
         bump,
         space = 8 + ConversationAccount::INIT_SPACE // 8 bytes for the account discriminator

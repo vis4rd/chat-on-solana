@@ -18,4 +18,6 @@ pub enum ConversationError {
     MessageTooLong,
     #[msg("The conversation has reached the maximum number of messages.")]
     TooManyMessages,
+    #[msg("Insufficient permission to perform the operation.")]
+    InvalidAuthority,
 }

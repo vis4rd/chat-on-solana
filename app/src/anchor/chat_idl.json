@@ -98,7 +98,7 @@
       ],
       "accounts": [
         {
-          "name": "payer",
+          "name": "authority",
           "writable": true,
           "signer": true
         },
@@ -334,6 +334,11 @@
       "code": 6007,
       "name": "TooManyMessages",
       "msg": "The conversation has reached the maximum number of messages."
+    },
+    {
+      "code": 6008,
+      "name": "InvalidAuthority",
+      "msg": "Insufficient permission to perform the operation."
     }
   ],
   "types": [
@@ -342,6 +347,10 @@
       "type": {
         "kind": "struct",
         "fields": [
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
           {
             "name": "chatter_count",
             "type": "u8"
