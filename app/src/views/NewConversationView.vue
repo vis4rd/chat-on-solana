@@ -1,6 +1,6 @@
 <script setup lang="ts">
     import { Button } from "@/components/ui/button";
-    import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+    import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
     import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
     import { Input } from "@/components/ui/input";
     import { createConversation } from "@/lib/solana";
@@ -8,10 +8,12 @@
     import { Icon } from "@iconify/vue";
     import { toTypedSchema } from "@vee-validate/zod";
     import { useForm } from "vee-validate";
+    import { useRouter } from "vue-router";
     import { ref, watch } from "vue";
     import * as z from "zod";
 
     const workspace = useAnchorWorkspaceStore();
+    const router = useRouter();
 
     // DOCS: https://zod.dev/basics
     const formSchema = toTypedSchema(
@@ -68,13 +70,16 @@
             chatterRowsCount.value--;
         }
     }
+    function redirectToChats() {
+        router.replace("/chat");
+    }
 </script>
 
 <template>
     <Card class="margins">
         <CardHeader>
             <CardTitle>New Conversation</CardTitle>
-            <CardDescription>Card Description</CardDescription>
+            <!-- <CardDescription>Card Description</CardDescription> -->
         </CardHeader>
         <CardContent>
             <form @submit="onSubmit" class="form-component">
@@ -83,7 +88,7 @@
                         <FormLabel>Conversation ID</FormLabel>
                         <FormDescription>Human-friendly name for your conversation.</FormDescription>
                         <FormControl>
-                            <Input placeholder="best friends" v-bind="componentField" />
+                            <Input placeholder="Unique name" v-bind="componentField" />
                         </FormControl>
                         <FormMessage class="error-msg" />
                     </FormItem>
@@ -129,8 +134,9 @@
             </form>
         </CardContent>
 
-        <CardFooter> Card Footer </CardFooter>
+        <!-- <CardFooter> Card Footer </CardFooter> -->
     </Card>
+    <Button variant="outline" @click="redirectToChats()">Back to chats</Button>
 </template>
 
 <style scoped>
