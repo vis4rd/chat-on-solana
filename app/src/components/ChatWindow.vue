@@ -68,8 +68,9 @@
 <template>
     <div class="column">
         <div class="row">
-            <ElementWrapper class="w-1/2"
-                ><b>{{ conversationListStore.selectedChat?.id }}</b>
+            <ElementWrapper class="w-1/2">
+                <b v-if="conversationListStore.selectedChat">{{ conversationListStore.selectedChat?.id }}</b>
+                <span v-else>Select a chat</span>
             </ElementWrapper>
             <ElementWrapper> chatters: {{ chatterCount }}</ElementWrapper>
             <ElementWrapper> messages: {{ messageCount }}/50 </ElementWrapper>
@@ -84,7 +85,8 @@
             </Button>
         </div>
         <BlockWrapper class="chat-window">
-            <Suspense :key="conversationListStore.selectedChat!.pda">
+            <div class="no-chat-selected-prompt" v-if="conversationListStore.selectedChat === null">Select a chat</div>
+            <Suspense v-else :key="conversationListStore.selectedChat?.pda">
                 <ChatWindowConversationHistory
                     v-model="conversation"
                     :account-pda="conversationListStore.selectedChat?.pda"
@@ -147,6 +149,12 @@
         /* 4rem  = the rest of gaps/margins */
         height: calc(100vh - 36px - 2rem - 4rem - 58px - 48px - 36px);
         min-height: 10rem;
+    }
+    .no-chat-selected-prompt {
+        width: 100%;
+        height: 100%;
+        text-align: center;
+        place-content: center;
     }
     .message-input {
         display: flex;

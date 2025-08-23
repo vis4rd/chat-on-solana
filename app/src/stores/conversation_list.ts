@@ -8,7 +8,7 @@ export type SelectedConversation = { index: number; id: string; pda: anchor.web3
 
 export const useConversationListStore = defineStore("conversation_list", () => {
     const conversations: Ref<string[], string[]> = ref([]);
-    const chat_index: Ref<number, number> = ref(0);
+    const chat_index: Ref<number, number> = ref(-1);
     const chat_id: ComputedRef<string> = computed(() => {
         if (conversations.value.length > 0) {
             return conversations.value[chat_index.value];

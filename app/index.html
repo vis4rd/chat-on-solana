@@ -9,5 +9,8 @@
     <body>
         <div id="app"></div>
         <script type="module" src="/src/main.ts"></script>
+        <!-- fix for "buffer not defined" from: https://github.com/solana-foundation/anchor/issues/986 -->
+        <script type="module" src="/src/shims.ts"></script>
+        <!-- end of fix -->
     </body>
 </html>
