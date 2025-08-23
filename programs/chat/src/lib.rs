@@ -77,4 +77,8 @@ pub mod chat {
         }
         Ok(())
     }
+
+    pub fn delete_conversation(_ctx: Context<DeleteConversation>, _conversation_id: String) -> Result<()> {
+        Ok(())
+    }
 }
