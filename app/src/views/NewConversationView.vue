@@ -41,6 +41,9 @@
         createConversation(values.conversation_id, values.chatters)
             .then((signature: string) => {
                 console.debug("Transaction sent:", signature);
+                setTimeout(() => {
+                    router.replace("/chat");
+                }, 1000);
             })
             .catch((error: Error) => {
                 console.error("Error creating conversation:", error);
