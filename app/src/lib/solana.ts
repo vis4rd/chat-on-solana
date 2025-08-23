@@ -107,3 +107,27 @@ export async function createConversationListAccount(owner: PublicKey): Promise<s
         return Promise.reject(error);
     }
 }
+
+export async function removeConversationFromList(conversationId: string): Promise<string> {
+    const workspace = useAnchorWorkspaceStore();
+
+    if (!workspace.isAtLeastConnected()) {
+        return Promise.reject(new Error("Wallet is not connected."));
+    }
+
+    try {
+        const tx = await workspace
+            .program!.methods.removeConversationFromList(conversationId)
+            .accounts({ user: workspace.wallet!.publicKey })
+            .transaction();
+
+        const latestBlockhash = await workspace.connection!.getLatestBlockhash();
+        tx.feePayer = workspace.wallet!.publicKey;
+        tx.recentBlockhash = latestBlockhash.blockhash;
+        const signedTx = await workspace.wallet!.signTransaction(tx);
+        const txSignature = await workspace.provider!.connection.sendRawTransaction(signedTx.serialize());
+        return Promise.resolve(txSignature);
+    } catch (error) {
+        return Promise.reject(error);
+    }
+}

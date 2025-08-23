@@ -184,6 +184,92 @@ export type Chat = {
         }
       ],
       "args": []
+    },
+    {
+      "name": "deleteConversation",
+      "discriminator": [
+        247,
+        125,
+        124,
+        231,
+        145,
+        74,
+        126,
+        212
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "conversationAccount",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "arg",
+                "path": "conversationId"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "conversationId",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "removeConversationFromList",
+      "discriminator": [
+        171,
+        11,
+        199,
+        133,
+        90,
+        127,
+        51,
+        210
+      ],
+      "accounts": [
+        {
+          "name": "user",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "conversationListAccount",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "user"
+              },
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  104,
+                  97,
+                  116,
+                  115
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "conversationId",
+          "type": "string"
+        }
+      ]
     }
   ],
   "accounts": [

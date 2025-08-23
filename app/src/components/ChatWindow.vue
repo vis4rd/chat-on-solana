@@ -7,7 +7,7 @@
     import { FormControl, FormField, FormItem } from "@/components/ui/form";
     import { Input } from "@/components/ui/input";
     import { Skeleton } from "@/components/ui/skeleton";
-    import { appendMessage } from "@/lib/solana";
+    import { appendMessage, removeConversationFromList } from "@/lib/solana";
     import { useConversationListStore } from "@/stores/conversation_list";
     import { Icon } from "@iconify/vue";
     import type { PublicKey } from "@solana/web3.js";
@@ -62,6 +62,26 @@
         } else {
             // TODO: notification about failure
         }
+    }
+
+    function leaveConversation() {
+        if (!conversationListStore.selectedChat?.id) {
+            toast.error("No conversation selected.", { duration: 5000 });
+            return;
+        }
+
+        const conversationId = conversationListStore.selectedChat!.id;
+        removeConversationFromList(conversationId)
+            .then(() => {
+                conversationListStore.deselectChat();
+                conversationListStore.conversations = conversationListStore.conversations.filter(
+                    (conv) => conv !== conversationId
+                );
+                toast.success(`Left the "${conversationId}" chat.`, { duration: 5000 });
+            })
+            .catch((err: Error) => {
+                toast.error("Failed to leave conversation.", { description: err.message, duration: 10000 });
+            });
     }
 </script>
 
@@ -118,6 +138,15 @@
                 <Icon icon="fluent:lock-closed-24-regular" class="size-5" />
             </ElementWrapper>
         </div>
+        <Button
+            @click="leaveConversation()"
+            class="limit-width"
+            variant="destructive"
+            :disabled="!conversationListStore.selectedChat"
+        >
+            <Icon v-if="!conversationListStore.selectedChat" icon="fluent:lock-closed-24-regular" class="size-5" />
+            <span v-else>Leave chat</span>
+        </Button>
     </div>
 </template>
 
@@ -177,5 +206,8 @@
     }
     .character-count {
         color: v-bind('(100 - inputLength) < 20 ? "var(--color-destructive)" : "var(--color-foreground)"');
+    }
+    .limit-width {
+        max-width: 150px;
     }
 </style>

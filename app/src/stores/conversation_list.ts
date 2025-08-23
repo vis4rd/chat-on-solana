@@ -39,6 +39,10 @@ export const useConversationListStore = defineStore("conversation_list", () => {
         }
     }
 
+    function deselectChat(): void {
+        chat_index.value = -1;
+    }
+
     return {
         conversations,
         selectedChat: computed(() => {
@@ -49,5 +53,6 @@ export const useConversationListStore = defineStore("conversation_list", () => {
             return chat;
         }),
         setSelectedChat,
+        deselectChat,
     };
 });
