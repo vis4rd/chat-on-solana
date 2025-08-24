@@ -1,7 +1,7 @@
 import { beforeEach, describe, it } from "node:test";
 import * as anchor from "@coral-xyz/anchor";
 import * as IDL from "../../target/types/chat.ts";
-import { expect } from "chai";
+import { assert, expect } from "chai";
 
 describe("delete_conversation instruction", () => {
     const provider = anchor.AnchorProvider.env();
@@ -41,5 +41,21 @@ describe("delete_conversation instruction", () => {
 
         const accountInfo = await provider.connection.getAccountInfo(conversationPDA);
         expect(accountInfo === null);
+    });
+
+    it("does not delete a conversation due to wrong authority", async () => {
+        const wrongAuthority = anchor.web3.Keypair.generate();
+
+        await assert.isRejected(
+            program.methods
+                .deleteConversation(conversationId)
+                .accounts({ authority: wrongAuthority.publicKey })
+                .signers([wrongAuthority])
+                .rpc(),
+            /InvalidAuthority/
+        );
+
+        const accountInfo = await provider.connection.getAccountInfo(conversationPDA);
+        expect(accountInfo !== null);
     });
 });

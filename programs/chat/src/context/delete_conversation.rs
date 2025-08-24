@@ -1,3 +1,5 @@
+use crate::errors::ConversationError;
+
 use super::super::state::ConversationAccount;
 use anchor_lang::prelude::*;
 
@@ -9,6 +11,7 @@ pub struct DeleteConversation<'info> {
 
     #[account(
         mut,
+        has_one = authority @ ConversationError::InvalidAuthority,
         close = authority,
         seeds = [_conversation_id.as_ref()],
         bump
