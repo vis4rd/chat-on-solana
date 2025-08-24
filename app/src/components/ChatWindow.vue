@@ -7,7 +7,7 @@
     import { FormControl, FormField, FormItem } from "@/components/ui/form";
     import { Input } from "@/components/ui/input";
     import { Skeleton } from "@/components/ui/skeleton";
-    import { appendMessage, removeConversationFromList } from "@/lib/solana";
+    import { appendMessage, deleteConversationAccount, removeConversationFromList } from "@/lib/solana";
     import { useConversationListStore } from "@/stores/conversation_list";
     import { Icon } from "@iconify/vue";
     import type { PublicKey } from "@solana/web3.js";
@@ -83,6 +83,26 @@
                 toast.error("Failed to leave conversation.", { description: err.message, duration: 10000 });
             });
     }
+
+    function deleteConversation() {
+        if (!conversationListStore.selectedChat?.id) {
+            toast.error("No conversation selected.", { duration: 5000 });
+            return;
+        }
+
+        const conversationId = conversationListStore.selectedChat!.id;
+        deleteConversationAccount(conversationId)
+            .then(() => {
+                conversationListStore.deselectChat();
+                // conversationListStore.conversations = conversationListStore.conversations.filter(
+                //     (conv) => conv !== conversationId
+                // );
+                toast.success(`Deleted the "${conversationId}" chat.`, { duration: 5000 });
+            })
+            .catch((err: Error) => {
+                toast.error("Failed to delete conversation.", { description: err.message, duration: 10000 });
+            });
+    }
 </script>
 
 <template>
@@ -138,15 +158,26 @@
                 <Icon icon="fluent:lock-closed-24-regular" class="size-5" />
             </ElementWrapper>
         </div>
-        <Button
-            @click="leaveConversation()"
-            class="limit-width"
-            variant="destructive"
-            :disabled="!conversationListStore.selectedChat"
-        >
-            <Icon v-if="!conversationListStore.selectedChat" icon="fluent:lock-closed-24-regular" class="size-5" />
-            <span v-else>Leave chat</span>
-        </Button>
+        <div class="row">
+            <Button
+                @click="leaveConversation()"
+                class="limit-width"
+                variant="destructive"
+                :disabled="!conversationListStore.selectedChat"
+            >
+                <Icon v-if="!conversationListStore.selectedChat" icon="fluent:lock-closed-24-regular" class="size-5" />
+                <span v-else>Leave chat</span>
+            </Button>
+            <Button
+                @click="deleteConversation()"
+                class="limit-width"
+                variant="destructive"
+                :disabled="!conversationListStore.selectedChat"
+            >
+                <Icon v-if="!conversationListStore.selectedChat" icon="fluent:lock-closed-24-regular" class="size-5" />
+                <span v-else>Delete chat</span>
+            </Button>
+        </div>
     </div>
 </template>
 
@@ -208,6 +239,6 @@
         color: v-bind('(100 - inputLength) < 20 ? "var(--color-destructive)" : "var(--color-foreground)"');
     }
     .limit-width {
-        max-width: 150px;
+        width: 150px;
     }
 </style>
