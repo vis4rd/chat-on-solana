@@ -1,4 +1,4 @@
-import { before, describe, it } from "node:test";
+import { afterEach, before, describe, it } from "node:test";
 import * as anchor from "@coral-xyz/anchor";
 import * as IDL from "../../target/types/chat.ts";
 import { assert } from "chai";
@@ -15,6 +15,7 @@ describe("append_conversation_to_list instruction", () => {
     );
 
     const conversationId = "test-convo";
+    const conversationId2 = "test-convo-2";
 
     before(async () => {
         // Ensure the conversation list account exists
@@ -30,6 +31,14 @@ describe("append_conversation_to_list instruction", () => {
             .rpc();
     });
 
+    afterEach(async () => {
+        try {
+            await program.methods.removeConversationFromList(conversationId).accounts({ user: payer.publicKey }).rpc();
+        } catch {
+            // Ignore if already not present
+        }
+    });
+
     it("appends a conversation id to the user's list", async () => {
         await program.methods.appendConversationToList(conversationId).accounts({ authority: payer.publicKey }).rpc();
 
@@ -38,7 +47,7 @@ describe("append_conversation_to_list instruction", () => {
     });
 
     it("does not append the same conversation id twice", async () => {
-        // TODO: refactor to init the test with a clean state when deleteConversation is implemented
+        await program.methods.appendConversationToList(conversationId).accounts({ authority: payer.publicKey }).rpc();
         await program.methods.appendConversationToList(conversationId).accounts({ authority: payer.publicKey }).rpc();
 
         const acc = await program.account.conversationListAccount.fetch(conversationListPDA);
@@ -47,7 +56,8 @@ describe("append_conversation_to_list instruction", () => {
     });
 
     it("appends a different conversation id", async () => {
-        const conversationId2 = "test-convo-2";
+        await program.methods.appendConversationToList(conversationId).accounts({ authority: payer.publicKey }).rpc();
+
         await program.methods
             .createConversation(conversationId2, [payer.publicKey, anchor.web3.Keypair.generate().publicKey])
             .accounts({ authority: payer.publicKey })
@@ -57,5 +67,30 @@ describe("append_conversation_to_list instruction", () => {
         const acc = await program.account.conversationListAccount.fetch(conversationListPDA);
         assert.include(acc.conversationIds, conversationId2);
         assert.strictEqual(acc.conversationIds.length, 2);
+    }).finally(() => {
+        // Clean up the second conversation
+        program.methods
+            .deleteConversation(conversationId2)
+            .accounts({ payer: payer.publicKey })
+            .rpc()
+            .catch(() => {});
+        program.methods
+            .removeConversationFromList(conversationId2)
+            .accounts({ user: payer.publicKey })
+            .rpc()
+            .catch(() => {});
+    });
+
+    it("does not append a conversation when authority is wrong", async () => {
+        const wrongAuthority = anchor.web3.Keypair.generate();
+
+        await assert.isRejected(
+            program.methods
+                .appendConversationToList(conversationId)
+                .accountsPartial({ authority: wrongAuthority.publicKey, conversationListAccount: conversationListPDA })
+                .signers([wrongAuthority])
+                .rpc(),
+            /(InvalidAuthority|ConstraintSeeds)/
+        );
     });
 });

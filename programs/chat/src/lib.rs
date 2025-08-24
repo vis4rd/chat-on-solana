@@ -67,6 +67,7 @@ pub mod chat {
 
     pub fn create_conversation_list(ctx: Context<CreateConversationList>) -> Result<()> {
         ctx.accounts.conversation_list_account.conversation_ids = Vec::new();
+        ctx.accounts.conversation_list_account.authority = ctx.accounts.user.key();
         Ok(())
     }
 
