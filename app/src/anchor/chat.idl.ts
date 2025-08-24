@@ -5,7 +5,7 @@
  * IDL can be found at `target/idl/chat.json`.
  */
 export type Chat = {
-  "address": "8TK3vs2d9JPvFZykGtnmtSbpH62xBCXTZZTEe3VrRjYB",
+  "address": "FS8j53e5uikrK9Xd624Dw9EzHgQaPQF34VoMxe25ewRe",
   "metadata": {
     "name": "chat",
     "version": "0.1.0",
@@ -245,7 +245,10 @@ export type Chat = {
         {
           "name": "authority",
           "writable": true,
-          "signer": true
+          "signer": true,
+          "relations": [
+            "conversationListAccount"
+          ]
         },
         {
           "name": "conversationListAccount",

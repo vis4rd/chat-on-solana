@@ -1,5 +1,5 @@
 {
-  "address": "8TK3vs2d9JPvFZykGtnmtSbpH62xBCXTZZTEe3VrRjYB",
+  "address": "FS8j53e5uikrK9Xd624Dw9EzHgQaPQF34VoMxe25ewRe",
   "metadata": {
     "name": "chat",
     "version": "0.1.0",
@@ -239,7 +239,10 @@
         {
           "name": "authority",
           "writable": true,
-          "signer": true
+          "signer": true,
+          "relations": [
+            "conversation_list_account"
+          ]
         },
         {
           "name": "conversation_list_account",
