@@ -8,9 +8,10 @@
     import { Input } from "@/components/ui/input";
     import { Skeleton } from "@/components/ui/skeleton";
     import { appendMessage, deleteConversationAccount, removeConversationFromList } from "@/lib/solana";
+    import { useAnchorWorkspaceStore } from "@/stores/anchor_workspace";
     import { useConversationListStore } from "@/stores/conversation_list";
     import { Icon } from "@iconify/vue";
-    import type { PublicKey } from "@solana/web3.js";
+    import { PublicKey } from "@solana/web3.js";
     import { toTypedSchema } from "@vee-validate/zod";
     import { useForm } from "vee-validate";
     import { toast } from "vue-sonner";
@@ -18,13 +19,25 @@
     import * as z from "zod";
 
     const conversationListStore = useConversationListStore();
+    const workspace = useAnchorWorkspaceStore();
+    const conversationDefault: ConversationAccount = {
+        authority: PublicKey.default,
+        chatterCount: 0,
+        chatters: [],
+        messages: [],
+    };
 
     type ChatMessage = { data: string; author: PublicKey; timestamp: number };
-    type ConversationAccount = { chatterCount: number; chatters: PublicKey[]; messages: ChatMessage[] };
+    type ConversationAccount = {
+        authority: PublicKey;
+        chatterCount: number;
+        chatters: PublicKey[];
+        messages: ChatMessage[];
+    };
 
     const input = ref("");
     const inputLength = computed(() => input.value.trim().length);
-    const conversation = ref<ConversationAccount>({ chatterCount: 0, chatters: [], messages: [] });
+    const conversation = ref<ConversationAccount>(conversationDefault);
     const chatterCount = computed(() => conversation.value.chatterCount);
     const messageCount = computed(() => conversation.value.messages.length);
 
@@ -103,6 +116,13 @@
                 toast.error("Failed to delete conversation.", { description: err.message, duration: 10000 });
             });
     }
+
+    function hasAuthority() {
+        return conversation.value.authority.toBase58() === workspace.wallet?.publicKey.toBase58();
+    }
+    function doesChatExist() {
+        return conversation.value.chatterCount > 0;
+    }
 </script>
 
 <template>
@@ -119,7 +139,7 @@
                 class="grow"
                 variant="outline"
                 aria-label="Share conversation address"
-                :disabled="conversationListStore.selectedChat === null"
+                :disabled="conversationListStore.selectedChat === null || !doesChatExist()"
             >
                 <Icon icon="fluent:share-24-regular" class="size-5" />
                 Share
@@ -139,7 +159,11 @@
         </BlockWrapper>
 
         <div class="message-input">
-            <form v-if="conversationListStore.selectedChat" class="form-component" @submit="onSubmit">
+            <form
+                v-if="conversationListStore.selectedChat && doesChatExist()"
+                class="form-component"
+                @submit="onSubmit"
+            >
                 <FormField v-slot="{ componentField }" name="message_content">
                     <FormItem class="full-width">
                         <FormControl>
@@ -163,7 +187,7 @@
                 @click="leaveConversation()"
                 class="limit-width"
                 variant="destructive"
-                :disabled="!conversationListStore.selectedChat"
+                :disabled="!conversationListStore.selectedChat || hasAuthority()"
             >
                 <Icon v-if="!conversationListStore.selectedChat" icon="fluent:lock-closed-24-regular" class="size-5" />
                 <span v-else>Leave chat</span>
@@ -172,11 +196,12 @@
                 @click="deleteConversation()"
                 class="limit-width"
                 variant="destructive"
-                :disabled="!conversationListStore.selectedChat"
+                :disabled="!conversationListStore.selectedChat || !hasAuthority()"
             >
                 <Icon v-if="!conversationListStore.selectedChat" icon="fluent:lock-closed-24-regular" class="size-5" />
                 <span v-else>Delete chat</span>
             </Button>
+            <ElementWrapper>{{ conversation.authority.toBase58() }}</ElementWrapper>
         </div>
     </div>
 </template>

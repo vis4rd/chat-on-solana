@@ -2,26 +2,33 @@
     import ChatMessage from "@/components/ChatMessage.vue";
     import { ScrollArea } from "@/components/ui/scroll-area";
     import { useAnchorWorkspaceStore } from "@/stores/anchor_workspace";
-    import type { PublicKey } from "@solana/web3.js";
+    import { PublicKey } from "@solana/web3.js";
     import { useVModel } from "@vueuse/core";
+    import { toast } from "vue-sonner";
     import { onUnmounted } from "vue";
 
     type ChatMessage = { data: string; author: PublicKey; timestamp: number };
-    type ConversationAccount = { chatterCount: number; chatters: PublicKey[]; messages: ChatMessage[] };
+    type ConversationAccount = {
+        authority: PublicKey;
+        chatterCount: number;
+        chatters: PublicKey[];
+        messages: ChatMessage[];
+    };
 
     const workspace = useAnchorWorkspaceStore();
+    const conversationDefault: ConversationAccount = {
+        authority: PublicKey.default,
+        chatterCount: 0,
+        chatters: [],
+        messages: [],
+    };
 
     const props = defineProps<{ modelValue: ConversationAccount; accountPda: PublicKey | undefined }>();
     const emits = defineEmits<{ (e: "update:modelValue", payload: ConversationAccount): void }>();
-    const conversation = useVModel(props, "modelValue", emits, {
-        passive: true,
-        defaultValue: { chatterCount: 0, chatters: [], messages: [] },
-    });
+    const conversation = useVModel(props, "modelValue", emits, { passive: true, defaultValue: conversationDefault });
 
     async function fetchConversationHistory() {
         try {
-            console.log("Fetching conversation history for:", props.accountPda);
-
             // Wait until props.accountPda is available before proceeding
             while (!props.accountPda) {
                 await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -29,7 +36,8 @@
 
             conversation.value = await workspace.program!.account.conversationAccount.fetch(props.accountPda)!;
         } catch (error) {
-            console.error("Error fetching conversations:", error);
+            toast.error("Can't load chat history:", { description: (error as Error).message });
+            conversation.value = conversationDefault;
         }
     }
 
