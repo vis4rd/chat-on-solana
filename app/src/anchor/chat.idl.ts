@@ -243,7 +243,7 @@ export type Chat = {
       ],
       "accounts": [
         {
-          "name": "user",
+          "name": "authority",
           "writable": true,
           "signer": true
         },
@@ -254,7 +254,7 @@ export type Chat = {
             "seeds": [
               {
                 "kind": "account",
-                "path": "user"
+                "path": "authority"
               },
               {
                 "kind": "const",

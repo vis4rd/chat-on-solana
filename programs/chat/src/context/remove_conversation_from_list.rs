@@ -1,4 +1,4 @@
-use crate::state::ConversationListAccount;
+use crate::{errors::ConversationError, state::ConversationListAccount};
 use anchor_lang::prelude::*;
 
 #[derive(Accounts)]
@@ -8,6 +8,7 @@ pub struct RemoveConversationFromList<'info> {
 
     #[account(
         mut,
+        has_one = authority @ ConversationError::InvalidAuthority,
         seeds = [authority.key().as_ref(), b"chats"],
         bump,
     )]

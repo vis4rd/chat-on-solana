@@ -60,4 +60,20 @@ describe("remove_conversation_from_list instruction", () => {
         }
         assert.isNull(error, "Should not throw when removing a non-existent conversationId");
     });
+
+    it("does not remove a conversation due to wrong authority", async () => {
+        const wrongAuthority = anchor.web3.Keypair.generate();
+
+        await assert.isRejected(
+            program.methods
+                .removeConversationFromList(conversationId)
+                .accountsPartial({ authority: wrongAuthority.publicKey, conversationListAccount: conversationListPDA })
+                .signers([wrongAuthority])
+                .rpc(),
+            /(InvalidAuthority|ConstraintSeeds)/
+        );
+
+        const acc = await program.account.conversationListAccount.fetch(conversationListPDA);
+        assert.include(acc.conversationIds, conversationId);
+    });
 });
