@@ -41,7 +41,7 @@ export async function deleteAllPdaAccounts(targetAccount: PublicKey) {
         try {
             await program.methods
                 .deleteConversation(conversationId)
-                .accountsPartial({ payer: payer.publicKey, conversationAccount: conversationPda })
+                .accountsPartial({ authority: payer.publicKey, conversationAccount: conversationPda })
                 .rpc();
             console.log(`Deleted conversation PDA: ${conversationPda.toBase58()}`);
         } catch (error) {

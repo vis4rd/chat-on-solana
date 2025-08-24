@@ -37,6 +37,12 @@ describe("CreateConversation", () => {
         const accInfo = await provider.connection.getAccountInfo(conversationPda);
         assert.isNotNull(accInfo, "Account not found");
         assert(accInfo.lamports > 0, "Account not found");
+
+        const acc = await program.account.conversationAccount.fetch(conversationPda);
+        assert.equal(acc.authority.toBase58(), payer.publicKey.toBase58());
+        assert.equal(acc.chatterCount, chatters.length);
+        assert.equal(acc.messages.length, 0);
+        assert.deepEqual(acc.chatters, chatters);
     });
 
     it("Reject with 'NotEnoughChatters' when passed less than 2 chatters", async () => {

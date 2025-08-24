@@ -35,7 +35,7 @@ describe("delete_conversation instruction", () => {
     it("deletes a conversation account", async () => {
         await program.methods
             .deleteConversation(conversationId)
-            .accounts({ payer: payer.publicKey })
+            .accounts({ authority: payer.publicKey })
             .signers([payer])
             .rpc();
 

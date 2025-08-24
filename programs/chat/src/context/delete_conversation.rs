@@ -5,11 +5,11 @@ use anchor_lang::prelude::*;
 #[instruction(_conversation_id: String)]
 pub struct DeleteConversation<'info> {
     #[account(mut)]
-    pub payer: Signer<'info>,
+    pub authority: Signer<'info>,
 
     #[account(
         mut,
-        close = payer,
+        close = authority,
         seeds = [_conversation_id.as_ref()],
         bump
     )]
