@@ -4,6 +4,7 @@
     import { useAnchorWorkspaceStore } from "@/stores/anchor_workspace";
     import type { PublicKey } from "@solana/web3.js";
     import { useVModel } from "@vueuse/core";
+    import { onUnmounted } from "vue";
 
     type ChatMessage = { data: string; author: PublicKey; timestamp: number };
     type ConversationAccount = { chatterCount: number; chatters: PublicKey[]; messages: ChatMessage[] };
@@ -38,6 +39,11 @@
     eventEmitter.on("change", (updatedConversation: ConversationAccount) => {
         console.debug("Conversation updated:", updatedConversation);
         conversation.value = updatedConversation;
+    });
+
+    onUnmounted(() => {
+        eventEmitter.removeAllListeners();
+        workspace.program!.account.conversationAccount.unsubscribe(props.accountPda!);
     });
 </script>
 
