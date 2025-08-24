@@ -5,7 +5,7 @@
  * IDL can be found at `target/idl/chat.json`.
  */
 export type Chat = {
-  "address": "2GvsbRqky5o32Aft5jFmP9v4vuMC77mAZVxhLsfDRSiP",
+  "address": "8TK3vs2d9JPvFZykGtnmtSbpH62xBCXTZZTEe3VrRjYB",
   "metadata": {
     "name": "chat",
     "version": "0.1.0",
