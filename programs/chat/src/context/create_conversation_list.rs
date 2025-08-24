@@ -5,14 +5,16 @@ use anchor_lang::prelude::*;
 #[instruction()]
 pub struct CreateConversationList<'info> {
     #[account(mut)]
-    pub user: Signer<'info>,
+    pub authority: Signer<'info>,
+
     #[account(
         init,
-        payer = user,
-        seeds = [user.key().as_ref(), b"chats"],
+        payer = authority,
+        seeds = [authority.key().as_ref(), b"chats"],
         bump,
         space = 8 + ConversationListAccount::INIT_SPACE
     )]
     pub conversation_list_account: Account<'info, ConversationListAccount>,
+
     pub system_program: Program<'info, System>,
 }

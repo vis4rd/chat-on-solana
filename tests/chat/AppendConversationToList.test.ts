@@ -20,7 +20,7 @@ describe("append_conversation_to_list instruction", () => {
     before(async () => {
         // Ensure the conversation list account exists
         try {
-            await program.methods.createConversationList().accounts({ user: payer.publicKey }).rpc();
+            await program.methods.createConversationList().accounts({ authority: payer.publicKey }).rpc();
         } catch {
             // Ignore if already exists
         }

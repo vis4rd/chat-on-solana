@@ -23,7 +23,7 @@ describe("remove_conversation_from_list instruction", () => {
             "confirmed"
         );
 
-        await program.methods.createConversationList().accounts({ user: payer.publicKey }).signers([payer]).rpc();
+        await program.methods.createConversationList().accounts({ authority: payer.publicKey }).signers([payer]).rpc();
     });
 
     beforeEach(async () => {

@@ -21,9 +21,12 @@
       ],
       "accounts": [
         {
-          "name": "user",
+          "name": "authority",
           "writable": true,
-          "signer": true
+          "signer": true,
+          "relations": [
+            "conversation_list_account"
+          ]
         },
         {
           "name": "conversation_list_account",
@@ -32,7 +35,7 @@
             "seeds": [
               {
                 "kind": "account",
-                "path": "user"
+                "path": "authority"
               },
               {
                 "kind": "const",
@@ -146,7 +149,7 @@
       ],
       "accounts": [
         {
-          "name": "user",
+          "name": "authority",
           "writable": true,
           "signer": true
         },
@@ -157,7 +160,7 @@
             "seeds": [
               {
                 "kind": "account",
-                "path": "user"
+                "path": "authority"
               },
               {
                 "kind": "const",
@@ -193,9 +196,12 @@
       ],
       "accounts": [
         {
-          "name": "payer",
+          "name": "authority",
           "writable": true,
-          "signer": true
+          "signer": true,
+          "relations": [
+            "conversation_account"
+          ]
         },
         {
           "name": "conversation_account",
@@ -379,6 +385,10 @@
       "type": {
         "kind": "struct",
         "fields": [
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
           {
             "name": "conversation_ids",
             "type": {

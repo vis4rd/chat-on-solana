@@ -24,7 +24,7 @@ describe("create_conversation_list instruction", () => {
     );
 
     it("creates a conversation list account for the user", async () => {
-        await program.methods.createConversationList().accounts({ user: payer.publicKey }).signers([payer]).rpc();
+        await program.methods.createConversationList().accounts({ authority: payer.publicKey }).signers([payer]).rpc();
 
         const acc = await program.account.conversationListAccount.fetch(conversationListPDA);
         assert.isArray(acc.conversationIds);
@@ -34,7 +34,7 @@ describe("create_conversation_list instruction", () => {
 
     it("fails if the account already exists", async () => {
         await assert.isRejected(
-            program.methods.createConversationList().accounts({ user: payer.publicKey }).signers([payer]).rpc(),
+            program.methods.createConversationList().accounts({ authority: payer.publicKey }).signers([payer]).rpc(),
             /already in use|Account in use/
         );
     });

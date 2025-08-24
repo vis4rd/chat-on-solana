@@ -94,7 +94,7 @@ export async function createConversationListAccount(owner: PublicKey): Promise<s
 
         const tx = await workspace
             .program!.methods.createConversationList()
-            .accountsPartial({ user: owner, conversationListAccount: conversationListPDA })
+            .accountsPartial({ authority: owner, conversationListAccount: conversationListPDA })
             .transaction();
 
         const latestBlockhash = await workspace.connection!.getLatestBlockhash();

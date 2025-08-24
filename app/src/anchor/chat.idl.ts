@@ -27,9 +27,12 @@ export type Chat = {
       ],
       "accounts": [
         {
-          "name": "user",
+          "name": "authority",
           "writable": true,
-          "signer": true
+          "signer": true,
+          "relations": [
+            "conversationListAccount"
+          ]
         },
         {
           "name": "conversationListAccount",
@@ -38,7 +41,7 @@ export type Chat = {
             "seeds": [
               {
                 "kind": "account",
-                "path": "user"
+                "path": "authority"
               },
               {
                 "kind": "const",
@@ -152,7 +155,7 @@ export type Chat = {
       ],
       "accounts": [
         {
-          "name": "user",
+          "name": "authority",
           "writable": true,
           "signer": true
         },
@@ -163,7 +166,7 @@ export type Chat = {
             "seeds": [
               {
                 "kind": "account",
-                "path": "user"
+                "path": "authority"
               },
               {
                 "kind": "const",
@@ -199,9 +202,12 @@ export type Chat = {
       ],
       "accounts": [
         {
-          "name": "payer",
+          "name": "authority",
           "writable": true,
-          "signer": true
+          "signer": true,
+          "relations": [
+            "conversationAccount"
+          ]
         },
         {
           "name": "conversationAccount",
@@ -385,6 +391,10 @@ export type Chat = {
       "type": {
         "kind": "struct",
         "fields": [
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
           {
             "name": "conversationIds",
             "type": {
