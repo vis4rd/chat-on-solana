@@ -1,4 +1,4 @@
-import { afterEach, before, beforeEach, describe, it } from "node:test";
+import { before, beforeEach, describe, it } from "node:test";
 import * as anchor from "@coral-xyz/anchor";
 import * as IDL from "../../target/types/chat.ts";
 import { assert } from "chai";
@@ -34,21 +34,10 @@ describe("remove_conversation_from_list instruction", () => {
             .rpc();
     });
 
-    afterEach(async () => {
-        try {
-            await program.methods
-                .deleteConversation(conversationId)
-                .accounts({ payer: payer.publicKey })
-                .signers([payer])
-                .rpc();
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        } catch (e) {}
-    });
-
     it("removes a conversation from the user's list", async () => {
         await program.methods
             .removeConversationFromList(conversationId)
-            .accounts({ user: payer.publicKey })
+            .accounts({ authority: payer.publicKey })
             .signers([payer])
             .rpc();
 
@@ -63,7 +52,7 @@ describe("remove_conversation_from_list instruction", () => {
         try {
             await program.methods
                 .removeConversationFromList(fakeId)
-                .accounts({ user: payer.publicKey })
+                .accounts({ authority: payer.publicKey })
                 .signers([payer])
                 .rpc();
         } catch (e) {

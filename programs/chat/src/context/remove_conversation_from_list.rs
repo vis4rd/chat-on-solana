@@ -4,10 +4,11 @@ use anchor_lang::prelude::*;
 #[derive(Accounts)]
 pub struct RemoveConversationFromList<'info> {
     #[account(mut)]
-    pub user: Signer<'info>,
+    pub authority: Signer<'info>,
+
     #[account(
         mut,
-        seeds = [user.key().as_ref(), b"chats"],
+        seeds = [authority.key().as_ref(), b"chats"],
         bump,
     )]
     pub conversation_list_account: Account<'info, ConversationListAccount>,

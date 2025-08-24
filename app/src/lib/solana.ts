@@ -118,7 +118,7 @@ export async function removeConversationFromList(conversationId: string): Promis
     try {
         const tx = await workspace
             .program!.methods.removeConversationFromList(conversationId)
-            .accounts({ user: workspace.wallet!.publicKey })
+            .accounts({ authority: workspace.wallet!.publicKey })
             .transaction();
 
         const latestBlockhash = await workspace.connection!.getLatestBlockhash();

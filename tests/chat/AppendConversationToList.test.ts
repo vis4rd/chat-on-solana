@@ -33,7 +33,10 @@ describe("append_conversation_to_list instruction", () => {
 
     afterEach(async () => {
         try {
-            await program.methods.removeConversationFromList(conversationId).accounts({ user: payer.publicKey }).rpc();
+            await program.methods
+                .removeConversationFromList(conversationId)
+                .accounts({ authority: payer.publicKey })
+                .rpc();
         } catch {
             // Ignore if already not present
         }
@@ -76,7 +79,7 @@ describe("append_conversation_to_list instruction", () => {
             .catch(() => {});
         program.methods
             .removeConversationFromList(conversationId2)
-            .accounts({ user: payer.publicKey })
+            .accounts({ authority: payer.publicKey })
             .rpc()
             .catch(() => {});
     });
