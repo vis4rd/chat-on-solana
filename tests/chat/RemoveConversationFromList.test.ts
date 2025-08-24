@@ -29,7 +29,7 @@ describe("remove_conversation_from_list instruction", () => {
     beforeEach(async () => {
         await program.methods
             .appendConversationToList(conversationId)
-            .accounts({ user: payer.publicKey })
+            .accounts({ authority: payer.publicKey })
             .signers([payer])
             .rpc();
     });

@@ -25,9 +25,7 @@
             while (!props.accountPda) {
                 await new Promise((resolve) => setTimeout(resolve, 1000));
             }
-            // BUG: site hangs on fetch below. Reason yet unknown
-            //      possibility 1: signature of account has changed on chain, fetch can't deal with it
-            // solution: yeet whole program from devnet and redeploy
+
             conversation.value = await workspace.program!.account.conversationAccount.fetch(props.accountPda)!;
         } catch (error) {
             console.error("Error fetching conversations:", error);

@@ -31,7 +31,7 @@ describe("append_conversation_to_list instruction", () => {
     });
 
     it("appends a conversation id to the user's list", async () => {
-        await program.methods.appendConversationToList(conversationId).accounts({ user: payer.publicKey }).rpc();
+        await program.methods.appendConversationToList(conversationId).accounts({ authority: payer.publicKey }).rpc();
 
         const acc = await program.account.conversationListAccount.fetch(conversationListPDA);
         assert.include(acc.conversationIds, conversationId);
@@ -39,7 +39,7 @@ describe("append_conversation_to_list instruction", () => {
 
     it("does not append the same conversation id twice", async () => {
         // TODO: refactor to init the test with a clean state when deleteConversation is implemented
-        await program.methods.appendConversationToList(conversationId).accounts({ user: payer.publicKey }).rpc();
+        await program.methods.appendConversationToList(conversationId).accounts({ authority: payer.publicKey }).rpc();
 
         const acc = await program.account.conversationListAccount.fetch(conversationListPDA);
         const occurrences = acc.conversationIds.filter((id: string) => id === conversationId).length;
@@ -52,7 +52,7 @@ describe("append_conversation_to_list instruction", () => {
             .createConversation(conversationId2, [payer.publicKey, anchor.web3.Keypair.generate().publicKey])
             .accounts({ authority: payer.publicKey })
             .rpc();
-        await program.methods.appendConversationToList(conversationId2).accounts({ user: payer.publicKey }).rpc();
+        await program.methods.appendConversationToList(conversationId2).accounts({ authority: payer.publicKey }).rpc();
 
         const acc = await program.account.conversationListAccount.fetch(conversationListPDA);
         assert.include(acc.conversationIds, conversationId2);
