@@ -117,6 +117,9 @@
             });
     }
 
+    function isAnyChatSelected() {
+        return conversationListStore.selectedChat !== null;
+    }
     function hasAuthority() {
         return conversation.value.authority.toBase58() === workspace.wallet?.publicKey.toBase58();
     }
@@ -139,14 +142,15 @@
                 class="grow"
                 variant="outline"
                 aria-label="Share conversation address"
-                :disabled="conversationListStore.selectedChat === null || !doesChatExist()"
+                :disabled="!isAnyChatSelected() || !doesChatExist()"
             >
                 <Icon icon="fluent:share-24-regular" class="size-5" />
                 Share
             </Button>
         </div>
         <BlockWrapper class="chat-window">
-            <div class="no-chat-selected-prompt" v-if="conversationListStore.selectedChat === null">Select a chat</div>
+            <div class="no-chat-selected-prompt" v-if="!isAnyChatSelected()">Select a chat</div>
+            <!-- TODO: add note about the chat no longer existing -->
             <Suspense v-else :key="conversationListStore.selectedChat?.pda">
                 <ChatWindowConversationHistory
                     v-model="conversation"
@@ -159,11 +163,7 @@
         </BlockWrapper>
 
         <div class="message-input">
-            <form
-                v-if="conversationListStore.selectedChat && doesChatExist()"
-                class="form-component"
-                @submit="onSubmit"
-            >
+            <form v-if="isAnyChatSelected() && doesChatExist()" class="form-component" @submit="onSubmit">
                 <FormField v-slot="{ componentField }" name="message_content">
                     <FormItem class="full-width">
                         <FormControl>
@@ -187,18 +187,18 @@
                 @click="leaveConversation()"
                 class="limit-width"
                 variant="destructive"
-                :disabled="!conversationListStore.selectedChat || hasAuthority()"
+                :disabled="!isAnyChatSelected() || hasAuthority()"
             >
-                <Icon v-if="!conversationListStore.selectedChat" icon="fluent:lock-closed-24-regular" class="size-5" />
+                <Icon v-if="!isAnyChatSelected()" icon="fluent:lock-closed-24-regular" class="size-5" />
                 <span v-else>Leave chat</span>
             </Button>
             <Button
                 @click="deleteConversation()"
                 class="limit-width"
                 variant="destructive"
-                :disabled="!conversationListStore.selectedChat || !hasAuthority()"
+                :disabled="!isAnyChatSelected() || !hasAuthority()"
             >
-                <Icon v-if="!conversationListStore.selectedChat" icon="fluent:lock-closed-24-regular" class="size-5" />
+                <Icon v-if="!isAnyChatSelected()" icon="fluent:lock-closed-24-regular" class="size-5" />
                 <span v-else>Delete chat</span>
             </Button>
             <ElementWrapper>{{ conversation.authority.toBase58() }}</ElementWrapper>
