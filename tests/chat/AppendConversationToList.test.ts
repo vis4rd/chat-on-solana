@@ -70,8 +70,8 @@ describe("append_conversation_to_list instruction", () => {
         const acc = await program.account.conversationListAccount.fetch(conversationListPDA);
         assert.include(acc.conversationIds, conversationId2);
         assert.strictEqual(acc.conversationIds.length, 2);
-    }).finally(() => {
-        // Clean up the second conversation
+
+        // Clean up
         program.methods
             .deleteConversation(conversationId2)
             .accounts({ payer: payer.publicKey })
