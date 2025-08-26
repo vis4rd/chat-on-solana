@@ -94,4 +94,57 @@ pub mod chat {
         }
         Ok(())
     }
+
+    pub fn create_invite_list(ctx: Context<CreateInviteList>) -> Result<()> {
+        ctx.accounts.invite_list_account.conversation_ids = Vec::new();
+        ctx.accounts.invite_list_account.authority = ctx.accounts.authority.key();
+        Ok(())
+    }
+
+    pub fn add_invite_to_someones_list(
+        ctx: Context<AddInviteToSomeonesList>,
+        _recipient: Pubkey,
+        conversation_id: String,
+    ) -> Result<()> {
+        let recipient_list = &mut ctx.accounts.recipients_invite_list_account;
+        require!(
+            recipient_list.conversation_ids.len() < 50,
+            ConversationError::FullInviteList
+        );
+
+        if !recipient_list.conversation_ids.contains(&conversation_id) {
+            recipient_list.conversation_ids.push(conversation_id);
+        }
+        Ok(())
+    }
+
+    pub fn accept_invite(ctx: Context<AcceptInvite>, conversation_id: String) -> Result<()> {
+        let invite_list = &mut ctx.accounts.invite_list_account;
+        require!(
+            invite_list.conversation_ids.contains(&conversation_id),
+            ConversationError::InviteNotFound
+        );
+
+        let conversation_list = &mut ctx.accounts.conversation_list_account;
+        require!(
+            !conversation_list.conversation_ids.contains(&conversation_id),
+            ConversationError::ConversationIdTaken
+        );
+
+        if let Some(pos) = invite_list.conversation_ids.iter().position(|x| *x == conversation_id) {
+            invite_list.conversation_ids.remove(pos);
+        }
+
+        conversation_list.conversation_ids.push(conversation_id);
+
+        Ok(())
+    }
+
+    pub fn reject_invite(ctx: Context<RejectInvite>, conversation_id: String) -> Result<()> {
+        let invite_list = &mut ctx.accounts.invite_list_account;
+        if let Some(pos) = invite_list.conversation_ids.iter().position(|x| *x == conversation_id) {
+            invite_list.conversation_ids.remove(pos);
+        }
+        Ok(())
+    }
 }

@@ -20,4 +20,12 @@ pub enum ConversationError {
     TooManyMessages,
     #[msg("Insufficient permission to perform the operation.")]
     InvalidAuthority,
+    #[msg("The invitation list is full.")]
+    FullInviteList,
+    #[msg("Invite sent to oneself is not permitted.")]
+    ForbiddenInviteToSelf,
+    #[msg("The invite does not exist.")]
+    InviteNotFound,
+    #[msg("Conversation ID already taken.")]
+    ConversationIdTaken,
 }
