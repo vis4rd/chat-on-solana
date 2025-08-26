@@ -71,6 +71,7 @@ export const useAnchorWorkspaceStore = defineStore("anchor_workspace", (): Ancho
         ) => {
             if (walletStore.readyState.value.toString() === "Unsupported") {
                 walletConnectionState.value = WalletConnectionState.Disconnected;
+                ready.value = true;
                 return;
             }
             // else: walletStore.readyState is 'Installed'
