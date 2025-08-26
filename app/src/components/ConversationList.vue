@@ -1,27 +1,43 @@
 <script setup lang="ts">
-    import ConversationListDynamicLinks from "@/components/ConversationListDynamicLinks.vue";
     import ElementWrapper from "@/components/ElementWrapper.vue";
+    import InviteListDynamicLinks from "@/components/InviteListDynamicLinks.vue";
     import { Button } from "@/components/ui/button";
     import { Skeleton } from "@/components/ui/skeleton";
+    import ConversationListDynamicLinks from "./ConversationListDynamicLinks.vue";
 </script>
 
 <template>
     <div class="column">
-        <ElementWrapper class="conversation-list-title"> Chats </ElementWrapper>
+        <div class="chats">
+            <ElementWrapper class="conversation-list-title"> Chats </ElementWrapper>
 
-        <Transition mode="out-in">
-            <Suspense>
-                <template #fallback>
-                    <Skeleton class="skeleton" />
-                </template>
+            <Transition mode="out-in">
+                <Suspense>
+                    <template #fallback>
+                        <Skeleton class="skeleton" />
+                    </template>
 
-                <ConversationListDynamicLinks />
-            </Suspense>
-        </Transition>
+                    <ConversationListDynamicLinks />
+                </Suspense>
+            </Transition>
 
-        <RouterLink to="/newconversation">
-            <Button class="full-width">Create a new conversation</Button>
-        </RouterLink>
+            <RouterLink to="/newconversation">
+                <Button class="full-width">Create a new conversation</Button>
+            </RouterLink>
+        </div>
+        <div class="invites">
+            <ElementWrapper class="conversation-list-title"> Invites </ElementWrapper>
+
+            <Transition mode="out-in">
+                <Suspense>
+                    <template #fallback>
+                        <Skeleton class="skeleton" />
+                    </template>
+
+                    <InviteListDynamicLinks />
+                </Suspense>
+            </Transition>
+        </div>
     </div>
 </template>
 
@@ -30,6 +46,20 @@
         display: flex;
         flex-direction: column;
         gap: 0.5rem;
+    }
+
+    .chats {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        flex: 0.7;
+    }
+
+    .invites {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        flex: 0.3;
     }
 
     .conversation-list-title {

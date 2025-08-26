@@ -30,9 +30,33 @@ export const useConversationListStore = defineStore("conversation_list", () => {
         return undefined;
     });
 
+    const invites: Ref<string[], string[]> = ref([]);
+    const invite_index: Ref<number, number> = ref(-1);
+    const invite_id: ComputedRef<string> = computed(() => {
+        if (invites.value.length > 0) {
+            return invites.value[invite_index.value];
+        }
+        return "";
+    });
+    const invite_pda: ComputedRef<anchor.web3.PublicKey | undefined> = computed(() => {
+        if (invite_id.value.length !== 0) {
+            const workspace = useAnchorWorkspaceStore();
+            if (!workspace.program) {
+                return undefined;
+            }
+            const [pda] = anchor.web3.PublicKey.findProgramAddressSync(
+                [Buffer.from(invite_id.value)],
+                workspace.program!.programId
+            );
+            return pda;
+        }
+        return undefined;
+    });
+
     function setSelectedChat(conversation_id: string): void {
         const index = conversations.value.indexOf(conversation_id);
         if (index !== -1) {
+            invite_index.value = -1;
             chat_index.value = index;
         } else {
             console.warn(`Conversation ID ${conversation_id} not found in the list.`);
@@ -41,6 +65,20 @@ export const useConversationListStore = defineStore("conversation_list", () => {
 
     function deselectChat(): void {
         chat_index.value = -1;
+    }
+
+    function setSelectedInvite(conversation_id: string): void {
+        const index = invites.value.indexOf(conversation_id);
+        if (index !== -1) {
+            chat_index.value = -1;
+            invite_index.value = index;
+        } else {
+            console.warn(`Invite ID ${conversation_id} not found in the list.`);
+        }
+    }
+
+    function deselectInvite(): void {
+        invite_index.value = -1;
     }
 
     return {
@@ -54,5 +92,20 @@ export const useConversationListStore = defineStore("conversation_list", () => {
         }),
         setSelectedChat,
         deselectChat,
+
+        invites,
+        selectedInvite: computed(() => {
+            if (invite_index.value < 0) {
+                return null;
+            }
+            const invite: SelectedConversation = {
+                index: invite_index.value,
+                id: invite_id.value,
+                pda: invite_pda.value!,
+            };
+            return invite;
+        }),
+        setSelectedInvite,
+        deselectInvite,
     };
 });
