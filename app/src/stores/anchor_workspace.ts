@@ -4,6 +4,7 @@ import { getConversationListAccount, getWalletAccount } from "@/lib/solana";
 import { AnchorProvider, Program } from "@coral-xyz/anchor";
 import { clusterApiUrl, Connection } from "@solana/web3.js";
 import { useAnchorWallet, useWallet, type AnchorWallet } from "solana-wallets-vue";
+import { toast } from "vue-sonner";
 import { defineStore } from "pinia";
 import { ref, watch, type Ref } from "vue";
 
@@ -84,6 +85,14 @@ export const useAnchorWorkspaceStore = defineStore("anchor_workspace", (): Ancho
             if (connectingChanged && newConnecting) {
                 walletConnectionState.value = WalletConnectionState.Connecting;
                 ready.value = false;
+                setTimeout(() => {
+                    if (isConnecting() && ready.value === false) {
+                        toast.error("Connection with wallet timed out.");
+                        walletConnectionState.value = WalletConnectionState.Disconnected;
+                        walletStore.disconnect();
+                        ready.value = true;
+                    }
+                }, 20000);
                 // return; // ! commenting this might break connection state resolution
             }
             if (connectedChanged && newConnected) {
@@ -98,6 +107,19 @@ export const useAnchorWorkspaceStore = defineStore("anchor_workspace", (): Ancho
                 updateConnectionStateIfPresent();
                 return;
             }
+            if (readyChanged && newReady) {
+                if (isDisconnected()) {
+                    setTimeout(() => {
+                        if (isDisconnected()) {
+                            // ! requires auto-connect to work correctly
+                            toast.error("Connection with wallet timed out.");
+                            walletConnectionState.value = WalletConnectionState.Disconnected;
+                            walletStore.disconnect();
+                            ready.value = true;
+                        }
+                    }, 5000);
+                }
+            }
         }
     );
 
@@ -106,6 +128,12 @@ export const useAnchorWorkspaceStore = defineStore("anchor_workspace", (): Ancho
 
         if (walletStore.readyState.value.toString() === "Unsupported") {
             setReadyWithDelay();
+        } else {
+            setTimeout(() => {
+                if (isDisconnected() && ready.value === false) {
+                    setReadyWithDelay();
+                }
+            }, 1000);
         }
     }
 
