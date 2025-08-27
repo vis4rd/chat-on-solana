@@ -5,7 +5,7 @@
  * IDL can be found at `target/idl/chat.json`.
  */
 export type Chat = {
-  "address": "FS8j53e5uikrK9Xd624Dw9EzHgQaPQF34VoMxe25ewRe",
+  "address": "7XiCckHfHiSrH8wWmnHffMxQXqLpVRa6ENbZ9ydvAi4L",
   "metadata": {
     "name": "chat",
     "version": "0.1.0",
@@ -13,6 +13,136 @@ export type Chat = {
     "description": "Created with Anchor"
   },
   "instructions": [
+    {
+      "name": "acceptInvite",
+      "discriminator": [
+        173,
+        11,
+        225,
+        180,
+        81,
+        89,
+        93,
+        138
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "inviteListAccount",
+            "conversationListAccount"
+          ]
+        },
+        {
+          "name": "inviteListAccount",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "authority"
+              },
+              {
+                "kind": "const",
+                "value": [
+                  105,
+                  110,
+                  118,
+                  105,
+                  116,
+                  101,
+                  115
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "conversationListAccount",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "authority"
+              },
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  104,
+                  97,
+                  116,
+                  115
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "conversationId",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "addInviteToSomeonesList",
+      "discriminator": [
+        41,
+        115,
+        165,
+        174,
+        82,
+        54,
+        233,
+        170
+      ],
+      "accounts": [
+        {
+          "name": "sender",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "recipientsInviteListAccount",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "arg",
+                "path": "recipient"
+              },
+              {
+                "kind": "const",
+                "value": [
+                  105,
+                  110,
+                  118,
+                  105,
+                  116,
+                  101,
+                  115
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "recipient",
+          "type": "pubkey"
+        },
+        {
+          "name": "conversationId",
+          "type": "string"
+        }
+      ]
+    },
     {
       "name": "appendConversationToList",
       "discriminator": [
@@ -189,6 +319,55 @@ export type Chat = {
       "args": []
     },
     {
+      "name": "createInviteList",
+      "discriminator": [
+        254,
+        61,
+        126,
+        176,
+        65,
+        138,
+        153,
+        141
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "inviteListAccount",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "authority"
+              },
+              {
+                "kind": "const",
+                "value": [
+                  105,
+                  110,
+                  118,
+                  105,
+                  116,
+                  101,
+                  115
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "systemProgram",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
       "name": "deleteConversation",
       "discriminator": [
         247,
@@ -217,6 +396,59 @@ export type Chat = {
               {
                 "kind": "arg",
                 "path": "conversationId"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "conversationId",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "rejectInvite",
+      "discriminator": [
+        90,
+        74,
+        1,
+        90,
+        200,
+        244,
+        79,
+        76
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "inviteListAccount"
+          ]
+        },
+        {
+          "name": "inviteListAccount",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "authority"
+              },
+              {
+                "kind": "const",
+                "value": [
+                  105,
+                  110,
+                  118,
+                  105,
+                  116,
+                  101,
+                  115
+                ]
               }
             ]
           }
@@ -354,6 +586,26 @@ export type Chat = {
       "code": 6008,
       "name": "invalidAuthority",
       "msg": "Insufficient permission to perform the operation."
+    },
+    {
+      "code": 6009,
+      "name": "fullInviteList",
+      "msg": "The invitation list is full."
+    },
+    {
+      "code": 6010,
+      "name": "forbiddenInviteToSelf",
+      "msg": "Invite sent to oneself is not permitted."
+    },
+    {
+      "code": 6011,
+      "name": "inviteNotFound",
+      "msg": "The invite does not exist."
+    },
+    {
+      "code": 6012,
+      "name": "conversationIdTaken",
+      "msg": "Conversation ID already taken."
     }
   ],
   "types": [

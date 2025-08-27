@@ -6,7 +6,7 @@ resolution = true
 skip-lint = false
 
 [programs.localnet]
-chat = "FS8j53e5uikrK9Xd624Dw9EzHgQaPQF34VoMxe25ewRe"
+chat = "7XiCckHfHiSrH8wWmnHffMxQXqLpVRa6ENbZ9ydvAi4L"
 
 [registry]
 url = "https://api.apr.dev"
@@ -16,10 +16,7 @@ cluster = "devnet"
 wallet = "~/.config/solana/id.json"
 
 [scripts]
-# Run `export` after building and syncing keys (`anchor keys sync`)
 export = "anchor run export_json && anchor run export_ts"
 export_json = "cp ./target/idl/chat.json ./app/src/anchor/chat_idl.json"
 export_ts = "cp ./target/types/chat.ts ./app/src/anchor/chat.idl.ts"
-
-# It will be run with `anchor run test` but also at the end of `anchor test`
 test = "yarn run ts-mocha -p ./tsconfig.json 'tests/chat/**/*.ts'"

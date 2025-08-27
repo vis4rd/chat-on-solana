@@ -10,7 +10,7 @@ use context::*;
 use errors::ConversationError;
 use state::Message;
 
-declare_id!("FS8j53e5uikrK9Xd624Dw9EzHgQaPQF34VoMxe25ewRe");
+declare_id!("7XiCckHfHiSrH8wWmnHffMxQXqLpVRa6ENbZ9ydvAi4L");
 
 #[program]
 pub mod chat {

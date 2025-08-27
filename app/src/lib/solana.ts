@@ -53,6 +53,15 @@ export async function createConversation(conversationId: string, chatters: strin
             .instruction();
         const tx = new Transaction().add(ix1, ix2);
 
+        for (const kp of chatterPubkeys) {
+            if (kp.equals(payer)) continue; // Skip self-invite
+            const inviteIx = await workspace
+                .program!.methods.addInviteToSomeonesList(kp, conversationId)
+                .accounts({ sender: payer })
+                .instruction();
+            tx.add(inviteIx);
+        }
+
         return signAndSendTransaction(tx, payer);
     } catch (e) {
         console.error("Error creating conversation:", e);
@@ -142,6 +151,25 @@ export async function deleteConversationAccount(conversationId: string): Promise
         const tx = await workspace
             .program!.methods.deleteConversation(conversationId)
             .accounts({ authority: workspace.wallet!.publicKey })
+            .transaction();
+
+        return signAndSendTransaction(tx, workspace.wallet!.publicKey);
+    } catch (error) {
+        return Promise.reject(error);
+    }
+}
+
+export async function addInviteToSomeonesList(recipient: PublicKey, conversationId: string): Promise<string> {
+    const workspace = useAnchorWorkspaceStore();
+
+    if (!workspace.isAtLeastConnected()) {
+        return Promise.reject(new Error("Wallet is not connected."));
+    }
+
+    try {
+        const tx = await workspace
+            .program!.methods.addInviteToSomeonesList(recipient, conversationId)
+            .accounts({ sender: workspace.wallet!.publicKey })
             .transaction();
 
         return signAndSendTransaction(tx, workspace.wallet!.publicKey);

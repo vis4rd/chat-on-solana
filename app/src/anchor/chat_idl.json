@@ -1,5 +1,5 @@
 {
-  "address": "FS8j53e5uikrK9Xd624Dw9EzHgQaPQF34VoMxe25ewRe",
+  "address": "7XiCckHfHiSrH8wWmnHffMxQXqLpVRa6ENbZ9ydvAi4L",
   "metadata": {
     "name": "chat",
     "version": "0.1.0",
@@ -7,6 +7,136 @@
     "description": "Created with Anchor"
   },
   "instructions": [
+    {
+      "name": "accept_invite",
+      "discriminator": [
+        173,
+        11,
+        225,
+        180,
+        81,
+        89,
+        93,
+        138
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "invite_list_account",
+            "conversation_list_account"
+          ]
+        },
+        {
+          "name": "invite_list_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "authority"
+              },
+              {
+                "kind": "const",
+                "value": [
+                  105,
+                  110,
+                  118,
+                  105,
+                  116,
+                  101,
+                  115
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "conversation_list_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "authority"
+              },
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  104,
+                  97,
+                  116,
+                  115
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "conversation_id",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "add_invite_to_someones_list",
+      "discriminator": [
+        41,
+        115,
+        165,
+        174,
+        82,
+        54,
+        233,
+        170
+      ],
+      "accounts": [
+        {
+          "name": "sender",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "recipients_invite_list_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "arg",
+                "path": "recipient"
+              },
+              {
+                "kind": "const",
+                "value": [
+                  105,
+                  110,
+                  118,
+                  105,
+                  116,
+                  101,
+                  115
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "_recipient",
+          "type": "pubkey"
+        },
+        {
+          "name": "conversation_id",
+          "type": "string"
+        }
+      ]
+    },
     {
       "name": "append_conversation_to_list",
       "discriminator": [
@@ -183,6 +313,55 @@
       "args": []
     },
     {
+      "name": "create_invite_list",
+      "discriminator": [
+        254,
+        61,
+        126,
+        176,
+        65,
+        138,
+        153,
+        141
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "invite_list_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "authority"
+              },
+              {
+                "kind": "const",
+                "value": [
+                  105,
+                  110,
+                  118,
+                  105,
+                  116,
+                  101,
+                  115
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
       "name": "delete_conversation",
       "discriminator": [
         247,
@@ -219,6 +398,59 @@
       "args": [
         {
           "name": "_conversation_id",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "reject_invite",
+      "discriminator": [
+        90,
+        74,
+        1,
+        90,
+        200,
+        244,
+        79,
+        76
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "invite_list_account"
+          ]
+        },
+        {
+          "name": "invite_list_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "authority"
+              },
+              {
+                "kind": "const",
+                "value": [
+                  105,
+                  110,
+                  118,
+                  105,
+                  116,
+                  101,
+                  115
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "conversation_id",
           "type": "string"
         }
       ]
@@ -348,6 +580,26 @@
       "code": 6008,
       "name": "InvalidAuthority",
       "msg": "Insufficient permission to perform the operation."
+    },
+    {
+      "code": 6009,
+      "name": "FullInviteList",
+      "msg": "The invitation list is full."
+    },
+    {
+      "code": 6010,
+      "name": "ForbiddenInviteToSelf",
+      "msg": "Invite sent to oneself is not permitted."
+    },
+    {
+      "code": 6011,
+      "name": "InviteNotFound",
+      "msg": "The invite does not exist."
+    },
+    {
+      "code": 6012,
+      "name": "ConversationIdTaken",
+      "msg": "Conversation ID already taken."
     }
   ],
   "types": [

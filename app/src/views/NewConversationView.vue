@@ -3,12 +3,14 @@
     import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
     import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
     import { Input } from "@/components/ui/input";
-    import { createConversation } from "@/lib/solana";
+    import { addInviteToSomeonesList, createConversation } from "@/lib/solana";
     import { useAnchorWorkspaceStore } from "@/stores/anchor_workspace";
     import { Icon } from "@iconify/vue";
+    import { PublicKey } from "@solana/web3.js";
     import { toTypedSchema } from "@vee-validate/zod";
     import { useForm } from "vee-validate";
     import { useRouter } from "vue-router";
+    import { toast } from "vue-sonner";
     import { ref, watch } from "vue";
     import * as z from "zod";
 
