@@ -2,6 +2,24 @@ import { Buffer } from "buffer";
 import { useAnchorWorkspaceStore } from "@/stores/anchor_workspace";
 import { PublicKey, Transaction, type AccountInfo } from "@solana/web3.js";
 
+async function signAndSendTransaction(transaction: Transaction, payer: PublicKey): Promise<string> {
+    const workspace = useAnchorWorkspaceStore();
+
+    transaction.feePayer = payer;
+
+    try {
+        const latestBlockhash = await workspace.connection!.getLatestBlockhash();
+        transaction.recentBlockhash = latestBlockhash.blockhash;
+
+        const signedTx = await workspace.wallet!.signTransaction(transaction);
+        const signature = await workspace.connection!.sendRawTransaction(signedTx.serialize());
+
+        return Promise.resolve(signature);
+    } catch (error) {
+        return Promise.reject(error);
+    }
+}
+
 export async function getConversationListAccount(userPublicKey: PublicKey): Promise<AccountInfo<Buffer> | null> {
     const workspace = useAnchorWorkspaceStore();
 
@@ -33,13 +51,9 @@ export async function createConversation(conversationId: string, chatters: strin
             .program!.methods.appendConversationToList(conversationId)
             .accounts({ user: payer })
             .instruction();
-        const transaction = new Transaction().add(ix1, ix2);
-        const latestBlockhash = await workspace.connection!.getLatestBlockhash();
-        transaction.feePayer = payer;
-        transaction.recentBlockhash = latestBlockhash.blockhash;
-        const signed = await workspace.wallet!.signTransaction(transaction);
-        const sig = await workspace.connection!.sendRawTransaction(signed.serialize());
-        return Promise.resolve(sig);
+        const tx = new Transaction().add(ix1, ix2);
+
+        return signAndSendTransaction(tx, payer);
     } catch (e) {
         console.error("Error creating conversation:", e);
         return Promise.reject(e);
@@ -63,12 +77,7 @@ export async function appendMessage(conversationPDA: PublicKey, message: string)
                 .accounts({ conversationAccount: conversationPDA, author: workspace.wallet!.publicKey })
                 .transaction();
 
-            const latestBlockhash = await workspace.connection!.getLatestBlockhash();
-            tx.feePayer = workspace.wallet!.publicKey;
-            tx.recentBlockhash = latestBlockhash.blockhash;
-            const signedTx = await workspace.wallet!.signTransaction(tx);
-            const txSignature = await workspace.provider!.connection.sendRawTransaction(signedTx.serialize());
-            return Promise.resolve(txSignature);
+            return signAndSendTransaction(tx, workspace.wallet!.publicKey);
         } catch (error) {
             return Promise.reject(error);
         }
@@ -97,12 +106,7 @@ export async function createConversationListAccount(owner: PublicKey): Promise<s
             .accountsPartial({ authority: owner, conversationListAccount: conversationListPDA })
             .transaction();
 
-        const latestBlockhash = await workspace.connection!.getLatestBlockhash();
-        tx.feePayer = owner;
-        tx.recentBlockhash = latestBlockhash.blockhash;
-        const signedTx = await workspace.wallet!.signTransaction(tx);
-        const txSignature = await workspace.provider!.connection.sendRawTransaction(signedTx.serialize());
-        return Promise.resolve(txSignature);
+        return signAndSendTransaction(tx, owner);
     } catch (error) {
         return Promise.reject(error);
     }
@@ -121,12 +125,7 @@ export async function removeConversationFromList(conversationId: string): Promis
             .accounts({ authority: workspace.wallet!.publicKey })
             .transaction();
 
-        const latestBlockhash = await workspace.connection!.getLatestBlockhash();
-        tx.feePayer = workspace.wallet!.publicKey;
-        tx.recentBlockhash = latestBlockhash.blockhash;
-        const signedTx = await workspace.wallet!.signTransaction(tx);
-        const txSignature = await workspace.provider!.connection.sendRawTransaction(signedTx.serialize());
-        return Promise.resolve(txSignature);
+        return signAndSendTransaction(tx, workspace.wallet!.publicKey);
     } catch (error) {
         return Promise.reject(error);
     }
@@ -145,12 +144,7 @@ export async function deleteConversationAccount(conversationId: string): Promise
             .accounts({ authority: workspace.wallet!.publicKey })
             .transaction();
 
-        const latestBlockhash = await workspace.connection!.getLatestBlockhash();
-        tx.feePayer = workspace.wallet!.publicKey;
-        tx.recentBlockhash = latestBlockhash.blockhash;
-        const signedTx = await workspace.wallet!.signTransaction(tx);
-        const txSignature = await workspace.provider!.connection.sendRawTransaction(signedTx.serialize());
-        return Promise.resolve(txSignature);
+        return signAndSendTransaction(tx, workspace.wallet!.publicKey);
     } catch (error) {
         return Promise.reject(error);
     }
