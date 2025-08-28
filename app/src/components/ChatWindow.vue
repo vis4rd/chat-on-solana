@@ -91,6 +91,7 @@
                 conversationListStore.conversations = conversationListStore.conversations.filter(
                     (conv) => conv !== conversationId
                 );
+                conversation.value = conversationDefault;
                 toast.success(`Left the "${conversationId}" chat.`, { duration: 5000 });
             })
             .catch((err: Error) => {
@@ -111,6 +112,7 @@
                 conversationListStore.conversations = conversationListStore.conversations.filter(
                     (conv) => conv !== conversationId
                 );
+                conversation.value = conversationDefault;
                 toast.success(`Deleted the "${conversationId}" chat.`, { duration: 5000 });
             })
             .catch((err: Error) => {
