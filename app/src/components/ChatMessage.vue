@@ -6,7 +6,7 @@
 
 <template>
     <div class="chat-message-wrapper">
-        <ElementWrapper class="chat-message">
+        <ElementWrapper class="chat-message-content">
             <slot />
         </ElementWrapper>
     </div>
@@ -18,8 +18,9 @@
         width: 100%;
         justify-content: v-bind('$props.user ? "right" : "left"');
     }
-    .chat-message {
+    .chat-message-content {
         background-color: v-bind('$props.user ? "var(--color-primary)" : "var(--color-muted)"');
         color: v-bind('$props.user ? "var(--color-primary-foreground)" : "var(--color-foreground)"');
+        max-height: fit-content;
     }
 </style>

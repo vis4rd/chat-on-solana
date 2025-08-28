@@ -18,7 +18,8 @@
         line-height: var(--tw-leading, var(--text-sm--line-height));
         padding-block: calc(var(--spacing) * 1);
         padding-inline: calc(var(--spacing) * 3);
-        height: calc(var(--spacing) * 9);
+        min-height: calc(var(--spacing) * 9);
+        max-height: calc(var(--spacing) * 9);
 
         border-color: var(--input);
         border-style: var(--tw-border-style);

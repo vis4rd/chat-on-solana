@@ -5,6 +5,7 @@
     import { PublicKey } from "@solana/web3.js";
     import { useVModel } from "@vueuse/core";
     import { toast } from "vue-sonner";
+    import ChatMessageAuthor from "./ChatMessageAuthor.vue";
     import { onUnmounted } from "vue";
 
     type ChatMessage = { data: string; author: PublicKey; timestamp: number };
@@ -58,13 +59,12 @@
 <template>
     <ScrollArea class="chat-scroll-area">
         <!-- TODO: timestamps? -->
-        <!-- TODO: authors -->
-        <ChatMessage
-            v-for="message in conversation.messages"
-            :key="message.timestamp"
-            :user="message.author.equals(workspace.wallet!.publicKey)"
-            >{{ message.data }}</ChatMessage
-        >
+        <div class="chat-with-author" v-for="message in conversation.messages" :key="message.timestamp">
+            <ChatMessageAuthor :message="message" :conversation="conversation" />
+            <ChatMessage :user="message.author.equals(workspace.wallet!.publicKey)" class="chat-message">
+                {{ message.data }}
+            </ChatMessage>
+        </div>
     </ScrollArea>
 </template>
 
@@ -74,5 +74,12 @@
         height: 100%;
         padding-left: 0.6rem;
         padding-right: 0.6rem;
+    }
+    .chat-with-author {
+        display: flex;
+        width: 100%;
+        justify-content: flex-start;
+        margin-top: 0.4rem;
+        gap: 0.4rem;
     }
 </style>

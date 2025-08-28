@@ -172,7 +172,7 @@
         </BlockWrapper>
 
         <div class="message-input">
-            <form v-if="isAnyChatSelected() && doesChatExist()" class="form-component" @submit="onSubmit">
+            <form v-if="isAnyChatSelected() && doesChatExist()" class="form-component" @submit.once="onSubmit">
                 <FormField v-slot="{ componentField }" name="message_content">
                     <FormItem class="full-width">
                         <FormControl>
