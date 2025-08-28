@@ -122,10 +122,16 @@ export async function deleteConversationAccount(conversationId: string): Promise
     }
 
     try {
-        const tx = await workspace
+        const tx = new Transaction();
+        const removeFromListIx = await workspace
+            .program!.methods.removeConversationFromList(conversationId)
+            .accounts({ authority: workspace.wallet!.publicKey })
+            .transaction();
+        const deleteIx = await workspace
             .program!.methods.deleteConversation(conversationId)
             .accounts({ authority: workspace.wallet!.publicKey })
             .transaction();
+        tx.add(removeFromListIx, deleteIx);
 
         return signAndSendTransaction(tx, workspace.wallet!.publicKey);
     } catch (error) {

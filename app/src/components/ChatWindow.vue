@@ -78,7 +78,7 @@
         }
     }
 
-    function leaveConversation() {
+    function leaveChat() {
         if (!conversationListStore.selectedChat?.id) {
             toast.error("No conversation selected.", { duration: 5000 });
             return;
@@ -98,7 +98,7 @@
             });
     }
 
-    function deleteConversation() {
+    function deleteChat() {
         if (!conversationListStore.selectedChat?.id) {
             toast.error("No conversation selected.", { duration: 5000 });
             return;
@@ -108,9 +108,9 @@
         deleteConversationAccount(conversationId)
             .then(() => {
                 conversationListStore.deselectChat();
-                // conversationListStore.conversations = conversationListStore.conversations.filter(
-                //     (conv) => conv !== conversationId
-                // );
+                conversationListStore.conversations = conversationListStore.conversations.filter(
+                    (conv) => conv !== conversationId
+                );
                 toast.success(`Deleted the "${conversationId}" chat.`, { duration: 5000 });
             })
             .catch((err: Error) => {
@@ -191,7 +191,7 @@
         </div>
         <div class="row">
             <Button
-                @click="leaveConversation()"
+                @click="leaveChat()"
                 class="limit-width"
                 variant="destructive"
                 :disabled="!isAnyChatSelected() || hasAuthority()"
@@ -200,7 +200,7 @@
                 <span v-else>Leave chat</span>
             </Button>
             <Button
-                @click="deleteConversation()"
+                @click="deleteChat()"
                 class="limit-width"
                 variant="destructive"
                 :disabled="!isAnyChatSelected() || !hasAuthority()"
