@@ -6,14 +6,20 @@
     import { Button } from "@/components/ui/button";
     import { registerUser } from "@/lib/solana";
     import { useAnchorWorkspaceStore } from "@/stores/anchor_workspace";
+    import { useRouter } from "vue-router";
     import { toast } from "vue-sonner";
 
     const workspace = useAnchorWorkspaceStore();
+    const router = useRouter();
 
     function registerAccount(): void {
-        registerUser(workspace.wallet!.publicKey).catch((error: Error) => {
-            toast.error("Failed to register.", { description: error.message, duration: 10000 });
-        });
+        registerUser(workspace.wallet!.publicKey)
+            .then(() => {
+                router.replace("/chat");
+            })
+            .catch((error: Error) => {
+                toast.error("Failed to register.", { description: error.message, duration: 10000 });
+            });
     }
 </script>
 
