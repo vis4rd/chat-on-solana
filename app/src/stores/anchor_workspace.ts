@@ -95,7 +95,9 @@ export const useAnchorWorkspaceStore = defineStore("anchor_workspace", (): Ancho
                 }, 20000);
                 // return; // ! commenting this might break connection state resolution
             }
-            if (connectedChanged && newConnected) {
+            if ((connectedChanged || (connectingChanged && !newConnecting)) && newConnected) {
+                // if: connected and (connecting: true -> false) OR
+                // if: connected and (connected: false -> true)
                 walletConnectionState.value = WalletConnectionState.Connected;
 
                 wallet.value = useAnchorWallet().value;
