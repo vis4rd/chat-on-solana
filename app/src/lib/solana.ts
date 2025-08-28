@@ -173,3 +173,41 @@ export async function registerUser(owner: PublicKey): Promise<string> {
         return Promise.reject(error);
     }
 }
+
+export async function acceptInvite(conversationId: string): Promise<string> {
+    const workspace = useAnchorWorkspaceStore();
+
+    if (!workspace.isAtLeastConnected()) {
+        return Promise.reject(new Error("Wallet is not connected."));
+    }
+
+    try {
+        const tx = await workspace
+            .program!.methods.acceptInvite(conversationId)
+            .accounts({ authority: workspace.wallet!.publicKey })
+            .transaction();
+
+        return signAndSendTransaction(tx, workspace.wallet!.publicKey);
+    } catch (error) {
+        return Promise.reject(error);
+    }
+}
+
+export async function rejectInvite(conversationId: string): Promise<string> {
+    const workspace = useAnchorWorkspaceStore();
+
+    if (!workspace.isAtLeastConnected()) {
+        return Promise.reject(new Error("Wallet is not connected."));
+    }
+
+    try {
+        const tx = await workspace
+            .program!.methods.rejectInvite(conversationId)
+            .accounts({ authority: workspace.wallet!.publicKey })
+            .transaction();
+
+        return signAndSendTransaction(tx, workspace.wallet!.publicKey);
+    } catch (error) {
+        return Promise.reject(error);
+    }
+}

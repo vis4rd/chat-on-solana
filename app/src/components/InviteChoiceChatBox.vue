@@ -2,8 +2,10 @@
     import { H3 } from "@/components/typography";
     import { Button } from "@/components/ui/button";
     import Separator from "@/components/ui/separator/Separator.vue";
+    import { acceptInvite, rejectInvite } from "@/lib/solana";
     import { useAnchorWorkspaceStore } from "@/stores/anchor_workspace";
     import { useConversationListStore } from "@/stores/conversation_list";
+    import { toast } from "vue-sonner";
 
     const conversationListStore = useConversationListStore();
     const workspace = useAnchorWorkspaceStore();
@@ -13,6 +15,30 @@
     const otherChatters = inviteChatAccountInfo!.data!.chatters.filter((chatter) =>
         chatter.equals(workspace.wallet!.publicKey)
     );
+
+    function acceptChatInvite(): void {
+        const inviteId = conversationListStore.selectedInvite!.id;
+        acceptInvite(inviteId)
+            .then(() => {
+                conversationListStore.deselectInvite();
+                conversationListStore.invites = conversationListStore.invites.filter((invite) => invite !== inviteId);
+                conversationListStore.conversations.push(inviteId);
+            })
+            .catch((error: Error) => {
+                toast.error("Error accepting invite:", { description: error });
+            });
+    }
+    function rejectChatInvite(): void {
+        const inviteId = conversationListStore.selectedInvite!.id;
+        rejectInvite(inviteId)
+            .then(() => {
+                conversationListStore.deselectInvite();
+                conversationListStore.invites = conversationListStore.invites.filter((invite) => invite !== inviteId);
+            })
+            .catch((error: Error) => {
+                toast.error("Error rejecting invite:", { description: error });
+            });
+    }
 </script>
 
 <template>
@@ -54,8 +80,8 @@
         </div>
 
         <div class="extra-margin row">
-            <Button>Accept</Button>
-            <Button variant="destructive">Reject</Button>
+            <Button @click="acceptChatInvite()">Accept</Button>
+            <Button @click="rejectChatInvite()" variant="destructive">Reject</Button>
         </div>
     </div>
 </template>
