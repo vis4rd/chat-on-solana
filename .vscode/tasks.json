@@ -22,7 +22,7 @@
             "label": "Run frontend dev server",
             "detail": "Run the frontend development server using Vite",
             "type": "shell",
-            "command": "npm run dev",
+            "command": "npm run dev -- --host",
             "runOptions": {
                 "instanceLimit": 1
             },

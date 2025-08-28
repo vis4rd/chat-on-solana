@@ -95,32 +95,6 @@ export async function appendMessage(conversationPDA: PublicKey, message: string)
     return Promise.reject(new Error("Invalid message content"));
 }
 
-export async function createConversationListAccount(owner: PublicKey): Promise<string> {
-    const workspace = useAnchorWorkspaceStore();
-
-    if (!workspace.isAtLeastConnected()) {
-        return Promise.reject(new Error("Wallet is not connected."));
-    }
-
-    try {
-        // TS client has problems with deriving PDA from seeds as recommended by Anchor program,
-        // so deriving it manually here
-        const [conversationListPDA] = PublicKey.findProgramAddressSync(
-            [workspace.wallet!.publicKey.toBuffer(), Buffer.from("chats")],
-            workspace.program!.programId
-        );
-
-        const tx = await workspace
-            .program!.methods.createConversationList()
-            .accountsPartial({ authority: owner, conversationListAccount: conversationListPDA })
-            .transaction();
-
-        return signAndSendTransaction(tx, owner);
-    } catch (error) {
-        return Promise.reject(error);
-    }
-}
-
 export async function removeConversationFromList(conversationId: string): Promise<string> {
     const workspace = useAnchorWorkspaceStore();
 
@@ -173,6 +147,28 @@ export async function addInviteToSomeonesList(recipient: PublicKey, conversation
             .transaction();
 
         return signAndSendTransaction(tx, workspace.wallet!.publicKey);
+    } catch (error) {
+        return Promise.reject(error);
+    }
+}
+
+export async function registerUser(owner: PublicKey): Promise<string> {
+    const workspace = useAnchorWorkspaceStore();
+
+    if (!workspace.isAtLeastConnected()) {
+        return Promise.reject(new Error("Wallet is not connected."));
+    }
+
+    try {
+        const tx = new Transaction();
+        const ix1 = await workspace
+            .program!.methods.createConversationList()
+            .accounts({ authority: owner })
+            .instruction();
+        const ix2 = await workspace.program!.methods.createInviteList().accounts({ authority: owner }).instruction();
+        tx.add(ix1, ix2);
+
+        return signAndSendTransaction(tx, owner);
     } catch (error) {
         return Promise.reject(error);
     }

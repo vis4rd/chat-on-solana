@@ -4,14 +4,14 @@
     import H2 from "@/components/typography/H2.vue";
     import List from "@/components/typography/List.vue";
     import { Button } from "@/components/ui/button";
-    import { createConversationListAccount } from "@/lib/solana";
+    import { registerUser } from "@/lib/solana";
     import { useAnchorWorkspaceStore } from "@/stores/anchor_workspace";
     import { toast } from "vue-sonner";
 
     const workspace = useAnchorWorkspaceStore();
 
     function registerAccount(): void {
-        createConversationListAccount(workspace.wallet!.publicKey).catch((error: Error) => {
+        registerUser(workspace.wallet!.publicKey).catch((error: Error) => {
             toast.error("Failed to register.", { description: error.message, duration: 10000 });
         });
     }
