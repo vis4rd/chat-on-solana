@@ -81,6 +81,14 @@ export const useConversationListStore = defineStore("conversation_list", () => {
         invite_index.value = -1;
     }
 
+    function isInviteSelected(): boolean {
+        return invite_index.value !== -1;
+    }
+
+    function isChatSelected(): boolean {
+        return chat_index.value !== -1;
+    }
+
     return {
         conversations,
         selectedChat: computed(() => {
@@ -92,6 +100,7 @@ export const useConversationListStore = defineStore("conversation_list", () => {
         }),
         setSelectedChat,
         deselectChat,
+        isChatSelected,
 
         invites,
         selectedInvite: computed(() => {
@@ -107,5 +116,6 @@ export const useConversationListStore = defineStore("conversation_list", () => {
         }),
         setSelectedInvite,
         deselectInvite,
+        isInviteSelected,
     };
 });

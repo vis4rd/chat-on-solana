@@ -3,6 +3,7 @@
     import ChatMessage from "@/components/ChatMessage.vue";
     import ChatWindowConversationHistory from "@/components/ChatWindowConversationHistory.vue";
     import ElementWrapper from "@/components/ElementWrapper.vue";
+    import InviteChoiceChatBox from "@/components/InviteChoiceChatBox.vue";
     import { Button } from "@/components/ui/button";
     import { FormControl, FormField, FormItem } from "@/components/ui/form";
     import { Input } from "@/components/ui/input";
@@ -118,7 +119,10 @@
     }
 
     function isAnyChatSelected() {
-        return conversationListStore.selectedChat !== null;
+        return conversationListStore.isChatSelected();
+    }
+    function isAnyInviteSelected() {
+        return conversationListStore.isInviteSelected();
     }
     function hasAuthority() {
         return conversation.value.authority.toBase58() === workspace.wallet?.publicKey.toBase58();
@@ -149,7 +153,10 @@
             </Button>
         </div>
         <BlockWrapper class="chat-window">
-            <div class="no-chat-selected-prompt" v-if="!isAnyChatSelected()">Select a chat</div>
+            <div class="chat-box" v-if="!isAnyChatSelected() && !isAnyInviteSelected()">Select a chat</div>
+            <Suspense v-else-if="isAnyInviteSelected()">
+                <InviteChoiceChatBox class="chat-box" />
+            </Suspense>
             <!-- TODO: add note about the chat no longer existing -->
             <Suspense v-else :key="conversationListStore.selectedChat?.pda">
                 <ChatWindowConversationHistory
@@ -239,7 +246,7 @@
         height: calc(100vh - 36px - 2rem - 4rem - 58px - 48px - 36px);
         min-height: 10rem;
     }
-    .no-chat-selected-prompt {
+    .chat-box {
         width: 100%;
         height: 100%;
         text-align: center;
