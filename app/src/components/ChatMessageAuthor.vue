@@ -12,10 +12,10 @@
         messages: ChatMessage[];
     };
 
-    const props = defineProps<{ message: ChatMessage; conversation: ConversationAccount }>();
+    const props = defineProps<{ author: PublicKey; conversation: ConversationAccount }>();
     const workspace = useAnchorWorkspaceStore();
 
-    const author = props.message.author;
+    const author = props.author;
 
     function copyAuthorAddress() {
         try {
