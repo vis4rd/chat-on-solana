@@ -24,7 +24,7 @@
         </H2>
 
         <div class="paragraph">
-            Currently the only supported wallet is <a href="https://phantom.app/" target="_blank">Phantom</a>.
+            Currently the only supported wallet is <a href="https://www.solflare.com/" target="_blank">Solflare</a>.
             <br />
             Install it as a browser extension for seamless integration and easy usage!
         </div>

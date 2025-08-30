@@ -40,7 +40,7 @@
                 <br />
                 <br />
                 <ElementWrapper
-                    class="align-left"
+                    class="align-left devnet-note"
                     v-if="workspace.connection!.rpcEndpoint === 'https://api.devnet.solana.com'"
                 >
                     We've detected that deployment of this site is connected to <b>Solana Devnet</b>.
@@ -116,7 +116,12 @@
         display: block;
         place-items: start;
         width: 100%;
+    }
+
+    .devnet-note {
         height: fit-content;
+        max-height: fit-content;
+        padding-top: 1rem;
     }
 
     p,
