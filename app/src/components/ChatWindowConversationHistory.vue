@@ -4,9 +4,8 @@
     import { ScrollArea } from "@/components/ui/scroll-area";
     import { useAnchorWorkspaceStore } from "@/stores/anchor_workspace";
     import { PublicKey } from "@solana/web3.js";
-    import { useVModel } from "@vueuse/core";
     import { toast } from "vue-sonner";
-    import { computed, onUnmounted, type ComputedRef, type Ref } from "vue";
+    import { computed, onUnmounted, type ComputedRef, type ModelRef } from "vue";
 
     type ChatMessage = { data: string; author: PublicKey; timestamp: number };
     type ConversationAccount = {
@@ -15,7 +14,12 @@
         chatters: PublicKey[];
         messages: ChatMessage[];
     };
-    type ChatMessageSequence = { author: PublicKey; messages: ChatMessage[] };
+    type ChatMessageSequenceWithTimestamp = { timestamp: number; messages: ChatMessage[] };
+    type ChatMessageSequenceWithAuthor = { author: PublicKey; messages: ChatMessage[] };
+    type ChatMessageSequenceWithAuthorSequenceWithTimestamp = {
+        timestamp: number;
+        messageSequencesWithAuthor: ChatMessageSequenceWithAuthor[];
+    };
 
     const workspace = useAnchorWorkspaceStore();
     const conversationDefault: ConversationAccount = {
@@ -25,23 +29,23 @@
         messages: [],
     };
 
-    const props = defineProps<{ modelValue: ConversationAccount; accountPda: PublicKey | undefined }>();
-    const emits = defineEmits<{ (e: "update:modelValue", payload: ConversationAccount): void }>();
-    const conversation: Ref<ConversationAccount> = useVModel(props, "modelValue", emits, {
-        passive: true,
-        defaultValue: conversationDefault,
+    const props = defineProps<{ accountPda: PublicKey | undefined }>();
+    const conversation: ModelRef<ConversationAccount> = defineModel("conversationAccount", {
+        default: { authority: PublicKey.default, chatterCount: 0, chatters: [], messages: [] },
     });
+
     const messages: ComputedRef<ChatMessage[]> = computed(() => conversation.value.messages);
-    const messageSequences: ComputedRef<ChatMessageSequence[]> = computed(() => {
-        const sequences: ChatMessageSequence[] = [];
-        let currentSequence: ChatMessageSequence | null = null;
+    const messageSequencesByTimestamp: ComputedRef<ChatMessageSequenceWithTimestamp[]> = computed(() => {
+        const sequences: ChatMessageSequenceWithTimestamp[] = [];
+        let currentSequence: ChatMessageSequenceWithTimestamp | null = null;
 
         messages.value.forEach((message) => {
-            if (!currentSequence || !message.author.equals(currentSequence.author)) {
+            if (!currentSequence || message.timestamp - currentSequence.timestamp > 5 * 60) {
+                // New sequence if more than 5 minutes have passed
                 if (currentSequence) {
                     sequences.push(currentSequence);
                 }
-                currentSequence = { author: message.author, messages: [message] };
+                currentSequence = { timestamp: message.timestamp, messages: [message] };
             } else {
                 currentSequence.messages.push(message);
             }
@@ -53,6 +57,38 @@
 
         return sequences;
     });
+    const messageSequencesByTimestampThenAuthor: ComputedRef<ChatMessageSequenceWithAuthorSequenceWithTimestamp[]> =
+        computed(() => {
+            const sequencesOfSequences: ChatMessageSequenceWithAuthorSequenceWithTimestamp[] = [];
+            let currentSequence: ChatMessageSequenceWithAuthorSequenceWithTimestamp | null = null;
+
+            messageSequencesByTimestamp.value.forEach((sequence) => {
+                currentSequence = { timestamp: sequence.timestamp, messageSequencesWithAuthor: [] };
+
+                let currentSequenceWithAuthor: ChatMessageSequenceWithAuthor | null = null;
+                sequence.messages.forEach((message) => {
+                    if (!currentSequenceWithAuthor) {
+                        currentSequenceWithAuthor = { author: message.author, messages: [message] };
+                        return;
+                    }
+
+                    if (message.author.equals(currentSequenceWithAuthor.author)) {
+                        // Same author as previous message
+                        currentSequenceWithAuthor.messages.push(message);
+                        return;
+                    }
+
+                    // Different author, push the current sequence and start a new one
+                    currentSequence!.messageSequencesWithAuthor.push(currentSequenceWithAuthor);
+                    currentSequenceWithAuthor = { author: message.author, messages: [message] };
+                });
+
+                currentSequence.messageSequencesWithAuthor.push(currentSequenceWithAuthor!);
+                sequencesOfSequences.push(currentSequence);
+            });
+
+            return sequencesOfSequences;
+        });
 
     async function fetchConversationHistory() {
         try {
@@ -85,19 +121,33 @@
 <template>
     <ScrollArea class="chat-scroll-area">
         <div
-            v-for="messageSequence in messageSequences"
-            :key="messageSequence.author.toString()"
-            class="chat-message-sequence"
+            v-for="(messageSequenceSequenceWithTimestamp, index) in messageSequencesByTimestampThenAuthor"
+            :key="index"
+            class="chat-message-sequence-sequence"
         >
-            <ChatMessageAuthor :author="messageSequence.author" :conversation="conversation" />
-            <div class="chat-message-sequence-messages">
-                <ChatMessage
-                    v-for="message in messageSequence.messages"
-                    :key="message.timestamp"
-                    :isMyself="message.author.equals(workspace.wallet!.publicKey)"
-                >
-                    {{ message.data }}
-                </ChatMessage>
+            <span class="chat-message-sequence-timestamp">
+                {{
+                    new Date(messageSequenceSequenceWithTimestamp.timestamp * 1000)
+                        .toISOString()
+                        .slice(0, 16)
+                        .replace("T", " ")
+                }}
+            </span>
+            <div
+                v-for="(messageSequence, index) in messageSequenceSequenceWithTimestamp.messageSequencesWithAuthor"
+                :key="index"
+                class="chat-message-sequence"
+            >
+                <ChatMessageAuthor :author="messageSequence.author" :conversation="conversation" />
+                <div class="chat-message-sequence-messages">
+                    <ChatMessage
+                        v-for="message in messageSequence.messages"
+                        :key="message.timestamp"
+                        :isMyself="message.author.equals(workspace.wallet!.publicKey)"
+                    >
+                        {{ message.data }}
+                    </ChatMessage>
+                </div>
             </div>
         </div>
     </ScrollArea>
@@ -109,6 +159,13 @@
         height: 100%;
         padding-left: 0.6rem;
         padding-right: 0.6rem;
+    }
+    .chat-message-sequence-timestamp {
+        display: flex;
+        place-content: center;
+        width: 100%;
+        color: var(--color-muted-foreground);
+        font-size: 0.7rem;
     }
     .chat-message-sequence {
         display: flex;

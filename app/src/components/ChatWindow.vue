@@ -162,7 +162,7 @@
             <!-- TODO: add note about the chat no longer existing -->
             <Suspense v-else :key="conversationListStore.selectedChat?.pda">
                 <ChatWindowConversationHistory
-                    v-model="conversation"
+                    v-model:conversation-account="conversation"
                     :account-pda="conversationListStore.selectedChat?.pda"
                 />
                 <template #fallback>
