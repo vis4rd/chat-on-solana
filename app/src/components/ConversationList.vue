@@ -11,15 +11,13 @@
         <div class="chats">
             <ElementWrapper class="conversation-list-title"> Chats </ElementWrapper>
 
-            <Transition mode="out-in">
-                <Suspense>
-                    <template #fallback>
-                        <Skeleton class="skeleton" />
-                    </template>
+            <Suspense>
+                <template #fallback>
+                    <Skeleton class="skeleton" />
+                </template>
 
-                    <ConversationListDynamicLinks />
-                </Suspense>
-            </Transition>
+                <ConversationListDynamicLinks />
+            </Suspense>
 
             <RouterLink to="/newconversation">
                 <Button class="full-width">Create a new conversation</Button>
@@ -28,15 +26,13 @@
         <div class="invites">
             <ElementWrapper class="conversation-list-title"> Invites </ElementWrapper>
 
-            <Transition mode="out-in">
-                <Suspense>
-                    <template #fallback>
-                        <Skeleton class="skeleton" />
-                    </template>
+            <Suspense>
+                <template #fallback>
+                    <Skeleton class="skeleton" />
+                </template>
 
-                    <InviteListDynamicLinks />
-                </Suspense>
-            </Transition>
+                <InviteListDynamicLinks />
+            </Suspense>
         </div>
     </div>
 </template>
