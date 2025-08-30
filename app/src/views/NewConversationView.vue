@@ -36,17 +36,17 @@
     setFieldValue("chatters", [workspace.wallet!.publicKey.toBase58()]);
 
     const onSubmit = handleSubmit((values) => {
-        console.log("Form submitted!", values);
+        // console.log("Form submitted!", values);
 
         createConversation(values.conversation_id, values.chatters)
             .then((signature: string) => {
-                console.debug("Transaction sent:", signature);
+                // console.debug("Transaction sent:", signature);
                 setTimeout(() => {
                     router.replace("/chat");
                 }, 1000);
             })
             .catch((error: Error) => {
-                console.error("Error creating conversation:", error);
+                // console.error("Error creating conversation:", error);
             });
     });
 

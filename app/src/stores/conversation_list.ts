@@ -59,7 +59,7 @@ export const useConversationListStore = defineStore("conversation_list", () => {
             invite_index.value = -1;
             chat_index.value = index;
         } else {
-            console.warn(`Conversation ID ${conversation_id} not found in the list.`);
+            // console.warn(`Conversation ID ${conversation_id} not found in the list.`);
         }
     }
 
@@ -73,7 +73,7 @@ export const useConversationListStore = defineStore("conversation_list", () => {
             chat_index.value = -1;
             invite_index.value = index;
         } else {
-            console.warn(`Invite ID ${conversation_id} not found in the list.`);
+            // console.warn(`Invite ID ${conversation_id} not found in the list.`);
         }
     }
 

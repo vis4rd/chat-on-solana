@@ -64,7 +64,7 @@ export async function createConversation(conversationId: string, chatters: strin
 
         return signAndSendTransaction(tx, payer);
     } catch (e) {
-        console.error("Error creating conversation:", e);
+        // console.error("Error creating conversation:", e);
         return Promise.reject(e);
     }
 }

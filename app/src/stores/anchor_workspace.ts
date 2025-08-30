@@ -153,7 +153,7 @@ export const useAnchorWorkspaceStore = defineStore("anchor_workspace", (): Ancho
                 }
             })
             .catch((error) => {
-                console.error("Error checking presence on Solana ledger:", error);
+                // console.error("Error checking presence on Solana ledger:", error);
                 setReadyWithDelay();
             });
     }
@@ -169,7 +169,7 @@ export const useAnchorWorkspaceStore = defineStore("anchor_workspace", (): Ancho
                 }
             })
             .catch((error) => {
-                console.error("Error checking registration:", error);
+                // console.error("Error checking registration:", error);
             })
             .finally(() => {
                 setReadyWithDelay();
