@@ -7,7 +7,7 @@
     import { useAnchorWorkspaceStore, WalletConnectionState } from "@/stores/anchor_workspace";
     import { useColorMode } from "@vueuse/core";
     import { WalletMultiButton } from "solana-wallets-vue";
-    import { RouterView, useRoute, useRouter } from "vue-router";
+    import { RouterView, useRouter } from "vue-router";
     import { computed, watch } from "vue";
 
     const workspace = useAnchorWorkspaceStore();
@@ -24,7 +24,6 @@
     });
 
     const router = useRouter();
-    const route = useRoute();
 
     watch(
         () => workspace.walletConnectionState,
@@ -42,13 +41,13 @@
         { immediate: true }
     );
 
-    watch(
-        // TODO: DEBUG, please remove
-        () => route.fullPath,
-        (newRoute, oldRoute) => {
-            console.log("Route changed: ", oldRoute, "->", newRoute);
-        }
-    );
+    // watch(
+    //     // ! DEBUG only
+    //     () => route.fullPath,
+    //     (newRoute, oldRoute) => {
+    //         console.log("Route changed: ", oldRoute, "->", newRoute);
+    //     }
+    // );
 </script>
 
 <template>
@@ -61,14 +60,9 @@
                 {{ workspace.connection?.rpcEndpoint }}
             </ElementWrapper>
             <!-- <ElementWrapper>
-                <Suspense>
-                    <WalletBalanceElement />
-                    <template #fallback>Loading...</template>
-                </Suspense>
-            </ElementWrapper> -->
-            <ElementWrapper>
+                ! DEBUG ONLY
                 {{ workspace.ready ? "RDY" : "..." }}
-            </ElementWrapper>
+            </ElementWrapper> -->
             <DarkModeToggle />
         </div>
     </div>

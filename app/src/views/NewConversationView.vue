@@ -3,21 +3,19 @@
     import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
     import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
     import { Input } from "@/components/ui/input";
-    import { addInviteToSomeonesList, createConversation } from "@/lib/solana";
+    import { createConversation } from "@/lib/solana";
     import { useAnchorWorkspaceStore } from "@/stores/anchor_workspace";
     import { Icon } from "@iconify/vue";
-    import { PublicKey } from "@solana/web3.js";
     import { toTypedSchema } from "@vee-validate/zod";
     import { useForm } from "vee-validate";
     import { useRouter } from "vue-router";
-    import { toast } from "vue-sonner";
-    import { ref, watch } from "vue";
+    import { ref } from "vue";
     import * as z from "zod";
 
     const workspace = useAnchorWorkspaceStore();
     const router = useRouter();
 
-    // DOCS: https://zod.dev/basics
+    // ? DOCS: https://zod.dev/basics
     const formSchema = toTypedSchema(
         z.object({
             conversation_id: z.string().min(4).max(32),
@@ -26,13 +24,13 @@
     );
 
     const { handleSubmit, errors, setFieldValue } = useForm({ validationSchema: formSchema });
-    watch(
-        // TODO: DEBUG ONLY, please remove
-        () => errors.value,
-        (newErrors) => {
-            console.debug("Form errors updated:", newErrors);
-        }
-    );
+    // watch(
+    //     // ! DEBUG ONLY
+    //     () => errors.value,
+    //     (newErrors) => {
+    //         console.debug("Form errors updated:", newErrors);
+    //     }
+    // );
 
     // NOTE: required to set the field manually as HTML element is disabled
     setFieldValue("chatters", [workspace.wallet!.publicKey.toBase58()]);
@@ -51,17 +49,6 @@
                 console.error("Error creating conversation:", error);
             });
     });
-
-    // const onSubmitDebug = (event: Event) => {
-    //     console.debug("Submit button clicked", event);
-    //     if (event.target instanceof HTMLFormElement) {
-    //         const formData = new FormData(event.target);
-    //         for (const [key, value] of formData.entries()) {
-    //             console.debug(`${key}: ${value}`);
-    //         }
-    //     }
-    //     onSubmit(event);
-    // };
 
     const chatterRowsCount = ref(1);
 
@@ -84,7 +71,6 @@
     <Card class="margins">
         <CardHeader>
             <CardTitle>New Conversation</CardTitle>
-            <!-- <CardDescription>Card Description</CardDescription> -->
         </CardHeader>
         <CardContent>
             <form @submit="onSubmit" class="form-component">
@@ -138,8 +124,6 @@
                 <Button type="submit"> Submit </Button>
             </form>
         </CardContent>
-
-        <!-- <CardFooter> Card Footer </CardFooter> -->
     </Card>
     <Button variant="outline" @click="redirectToChats()">Back to chats</Button>
 </template>

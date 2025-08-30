@@ -71,10 +71,19 @@
 
     function copyConversationAddress() {
         if (conversationListStore.selectedChat?.pda) {
-            navigator.clipboard.writeText(conversationListStore.selectedChat.pda.toBase58());
-            // TODO: notification that address was copied successfully
+            navigator.clipboard
+                .writeText(conversationListStore.selectedChat.pda.toBase58())
+                .then(() => {
+                    toast.success("Conversation address copied to clipboard.", { duration: 5000 });
+                })
+                .catch(() => {
+                    toast.warning("Author address could not be copied to clipboard", {
+                        description: "Not secure context. Clipboard API is available only under https sites.",
+                        duration: 5000,
+                    });
+                });
         } else {
-            // TODO: notification about failure
+            toast.error("No conversation selected.", { duration: 5000 });
         }
     }
 
@@ -210,7 +219,6 @@
                 <Icon v-if="!isAnyChatSelected()" icon="fluent:lock-closed-24-regular" class="size-5" />
                 <span v-else>Delete chat</span>
             </Button>
-            <ElementWrapper>{{ conversation.authority.toBase58() }}</ElementWrapper>
         </div>
     </div>
 </template>
