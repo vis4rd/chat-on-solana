@@ -6,7 +6,7 @@ resolution = true
 skip-lint = false
 
 [programs.localnet]
-chat = "7XiCckHfHiSrH8wWmnHffMxQXqLpVRa6ENbZ9ydvAi4L"
+chat = "8Cq5oiMmozifx8ReYc9Eb1z57jS84vPL6D9W64duJ2mv"
 
 [registry]
 url = "https://api.apr.dev"

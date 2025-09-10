@@ -5,7 +5,7 @@
  * IDL can be found at `target/idl/chat.json`.
  */
 export type Chat = {
-  "address": "7XiCckHfHiSrH8wWmnHffMxQXqLpVRa6ENbZ9ydvAi4L",
+  "address": "8Cq5oiMmozifx8ReYc9Eb1z57jS84vPL6D9W64duJ2mv",
   "metadata": {
     "name": "chat",
     "version": "0.1.0",
@@ -32,7 +32,7 @@ export type Chat = {
           "signer": true,
           "relations": [
             "inviteListAccount",
-            "conversationListAccount"
+            "chatListAccount"
           ]
         },
         {
@@ -53,14 +53,18 @@ export type Chat = {
                   105,
                   116,
                   101,
-                  115
+                  95,
+                  108,
+                  105,
+                  115,
+                  116
                 ]
               }
             ]
           }
         },
         {
-          "name": "conversationListAccount",
+          "name": "chatListAccount",
           "writable": true,
           "pda": {
             "seeds": [
@@ -75,7 +79,11 @@ export type Chat = {
                   104,
                   97,
                   116,
-                  115
+                  95,
+                  108,
+                  105,
+                  115,
+                  116
                 ]
               }
             ]
@@ -84,22 +92,196 @@ export type Chat = {
       ],
       "args": [
         {
-          "name": "conversationId",
+          "name": "chatId",
           "type": "string"
         }
       ]
     },
     {
-      "name": "addInviteToSomeonesList",
+      "name": "appendMessage",
       "discriminator": [
-        41,
-        115,
-        165,
+        180,
+        85,
+        91,
+        83,
+        18,
+        62,
+        31,
+        7
+      ],
+      "accounts": [
+        {
+          "name": "author",
+          "signer": true
+        },
+        {
+          "name": "chatAccount",
+          "writable": true
+        }
+      ],
+      "args": [
+        {
+          "name": "message",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "createChat",
+      "discriminator": [
+        133,
+        186,
+        254,
+        72,
+        143,
+        178,
+        221,
+        28
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "chatListAccount"
+          ]
+        },
+        {
+          "name": "chatAccount",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "arg",
+                "path": "chatId"
+              }
+            ]
+          }
+        },
+        {
+          "name": "chatListAccount",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "authority"
+              },
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  104,
+                  97,
+                  116,
+                  95,
+                  108,
+                  105,
+                  115,
+                  116
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "systemProgram",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "chatId",
+          "type": "string"
+        },
+        {
+          "name": "chatters",
+          "type": {
+            "vec": "pubkey"
+          }
+        }
+      ]
+    },
+    {
+      "name": "deleteChat",
+      "discriminator": [
+        180,
+        180,
+        227,
+        33,
+        128,
         174,
-        82,
-        54,
-        233,
-        170
+        126,
+        252
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "chatAccount",
+            "chatListAccount"
+          ]
+        },
+        {
+          "name": "chatAccount",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "arg",
+                "path": "chatId"
+              }
+            ]
+          }
+        },
+        {
+          "name": "chatListAccount",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "authority"
+              },
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  104,
+                  97,
+                  116,
+                  95,
+                  108,
+                  105,
+                  115,
+                  116
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "chatId",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "inviteAnotherUser",
+      "discriminator": [
+        75,
+        6,
+        156,
+        79,
+        226,
+        190,
+        170,
+        84
       ],
       "accounts": [
         {
@@ -125,7 +307,11 @@ export type Chat = {
                   105,
                   116,
                   101,
-                  115
+                  95,
+                  108,
+                  105,
+                  115,
+                  116
                 ]
               }
             ]
@@ -138,22 +324,22 @@ export type Chat = {
           "type": "pubkey"
         },
         {
-          "name": "conversationId",
+          "name": "chatId",
           "type": "string"
         }
       ]
     },
     {
-      "name": "appendConversationToList",
+      "name": "leaveChat",
       "discriminator": [
-        114,
-        240,
-        202,
-        151,
-        47,
-        184,
-        106,
-        167
+        33,
+        33,
+        11,
+        135,
+        89,
+        243,
+        113,
+        102
       ],
       "accounts": [
         {
@@ -161,11 +347,11 @@ export type Chat = {
           "writable": true,
           "signer": true,
           "relations": [
-            "conversationListAccount"
+            "chatListAccount"
           ]
         },
         {
-          "name": "conversationListAccount",
+          "name": "chatListAccount",
           "writable": true,
           "pda": {
             "seeds": [
@@ -180,7 +366,11 @@ export type Chat = {
                   104,
                   97,
                   116,
-                  115
+                  95,
+                  108,
+                  105,
+                  115,
+                  116
                 ]
               }
             ]
@@ -189,51 +379,22 @@ export type Chat = {
       ],
       "args": [
         {
-          "name": "conversationId",
+          "name": "chatId",
           "type": "string"
         }
       ]
     },
     {
-      "name": "appendMessage",
+      "name": "registerUser",
       "discriminator": [
-        180,
-        85,
-        91,
-        83,
-        18,
-        62,
-        31,
-        7
-      ],
-      "accounts": [
-        {
-          "name": "conversationAccount",
-          "writable": true
-        },
-        {
-          "name": "author",
-          "signer": true
-        }
-      ],
-      "args": [
-        {
-          "name": "message",
-          "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "createConversation",
-      "discriminator": [
-        30,
-        90,
-        208,
-        53,
-        75,
-        232,
-        26,
-        102
+        2,
+        241,
+        150,
+        223,
+        99,
+        214,
+        116,
+        97
       ],
       "accounts": [
         {
@@ -242,55 +403,7 @@ export type Chat = {
           "signer": true
         },
         {
-          "name": "conversationAccount",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "arg",
-                "path": "conversationId"
-              }
-            ]
-          }
-        },
-        {
-          "name": "systemProgram",
-          "address": "11111111111111111111111111111111"
-        }
-      ],
-      "args": [
-        {
-          "name": "conversationId",
-          "type": "string"
-        },
-        {
-          "name": "chatters",
-          "type": {
-            "vec": "pubkey"
-          }
-        }
-      ]
-    },
-    {
-      "name": "createConversationList",
-      "discriminator": [
-        44,
-        145,
-        217,
-        62,
-        213,
-        184,
-        37,
-        214
-      ],
-      "accounts": [
-        {
-          "name": "authority",
-          "writable": true,
-          "signer": true
-        },
-        {
-          "name": "conversationListAccount",
+          "name": "chatListAccount",
           "writable": true,
           "pda": {
             "seeds": [
@@ -305,36 +418,15 @@ export type Chat = {
                   104,
                   97,
                   116,
-                  115
+                  95,
+                  108,
+                  105,
+                  115,
+                  116
                 ]
               }
             ]
           }
-        },
-        {
-          "name": "systemProgram",
-          "address": "11111111111111111111111111111111"
-        }
-      ],
-      "args": []
-    },
-    {
-      "name": "createInviteList",
-      "discriminator": [
-        254,
-        61,
-        126,
-        176,
-        65,
-        138,
-        153,
-        141
-      ],
-      "accounts": [
-        {
-          "name": "authority",
-          "writable": true,
-          "signer": true
         },
         {
           "name": "inviteListAccount",
@@ -354,7 +446,11 @@ export type Chat = {
                   105,
                   116,
                   101,
-                  115
+                  95,
+                  108,
+                  105,
+                  115,
+                  116
                 ]
               }
             ]
@@ -366,47 +462,6 @@ export type Chat = {
         }
       ],
       "args": []
-    },
-    {
-      "name": "deleteConversation",
-      "discriminator": [
-        247,
-        125,
-        124,
-        231,
-        145,
-        74,
-        126,
-        212
-      ],
-      "accounts": [
-        {
-          "name": "authority",
-          "writable": true,
-          "signer": true,
-          "relations": [
-            "conversationAccount"
-          ]
-        },
-        {
-          "name": "conversationAccount",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "arg",
-                "path": "conversationId"
-              }
-            ]
-          }
-        }
-      ],
-      "args": [
-        {
-          "name": "conversationId",
-          "type": "string"
-        }
-      ]
     },
     {
       "name": "rejectInvite",
@@ -447,7 +502,11 @@ export type Chat = {
                   105,
                   116,
                   101,
-                  115
+                  95,
+                  108,
+                  105,
+                  115,
+                  116
                 ]
               }
             ]
@@ -456,58 +515,7 @@ export type Chat = {
       ],
       "args": [
         {
-          "name": "conversationId",
-          "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "removeConversationFromList",
-      "discriminator": [
-        171,
-        11,
-        199,
-        133,
-        90,
-        127,
-        51,
-        210
-      ],
-      "accounts": [
-        {
-          "name": "authority",
-          "writable": true,
-          "signer": true,
-          "relations": [
-            "conversationListAccount"
-          ]
-        },
-        {
-          "name": "conversationListAccount",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "account",
-                "path": "authority"
-              },
-              {
-                "kind": "const",
-                "value": [
-                  99,
-                  104,
-                  97,
-                  116,
-                  115
-                ]
-              }
-            ]
-          }
-        }
-      ],
-      "args": [
-        {
-          "name": "conversationId",
+          "name": "chatId",
           "type": "string"
         }
       ]
@@ -515,29 +523,29 @@ export type Chat = {
   ],
   "accounts": [
     {
-      "name": "conversationAccount",
+      "name": "chatAccount",
       "discriminator": [
-        49,
-        27,
-        167,
-        114,
-        0,
-        28,
-        72,
-        47
+        188,
+        218,
+        213,
+        242,
+        64,
+        84,
+        104,
+        17
       ]
     },
     {
-      "name": "conversationListAccount",
+      "name": "chatListAccount",
       "discriminator": [
-        36,
-        110,
-        111,
-        100,
-        166,
-        209,
-        120,
-        91
+        215,
+        125,
+        125,
+        86,
+        234,
+        190,
+        235,
+        60
       ]
     }
   ],
@@ -564,13 +572,13 @@ export type Chat = {
     },
     {
       "code": 6004,
-      "name": "conversationAccountIsChatter",
-      "msg": "The conversation account cannot be one of the chatters."
+      "name": "chatAccountIsChatter",
+      "msg": "The chat account cannot be one of the chatters."
     },
     {
       "code": 6005,
-      "name": "tooLongConversationId",
-      "msg": "The conversation ID is too long. It must be 32 characters or less."
+      "name": "chatIdTooLong",
+      "msg": "The chat ID is too long. It must be 32 characters or less."
     },
     {
       "code": 6006,
@@ -580,7 +588,7 @@ export type Chat = {
     {
       "code": 6007,
       "name": "tooManyMessages",
-      "msg": "The conversation has reached the maximum number of messages."
+      "msg": "The chat has reached the maximum number of messages."
     },
     {
       "code": 6008,
@@ -604,13 +612,13 @@ export type Chat = {
     },
     {
       "code": 6012,
-      "name": "conversationIdTaken",
-      "msg": "Conversation ID already taken."
+      "name": "chatIdTaken",
+      "msg": "Chat ID already taken."
     }
   ],
   "types": [
     {
-      "name": "conversationAccount",
+      "name": "chatAccount",
       "type": {
         "kind": "struct",
         "fields": [
@@ -642,7 +650,7 @@ export type Chat = {
       }
     },
     {
-      "name": "conversationListAccount",
+      "name": "chatListAccount",
       "type": {
         "kind": "struct",
         "fields": [
@@ -651,7 +659,7 @@ export type Chat = {
             "type": "pubkey"
           },
           {
-            "name": "conversationIds",
+            "name": "chatIds",
             "type": {
               "vec": "string"
             }

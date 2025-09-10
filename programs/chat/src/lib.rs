@@ -9,7 +9,7 @@ mod errors;
 use crate::contexts::*;
 use anchor_lang::prelude::*;
 
-declare_id!("7XiCckHfHiSrH8wWmnHffMxQXqLpVRa6ENbZ9ydvAi4L");
+declare_id!("8Cq5oiMmozifx8ReYc9Eb1z57jS84vPL6D9W64duJ2mv");
 
 #[program]
 pub mod chat {

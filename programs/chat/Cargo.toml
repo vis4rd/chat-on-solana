@@ -1,7 +1,7 @@
 [package]
 name = "chat"
 version = "0.1.0"
-description = "Created with Anchor"
+description = "Chat On Solana - decentralized instant messaging application"
 edition = "2021"
 
 [lib]
