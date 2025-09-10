@@ -12,7 +12,7 @@ pub struct Message {
 
 #[account]
 #[derive(InitSpace)]
-pub struct ConversationAccount {
+pub struct ChatAccount {
     pub authority: Pubkey,
 
     pub chatter_count: u8,

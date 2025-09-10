@@ -1,7 +1,7 @@
 use anchor_lang::prelude::*;
 
 #[error_code]
-pub enum ConversationError {
+pub enum ChatError {
     #[msg("Not enough chatters provided. At least 2 are required.")]
     NotEnoughChatters,
     #[msg("The number of chatters exceeds the maximum limit of 4.")]
@@ -10,13 +10,13 @@ pub enum ConversationError {
     RepeatedChatters,
     #[msg("The payer must be one of the chatters.")]
     PayerNotInChatters,
-    #[msg("The conversation account cannot be one of the chatters.")]
-    ConversationAccountIsChatter,
-    #[msg("The conversation ID is too long. It must be 32 characters or less.")]
-    TooLongConversationId,
+    #[msg("The chat account cannot be one of the chatters.")]
+    ChatAccountIsChatter,
+    #[msg("The chat ID is too long. It must be 32 characters or less.")]
+    ChatIdTooLong,
     #[msg("The message is too long. It must be 100 characters or less.")]
     MessageTooLong,
-    #[msg("The conversation has reached the maximum number of messages.")]
+    #[msg("The chat has reached the maximum number of messages.")]
     TooManyMessages,
     #[msg("Insufficient permission to perform the operation.")]
     InvalidAuthority,
@@ -26,6 +26,6 @@ pub enum ConversationError {
     ForbiddenInviteToSelf,
     #[msg("The invite does not exist.")]
     InviteNotFound,
-    #[msg("Conversation ID already taken.")]
-    ConversationIdTaken,
+    #[msg("Chat ID already taken.")]
+    ChatIdTaken,
 }
