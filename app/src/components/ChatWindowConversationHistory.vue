@@ -31,7 +31,13 @@
 
     const props = defineProps<{ accountPda: PublicKey | undefined }>();
     const conversation: ModelRef<ConversationAccount> = defineModel("conversationAccount", {
-        default: { authority: PublicKey.default, chatterCount: 0, chatters: [], messages: [] },
+        // Explicitly cast default to ConversationAccount to avoid narrow literal -> never[] inference
+        default: {
+            authority: PublicKey.default,
+            chatterCount: 0,
+            chatters: [] as PublicKey[],
+            messages: [] as ChatMessage[],
+        } as ConversationAccount,
     });
 
     const messages: ComputedRef<ChatMessage[]> = computed(() => conversation.value.messages);
@@ -97,7 +103,7 @@
                 await new Promise((resolve) => setTimeout(resolve, 1000));
             }
 
-            conversation.value = await workspace.program!.account.conversationAccount.fetch(props.accountPda)!;
+            conversation.value = await workspace.program!.account.chatAccount.fetch(props.accountPda)!;
         } catch (error) {
             toast.error("Can't load chat history:", { description: (error as Error).message });
             conversation.value = conversationDefault;
@@ -106,7 +112,7 @@
 
     await fetchConversationHistory();
 
-    const eventEmitter = workspace.program!.account.conversationAccount.subscribe(props.accountPda!);
+    const eventEmitter = workspace.program!.account.chatAccount.subscribe(props.accountPda!);
     eventEmitter.on("change", (updatedConversation: ConversationAccount) => {
         // console.debug("Conversation updated:", updatedConversation);
         conversation.value = updatedConversation;
@@ -114,7 +120,7 @@
 
     onUnmounted(() => {
         eventEmitter.removeAllListeners();
-        workspace.program!.account.conversationAccount.unsubscribe(props.accountPda!);
+        workspace.program!.account.chatAccount.unsubscribe(props.accountPda!);
     });
 </script>
 

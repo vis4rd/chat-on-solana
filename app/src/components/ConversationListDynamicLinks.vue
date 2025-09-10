@@ -12,14 +12,13 @@
         conversationListStore.conversations = [];
     } else {
         try {
-            // Derive the PDA for the conversation_list_account
-            const [conversationListPDA] = await PublicKey.findProgramAddress(
-                [workspace.wallet!.publicKey.toBuffer(), Buffer.from("chats")],
+            // Derive the PDA for the chat_list_account
+            const [chatListPda] = PublicKey.findProgramAddressSync(
+                [workspace.wallet!.publicKey.toBuffer(), Buffer.from("chat_list")],
                 workspace.program!.programId
             );
-            // Fetch the account
-            const acc = await workspace.program!.account.conversationListAccount.fetch(conversationListPDA);
-            conversationListStore.conversations = acc.conversationIds;
+            const acc = await workspace.program!.account.chatListAccount.fetch(chatListPda);
+            conversationListStore.conversations = acc.chatIds;
 
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (e) {

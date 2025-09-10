@@ -12,13 +12,12 @@
         conversationListStore.invites = [];
     } else {
         try {
-            const [inviteListPDA] = PublicKey.findProgramAddressSync(
-                [workspace.wallet!.publicKey.toBuffer(), Buffer.from("invites")],
+            const [inviteListPda] = PublicKey.findProgramAddressSync(
+                [workspace.wallet!.publicKey.toBuffer(), Buffer.from("invite_list")],
                 workspace.program!.programId
             );
-
-            const acc = await workspace.program!.account.conversationListAccount.fetch(inviteListPDA);
-            conversationListStore.invites = acc.conversationIds;
+            const acc = await workspace.program!.account.chatListAccount.fetch(inviteListPda);
+            conversationListStore.invites = acc.chatIds;
         } catch {
             conversationListStore.invites = [];
         }

@@ -3,7 +3,7 @@
     import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
     import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
     import { Input } from "@/components/ui/input";
-    import { createConversation } from "@/lib/solana";
+    import { createChat } from "@/lib/solana";
     import { useAnchorWorkspaceStore } from "@/stores/anchor_workspace";
     import { Icon } from "@iconify/vue";
     import { toTypedSchema } from "@vee-validate/zod";
@@ -38,7 +38,7 @@
     const onSubmit = handleSubmit((values) => {
         // console.log("Form submitted!", values);
 
-        createConversation(values.conversation_id, values.chatters)
+        createChat(values.conversation_id, values.chatters)
             .then((signature: string) => {
                 // console.debug("Transaction sent:", signature);
                 setTimeout(() => {

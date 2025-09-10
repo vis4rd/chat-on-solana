@@ -9,11 +9,11 @@
 
     const conversationListStore = useConversationListStore();
     const workspace = useAnchorWorkspaceStore();
-    const inviteChatAccountInfo = await workspace.program?.account.conversationAccount.fetchAndContext(
+    const inviteChatAccountInfo = await workspace.program?.account.chatAccount.fetchAndContext(
         conversationListStore.selectedInvite!.pda
     );
-    const otherChatters = inviteChatAccountInfo!.data!.chatters.filter((chatter) =>
-        chatter.equals(workspace.wallet!.publicKey)
+    const otherChatters = inviteChatAccountInfo!.data!.chatters.filter(
+        (chatter) => !chatter.equals(inviteChatAccountInfo!.data!.authority)
     );
 
     function acceptChatInvite(): void {

@@ -8,7 +8,7 @@
     import { FormControl, FormField, FormItem } from "@/components/ui/form";
     import { Input } from "@/components/ui/input";
     import { Skeleton } from "@/components/ui/skeleton";
-    import { appendMessage, deleteConversationAccount, removeConversationFromList } from "@/lib/solana";
+    import { appendMessage, deleteChat, leaveChat } from "@/lib/solana";
     import { useAnchorWorkspaceStore } from "@/stores/anchor_workspace";
     import { useConversationListStore } from "@/stores/conversation_list";
     import { Icon } from "@iconify/vue";
@@ -87,14 +87,14 @@
         }
     }
 
-    function leaveChat() {
+    function leaveChatWrapper() {
         if (!conversationListStore.selectedChat?.id) {
             toast.error("No conversation selected.", { duration: 5000 });
             return;
         }
 
         const conversationId = conversationListStore.selectedChat!.id;
-        removeConversationFromList(conversationId)
+        leaveChat(conversationId)
             .then(() => {
                 conversationListStore.deselectChat();
                 conversationListStore.conversations = conversationListStore.conversations.filter(
@@ -108,14 +108,14 @@
             });
     }
 
-    function deleteChat() {
+    function deleteChatWrapper() {
         if (!conversationListStore.selectedChat?.id) {
             toast.error("No conversation selected.", { duration: 5000 });
             return;
         }
 
         const conversationId = conversationListStore.selectedChat!.id;
-        deleteConversationAccount(conversationId)
+        deleteChat(conversationId)
             .then(() => {
                 conversationListStore.deselectChat();
                 conversationListStore.conversations = conversationListStore.conversations.filter(
@@ -169,7 +169,7 @@
                 <InviteChoiceChatBox class="chat-box" />
             </Suspense>
             <!-- TODO: add note about the chat no longer existing -->
-            <Suspense v-else :key="conversationListStore.selectedChat?.pda">
+            <Suspense v-else :key="conversationListStore.selectedChat?.pda?.toBase58()">
                 <ChatWindowConversationHistory
                     v-model:conversation-account="conversation"
                     :account-pda="conversationListStore.selectedChat?.pda"
@@ -202,7 +202,7 @@
         </div>
         <div class="row">
             <Button
-                @click="leaveChat()"
+                @click="leaveChatWrapper()"
                 class="limit-width"
                 variant="destructive"
                 :disabled="!isAnyChatSelected() || hasAuthority()"
@@ -211,7 +211,7 @@
                 <span v-else>Leave chat</span>
             </Button>
             <Button
-                @click="deleteChat()"
+                @click="deleteChatWrapper()"
                 class="limit-width"
                 variant="destructive"
                 :disabled="!isAnyChatSelected() || !hasAuthority()"
