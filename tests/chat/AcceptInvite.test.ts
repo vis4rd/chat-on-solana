@@ -11,11 +11,11 @@ describe("accept_invite instruction", () => {
     const inviter = anchor.web3.Keypair.generate();
 
     const [inviteListPDA] = anchor.web3.PublicKey.findProgramAddressSync(
-        [authority.publicKey.toBuffer(), Buffer.from("invites")],
+        [authority.publicKey.toBuffer(), Buffer.from("invite_list")],
         program.programId
     );
-    const [conversationListPDA] = anchor.web3.PublicKey.findProgramAddressSync(
-        [authority.publicKey.toBuffer(), Buffer.from("chats")],
+    const [chatListPDA] = anchor.web3.PublicKey.findProgramAddressSync(
+        [authority.publicKey.toBuffer(), Buffer.from("chat_list")],
         program.programId
     );
 
@@ -31,28 +31,19 @@ describe("accept_invite instruction", () => {
             );
         }
 
-        await program.methods
-            .createInviteList()
-            .accounts({ authority: authority.publicKey })
-            .signers([authority])
-            .rpc();
-        await program.methods
-            .createConversationList()
-            .accounts({ authority: authority.publicKey })
-            .signers([authority])
-            .rpc();
+        await program.methods.registerUser().accounts({ authority: authority.publicKey }).signers([authority]).rpc();
     });
 
     it("moves conversationId from invites to chats on accept", async () => {
         await program.methods
-            .addInviteToSomeonesList(authority.publicKey, conversationId)
+            .inviteAnotherUser(authority.publicKey, conversationId)
             .accounts({ sender: inviter.publicKey })
             .signers([inviter])
             .rpc();
 
         // Sanity check: present in invites
-        const inv = await program.account.conversationListAccount.fetch(inviteListPDA);
-        assert.include(inv.conversationIds, conversationId);
+        const inv = await program.account.chatListAccount.fetch(inviteListPDA);
+        assert.include(inv.chatIds, conversationId);
 
         await program.methods
             .acceptInvite(conversationId)
@@ -60,10 +51,10 @@ describe("accept_invite instruction", () => {
             .signers([authority])
             .rpc();
 
-        const invitesAcc = await program.account.conversationListAccount.fetch(inviteListPDA);
-        assert.notInclude(invitesAcc.conversationIds, conversationId);
-        const convAcc = await program.account.conversationListAccount.fetch(conversationListPDA);
-        assert.include(convAcc.conversationIds, conversationId);
+        const invitesAcc = await program.account.chatListAccount.fetch(inviteListPDA);
+        assert.notInclude(invitesAcc.chatIds, conversationId);
+        const convAcc = await program.account.chatListAccount.fetch(chatListPDA);
+        assert.include(convAcc.chatIds, conversationId);
     });
 
     it("fails if invite is not present", async () => {
@@ -80,12 +71,12 @@ describe("accept_invite instruction", () => {
     it("fails if conversation id already taken in chats", async () => {
         const dupId = "dup-" + Math.floor(Math.random() * 10000);
         await program.methods
-            .appendConversationToList(dupId)
+            .createChat(dupId, [authority.publicKey, inviter.publicKey])
             .accounts({ authority: authority.publicKey })
             .signers([authority])
             .rpc();
         await program.methods
-            .addInviteToSomeonesList(authority.publicKey, dupId)
+            .inviteAnotherUser(authority.publicKey, dupId)
             .accounts({ sender: inviter.publicKey })
             .accountsPartial({ recipientsInviteListAccount: inviteListPDA })
             .signers([inviter])
@@ -97,11 +88,11 @@ describe("accept_invite instruction", () => {
                 .accounts({
                     authority: authority.publicKey,
                     inviteListAccount: inviteListPDA,
-                    conversationListAccount: conversationListPDA,
+                    chatListAccount: chatListPDA,
                 })
                 .signers([authority])
                 .rpc(),
-            /ConversationIdTaken/
+            /ChatIdTaken/
         );
     });
 
@@ -113,7 +104,7 @@ describe("accept_invite instruction", () => {
                 .accounts({
                     authority: wrong.publicKey,
                     inviteListAccount: inviteListPDA,
-                    conversationListAccount: conversationListPDA,
+                    chatListAccount: chatListPDA,
                 })
                 .signers([wrong])
                 .rpc(),

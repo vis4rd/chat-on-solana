@@ -11,27 +11,26 @@ describe("append_message instruction", () => {
     anchor.setProvider(provider);
     const program = anchor.workspace.Chat as anchor.Program<IDL.Chat>;
     const payer = provider.wallet as anchor.Wallet;
-    const conversationId: string = "test-convo-something";
-    const [conversationPda] = anchor.web3.PublicKey.findProgramAddressSync(
-        [Buffer.from(conversationId)],
-        program.programId
-    );
+    const chatId: string = "test-chat-something";
+    const [chatPda] = anchor.web3.PublicKey.findProgramAddressSync([Buffer.from(chatId)], program.programId);
     const chatters: anchor.web3.PublicKey[] = [payer.publicKey, anchor.web3.Keypair.generate().publicKey];
 
     before(async () => {
         await program.methods
-            .createConversation(conversationId, chatters)
+            .registerUser()
             .accounts({ authority: payer.publicKey })
-            .rpc();
+            .rpc()
+            .catch(() => {});
+        await program.methods.createChat(chatId, chatters).accounts({ authority: payer.publicKey }).rpc();
     });
 
     it("appends a message from a valid chatter", async () => {
         const expectedMessage = "Hello, world!";
         await program.methods
             .appendMessage(expectedMessage)
-            .accounts({ conversationAccount: conversationPda, author: payer.publicKey })
+            .accounts({ chatAccount: chatPda, author: payer.publicKey })
             .rpc();
-        const acc = await program.account.conversationAccount.fetch(conversationPda);
+        const acc = await program.account.chatAccount.fetch(chatPda);
         assert.equal(acc.messages[0].data, expectedMessage);
         assert.equal(acc.messages[0].author.toBase58(), payer.publicKey.toBase58());
     });
@@ -41,7 +40,7 @@ describe("append_message instruction", () => {
         await assert.isRejected(
             program.methods
                 .appendMessage(longMessage)
-                .accounts({ conversationAccount: conversationPda, author: payer.publicKey })
+                .accounts({ chatAccount: chatPda, author: payer.publicKey })
                 .rpc(),
             /MessageTooLong/
         );
@@ -52,7 +51,7 @@ describe("append_message instruction", () => {
         await assert.isRejected(
             program.methods
                 .appendMessage("Not allowed!")
-                .accounts({ conversationAccount: conversationPda, author: outsider.publicKey })
+                .accounts({ chatAccount: chatPda, author: outsider.publicKey })
                 .signers([outsider])
                 .rpc(),
             /PayerNotInChatters/
@@ -66,7 +65,7 @@ describe("append_message instruction", () => {
             for (let i = 0; i < 25; i++) {
                 const ix = await program.methods
                     .appendMessage(`msg${i}`)
-                    .accounts({ conversationAccount: conversationPda, author: payer.publicKey })
+                    .accounts({ chatAccount: chatPda, author: payer.publicKey })
                     .instruction();
                 tx.add(ix);
             }
@@ -74,11 +73,8 @@ describe("append_message instruction", () => {
         }
 
         // Add one more, should remove the oldest
-        await program.methods
-            .appendMessage("newest")
-            .accounts({ conversationAccount: conversationPda, author: payer.publicKey })
-            .rpc();
-        const acc = await program.account.conversationAccount.fetch(conversationPda);
+        await program.methods.appendMessage("newest").accounts({ chatAccount: chatPda, author: payer.publicKey }).rpc();
+        const acc = await program.account.chatAccount.fetch(chatPda);
         assert.equal(acc.messages.length, 50);
         assert.equal(acc.messages[0].data, "msg1"); // msg0 should be removed
         assert.equal(acc.messages[49].data, "newest");

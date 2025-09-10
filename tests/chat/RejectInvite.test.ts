@@ -11,7 +11,7 @@ describe("reject_invite instruction", () => {
     const inviter = anchor.web3.Keypair.generate();
 
     const [inviteListPDA] = anchor.web3.PublicKey.findProgramAddressSync(
-        [authority.publicKey.toBuffer(), Buffer.from("invites")],
+        [authority.publicKey.toBuffer(), Buffer.from("invite_list")],
         program.programId
     );
 
@@ -27,15 +27,11 @@ describe("reject_invite instruction", () => {
             );
         }
 
-        await program.methods
-            .createInviteList()
-            .accounts({ authority: authority.publicKey })
-            .signers([authority])
-            .rpc();
+        await program.methods.registerUser().accounts({ authority: authority.publicKey }).signers([authority]).rpc();
 
         // Add the invite we'll reject
         await program.methods
-            .addInviteToSomeonesList(authority.publicKey, conversationId)
+            .inviteAnotherUser(authority.publicKey, conversationId)
             .accounts({ sender: inviter.publicKey })
             .accountsPartial({ recipientsInviteListAccount: inviteListPDA })
             .signers([inviter])
@@ -49,8 +45,8 @@ describe("reject_invite instruction", () => {
             .signers([authority])
             .rpc();
 
-        const acc = await program.account.conversationListAccount.fetch(inviteListPDA);
-        assert.notInclude(acc.conversationIds, conversationId);
+        const acc = await program.account.chatListAccount.fetch(inviteListPDA);
+        assert.notInclude(acc.chatIds, conversationId);
     });
 
     it("no-op when invite not present", async () => {
