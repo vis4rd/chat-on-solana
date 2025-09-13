@@ -82,10 +82,6 @@ Run Solana program test suite on locally hosted node:
 anchor test --provider.cluster localnet
 ```
 
-### Authors
-
-Created by [Aleksander Kluczka](https://github.com/vis4rd) for my master thesis.
-
 ### License
 
 This project is licensed under [GNU AGPLv3](https://choosealicense.com/licenses/agpl-3.0/#), a free and open-source license. For more information, please see [the license file](LICENSE.md).
